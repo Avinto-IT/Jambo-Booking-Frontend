@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Hotel {
+  hotelID          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name             String
+  address          String
+  locationID       String   @db.ObjectId
+  amenities        Json
+  description      String
+  houseRules       Json
+  imageLinks       String[]
+  primaryImageLink String
+  isRunning        Boolean
+
+  location Location  @relation(fields: [locationID], references: [locationID])
+  bookings Booking[]
+}
+
+model User {
+  userID        String @id @default(auto()) @map("_id") @db.ObjectId
+  agencyName    String
+  username      String
+  password      String
+  email         String @unique
+  contactNumber String
+  role          String
+
+  bookings         Booking[]
+  bookingHistories BookingHistory[]
+}
+
+model Location {
+  locationID String @id @default(auto()) @map("_id") @db.ObjectId
+  city       String
+  country    String
+
+  hotels Hotel[]
+}
+
+model Booking {
+  bookingId   String   @id @default(auto()) @map("_id") @db.ObjectId
+  userID      String   @db.ObjectId
+  hotelID     String   @db.ObjectId
+  bookingDate DateTime
+  status      String
+  guests      Int
+  rooms       Int
+
+  user           User             @relation(fields: [userID], references: [userID])
+  hotel          Hotel            @relation(fields: [hotelID], references: [hotelID])
+  bookingHistory BookingHistory[]
+}
+
+model BookingHistory {
+  bookingId String @id @default(auto()) @map("_id") @db.ObjectId
+  count     Int
+
+  booking Booking @relation(fields: [bookingId], references: [bookingId])
+  userID  String  @db.ObjectId
+  user    User    @relation(fields: [userID], references: [userID])
+}
