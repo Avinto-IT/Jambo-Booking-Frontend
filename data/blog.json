@@ -1,0 +1,76 @@
+{
+  "blogs": [
+    {
+      "blogTitle": "The Ultimate Guide to Luxury Hotels",
+      "content": "Luxury hotels offer the finest in accommodations, service, and cuisine. Discover the best luxury hotels in the world.",
+      "images": [
+        "https://example.com/images/luxury_hotel_1.jpg",
+        "https://example.com/images/luxury_hotel_2.jpg"
+      ],
+      "created_date": "2024-06-18T10:00:00Z",
+      "active": true,
+      "caption": "Experience unparalleled luxury",
+      "user_id": "user_1234"
+    },
+    {
+      "blogTitle": "Top 10 Budget-Friendly Hotels",
+      "content": "Traveling on a budget? Check out our list of the top 10 budget-friendly hotels that offer great value for money.",
+      "images": [
+        "https://example.com/images/budget_hotel_1.jpg",
+        "https://example.com/images/budget_hotel_2.jpg"
+      ],
+      "created_date": "2024-06-17T09:30:00Z",
+      "active": true,
+      "caption": "Affordable stays for every traveler",
+      "user_id": "user_5678"
+    },
+    {
+      "blogTitle": "Boutique Hotels You Must Visit",
+      "content": "Boutique hotels offer unique experiences with personalized service and stylish decor. Here are some boutique hotels you must visit.",
+      "images": [
+        "https://example.com/images/boutique_hotel_1.jpg",
+        "https://example.com/images/boutique_hotel_2.jpg"
+      ],
+      "created_date": "2024-06-16T08:45:00Z",
+      "active": true,
+      "caption": "Unique stays with a personal touch",
+      "user_id": "user_91011"
+    },
+    {
+      "blogTitle": "Family-Friendly Hotels for Your Next Vacation",
+      "content": "Planning a family vacation? These family-friendly hotels offer amenities and activities for all ages.",
+      "images": [
+        "https://example.com/images/family_hotel_1.jpg",
+        "https://example.com/images/family_hotel_2.jpg"
+      ],
+      "created_date": "2024-06-15T07:15:00Z",
+      "active": true,
+      "caption": "Fun and comfort for the whole family",
+      "user_id": "user_1213"
+    },
+    {
+      "blogTitle": "Eco-Friendly Hotels for Sustainable Travel",
+      "content": "Sustainable travel is on the rise. Discover eco-friendly hotels that prioritize the environment and sustainability.",
+      "images": [
+        "https://example.com/images/eco_hotel_1.jpg",
+        "https://example.com/images/eco_hotel_2.jpg"
+      ],
+      "created_date": "2024-06-14T06:00:00Z",
+      "active": true,
+      "caption": "Green stays for the eco-conscious traveler",
+      "user_id": "user_1415"
+    },
+    {
+      "blogTitle": "Best Pet-Friendly Hotels",
+      "content": "Don't leave your furry friends behind. These pet-friendly hotels welcome pets with open arms and special amenities.",
+      "images": [
+        "https://example.com/images/pet_hotel_1.jpg",
+        "https://example.com/images/pet_hotel_2.jpg"
+      ],
+      "created_date": "2024-06-13T05:30:00Z",
+      "active": true,
+      "caption": "Perfect stays for you and your pet",
+      "user_id": "user_1617"
+    }
+  ]
+}

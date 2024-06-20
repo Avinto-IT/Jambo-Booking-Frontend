@@ -18,20 +18,45 @@ model Hotel {
   imageLinks       String[]
   primaryImageLink String
   isRunning        Boolean
+  rooms            Json
+  discount         String
 
   location Location  @relation(fields: [locationID], references: [locationID])
   bookings Booking[]
 }
 
-model User {
-  userID        String @id @default(auto()) @map("_id") @db.ObjectId
-  agencyName    String
-  username      String
-  password      String
-  email         String @unique
-  contactNumber String
-  role          String
+model Blog {
+  blogID       String   @id @default(auto()) @map("_id") @db.ObjectId
+  title        String
+  primaryImage String
+  content      String
+  caption      String
+  createdAt    DateTime
+  imageLinks   String[]
+  userId       String
+}
 
+model Agent {
+  agentID     String @id @default(auto()) @map("_id") @db.ObjectId
+  fullname    String
+  displayName String
+  grade       String
+}
+
+model Grade {
+  gradeID       String @id @default(auto()) @map("_id") @db.ObjectId
+  priceModifier String
+}
+
+model User {
+  userID           String           @id @default(auto()) @map("_id") @db.ObjectId
+  agencyName       String
+  username         String
+  password         String
+  email            String           @unique
+  contactNumber    String
+  role             String
+  dateOfBirth      DateTime
   bookings         Booking[]
   bookingHistories BookingHistory[]
 }
@@ -45,7 +70,7 @@ model Location {
 }
 
 model Booking {
-  bookingId   String   @id @default(auto()) @map("_id") @db.ObjectId
+  bookingID   String   @id @default(auto()) @map("_id") @db.ObjectId
   userID      String   @db.ObjectId
   hotelID     String   @db.ObjectId
   bookingDate DateTime
@@ -59,10 +84,10 @@ model Booking {
 }
 
 model BookingHistory {
-  bookingId String @id @default(auto()) @map("_id") @db.ObjectId
+  bookingID String @id @default(auto()) @map("_id") @db.ObjectId
   count     Int
 
-  booking Booking @relation(fields: [bookingId], references: [bookingId])
+  booking Booking @relation(fields: [bookingID], references: [bookingID])
   userID  String  @db.ObjectId
   user    User    @relation(fields: [userID], references: [userID])
 }
