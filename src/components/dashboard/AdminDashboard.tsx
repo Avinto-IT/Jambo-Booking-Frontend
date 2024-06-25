@@ -1,5 +1,10 @@
 import React from "react";
+import AddHotel from "./AdminDashboardSub/AddHotel";
 
 export default function AdminDashboard() {
-  return <div>This is Admin Dashboard</div>;
+  return (
+    <div>
+      <AddHotel />
+    </div>
+  );
 }

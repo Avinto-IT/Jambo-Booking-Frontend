@@ -14,6 +14,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (!email || !password) {
     return res.status(400).json({ error: "Missing email or password" });
   }
+
   try {
     const user = await prisma.user.findUnique({
       where: { email },
@@ -28,12 +29,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (!isPasswordValid) {
       return res.status(401).json({ error: "Invalid password" });
     }
+
     delete (user as { password?: string }).password;
     res.status(200).json({ message: "Login successful", user: user });
-  } catch {
+  } catch (error) {
+    console.error("Error during login:", error);
     res.status(500).json({ error: "Internal Server Error" });
   } finally {
-    await prisma.$disconnect;
+    await prisma.$disconnect();
   }
 }
 

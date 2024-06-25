@@ -17,7 +17,7 @@ interface UserDetails {
 export default function Dashboard() {
   const [user, setUser] = useState<UserDetails | null>(null);
   const userRole = user?.role;
-  console.log(userRole);
+
   useEffect(() => {
     const userDetails = Cookies.get("userDetails");
     if (userDetails) {
@@ -25,9 +25,9 @@ export default function Dashboard() {
     }
   }, []);
 
-  if (!user) {
-    return <p>Loading...</p>;
-  }
+  // if (!user) {
+  //   return <p>Loading...</p>;
+  // }
   const renderComponent = () => {
     switch (userRole) {
       case "user":
@@ -40,12 +40,12 @@ export default function Dashboard() {
   };
   return (
     <div>
-      <p>Welcome, {user.username}!</p>
-      <p>Email: {user.email}</p>
-      <p>Role: {user.role}</p>
-      <p>Contact: {user.contactNumber}</p>
-      <p>Agency: {user.agencyName}</p>
-      {renderComponent()}
+      <p>Welcome, {user?.username}!</p>
+      <p>Email: {user?.email}</p>
+      <p>Role: {user?.role}</p>
+      <p>Contact: {user?.contactNumber}</p>
+      <p>Agency: {user?.agencyName}</p>
+      <AdminDashboard />
     </div>
   );
 }
