@@ -1,9 +1,10 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 const prisma = new PrismaClient();
-
+const SECRET_KEY = "SCKEY977";
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
@@ -31,7 +32,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     }
 
     delete (user as { password?: string }).password;
-    res.status(200).json({ message: "Login successful", user: user });
+    const token = jwt.sign(
+      { userId: user.userID, role: user.role },
+      SECRET_KEY,
+      { expiresIn: "1h" }
+    );
+    res.status(200).json({ message: "Login successful", user: user, token });
   } catch (error) {
     console.error("Error during login:", error);
     res.status(500).json({ error: "Internal Server Error" });

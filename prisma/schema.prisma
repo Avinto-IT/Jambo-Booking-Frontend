@@ -47,8 +47,9 @@ model Grade {
 
 model User {
   userID           String           @id @default(auto()) @map("_id") @db.ObjectId
-  agencyName       String
-  username         String
+  agencyName       String?
+  firstName        String
+  lastName         String
   password         String
   email            String           @unique
   contactNumber    String
@@ -71,14 +72,15 @@ model Location {
 }
 
 model Booking {
-  bookingID   String   @id @default(auto()) @map("_id") @db.ObjectId
-  userID      String   @db.ObjectId
-  hotelID     String   @db.ObjectId
-  bookingDate DateTime
-  status      String
-  guests      Int
-  rooms       Int
+  bookingID        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userID           String   @db.ObjectId
+  hotelID          String   @db.ObjectId
+  bookingStartDate DateTime
+  bookingEndDate   DateTime
 
+  status         String
+  guests         Int
+  bookingInfo    Json
   user           User             @relation(fields: [userID], references: [userID])
   hotel          Hotel            @relation(fields: [hotelID], references: [hotelID])
   bookingHistory BookingHistory[]

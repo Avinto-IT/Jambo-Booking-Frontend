@@ -65,6 +65,13 @@ export default function AddHotelForm() {
   const [rooms, setRooms] = useState<Room[]>(initialRooms);
   const [locations, setLocations] = useState<Location[]>([]);
   const [message, setMessage] = useState("");
+  const [token, setToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Get the token from localStorage on client-side only
+    const storedToken = localStorage.getItem("token");
+    setToken(storedToken);
+  }, []);
 
   useEffect(() => {
     const fetchLocations = async () => {
@@ -126,14 +133,15 @@ export default function AddHotelForm() {
         : "",
     }));
   };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     try {
       const response = await fetch("/api/setHotels", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ ...formData, rooms }),
       });

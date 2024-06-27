@@ -1,18 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
-import UserDashboard from "../../components/dashboard/UserDashboard";
 import AdminDashboard from "../../components/dashboard/AdminDashboard";
-import EditorDashboard from "../../components/dashboard/EditorDashboard";
 import React from "react";
-
-interface UserDetails {
-  email: string;
-  username: string;
-  role: string;
-  contactNumber: number;
-  agencyName: string;
-}
+import { UserDetails } from "@/types";
+import AgentDashboard from "@/components/dashboard/AgentDashboard";
+import HotelDashboard from "@/components/dashboard/HotelDashboard";
 
 export default function Dashboard() {
   const [user, setUser] = useState<UserDetails | null>(null);
@@ -25,27 +18,18 @@ export default function Dashboard() {
     }
   }, []);
 
-  // if (!user) {
-  //   return <p>Loading...</p>;
-  // }
-  const renderComponent = () => {
-    switch (userRole) {
-      case "user":
-        return <UserDashboard />;
-      case "admin":
-        return <AdminDashboard />;
-      case "editor":
-        return <EditorDashboard />;
+  if (!user) {
+    return <p>Loading...</p>;
+  }
+  const renderDashboard = () => {
+    if (userRole === "admin") {
+      return <AdminDashboard user={user} />;
+    } else if (userRole === "agent") {
+      return <AgentDashboard user={user} />;
+    } else if (userRole === "hotel") {
+      return <HotelDashboard user={user} />;
     }
   };
-  return (
-    <div>
-      <p>Welcome, {user?.username}!</p>
-      <p>Email: {user?.email}</p>
-      <p>Role: {user?.role}</p>
-      <p>Contact: {user?.contactNumber}</p>
-      <p>Agency: {user?.agencyName}</p>
-      <AdminDashboard />
-    </div>
-  );
+
+  return <div>{renderDashboard()}</div>;
 }
