@@ -63,7 +63,7 @@ export default function Home() {
               </div>
               <h1 className="relative w-fit tracking-tight text-balance font-bold !leading-tight text-gray-900 text-5xl md:text-6xl lg:text-7xl">
                 Hotel Booking App
-                asdasdas
+      
               </h1>
             </div>
             <a href="/login" className="underline text-blue-700">
