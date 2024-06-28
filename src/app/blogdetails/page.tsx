@@ -1,6 +1,6 @@
 "use client";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
-import { Payment, columns } from "./columns";
+import { Bloginfo, columns } from "./columns";
 import { DataTable } from "./data-table";
 
 import React, { useEffect, useState } from "react";
@@ -8,34 +8,26 @@ import blogsdata from "../../../data/blog.json";
 import { Button } from "@/components/ui/button";
 
 import { Input } from "@/components/ui/input"
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import {
-    Pagination,
-    PaginationContent,
-    PaginationEllipsis,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious,
-  } from "@/components/ui/pagination"
+// import {
+//     Pagination,
+//     PaginationContent,
+//     PaginationEllipsis,
+//     PaginationItem,
+//     PaginationLink,
+//     PaginationNext,
+//     PaginationPrevious,
+//   } from "@/components/ui/pagination"
 
   import BlogHeader from "@/components/blog/BlogHeader";
-  import userImg from "@/components/blog/head/filter.svg";
+
   import circle from "@/components/blog/head/plus-circle.svg";
-  import search from "@/components/blog/head/searching.svg";
+
 
   import Image from 'next/image';
-import { RemoveFormattingIcon, Search, SearchIcon, icons } from "lucide-react";
+import {Search } from "lucide-react";
 
 export default function App() {
 
@@ -120,7 +112,7 @@ export default function App() {
             </div>
             </div>
 
-            
+              
         </div>
 
         <DataTable columns={columns} data={filteredData()} searchValue={searchValue}  />

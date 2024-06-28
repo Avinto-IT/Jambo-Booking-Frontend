@@ -5,7 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useEffect, useState } from 'react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import {MoreHorizontal } from "lucide-react";
 
 
 import React from "react";
@@ -16,6 +16,7 @@ import React from "react";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  searchValue: string;
 }
 
 export function DataTable<TData, TValue>({ columns, data ,searchValue}: DataTableProps<TData, TValue>) {
@@ -39,7 +40,7 @@ export function DataTable<TData, TValue>({ columns, data ,searchValue}: DataTabl
   });
   useEffect(() => {
     table.getColumn('blogTitle')?.setFilterValue(searchValue);
-  }, [searchValue, table]);
+  }, [searchValue]);
 
   return (
     

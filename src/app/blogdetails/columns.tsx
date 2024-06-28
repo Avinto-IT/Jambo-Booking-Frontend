@@ -2,28 +2,25 @@
 import { Badge } from "@/components/ui/badge"
  
 import { ColumnDef } from "@tanstack/react-table"
-import Image from "next/image";
-import photo from "./appartment.jpg"
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown } from "lucide-react";
-export type Payment = {
-  // user_id: string
-  POST_ID:Number,
+export type Bloginfo = {
+  POST_ID:string,
   hero_img:string
     blogTitle: string
-    // content: string
-  active: "true" | "false" 
+
+  active: boolean
   caption: string
   created_date:string
 
 }
  
-export const columns: ColumnDef<Payment>[] = [
+export const columns: ColumnDef<Bloginfo>[] = [
   {
     accessorKey: "POST_ID",
     header: ()=><div className="text-left">Post ID</div>,
     cell:({getValue})=>{
-      const value: string=getValue();
+      const value=getValue() as number;;
       
       return(
         <div className="flex justify-center">{value}</div>)
@@ -32,7 +29,7 @@ export const columns: ColumnDef<Payment>[] = [
     accessorKey: "hero_img",
     header: () => <div className="text-left"> </div>,
     cell:({getValue})=>{
-      const value: string=getValue();
+      const value=getValue() as string;
 
       return(
         <div className="w-32 h-20 relative">
@@ -47,7 +44,7 @@ export const columns: ColumnDef<Payment>[] = [
     accessorKey: "blogTitle",
     header: ()=><div>Blog Title</div>,
     cell:({getValue})=>{
-      const value:string=getValue();
+      const value=getValue() as string;
    
       return(
         <>
@@ -61,7 +58,7 @@ export const columns: ColumnDef<Payment>[] = [
     accessorKey: "active",
     header: () => <div className="text-left">Status</div>,
     cell: ({ getValue }) => {
-      const value = getValue();
+      const value = getValue() as boolean;
       return (
 
         <Badge variant="outline" className="rounded-xl" style={{ backgroundColor: value ? "lightgreen" : "white" }}>
@@ -78,7 +75,7 @@ export const columns: ColumnDef<Payment>[] = [
     accessorKey: "caption",
     header: ()=><div>Caption</div>,
     cell:({getValue})=>{
-      const value=getValue();
+      const value=getValue() as string;
    
       return(
         <>
@@ -100,17 +97,16 @@ export const columns: ColumnDef<Payment>[] = [
         </Button>
       )
     },
+     cell: ({ getValue }) => {
+    const value = getValue() as string;
+    const date = new Date(value);
+    const options: Intl.DateTimeFormatOptions = { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric' };
+    const formattedDate = date.toLocaleDateString("en-US", options);
 
-
-
-    cell: ({ getValue }) => {
-      const value = getValue();
-      let formatdate= new Date(value);
-      const options = { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric' };
-       formatdate= formatdate.toLocaleDateString("en-US",options);
-      return (
-          formatdate
-        );}
+    return (
+      <div className="flex justify-center">{formattedDate}</div>
+    );
+  },
   },
   
 ]
