@@ -12,17 +12,18 @@ model Hotel {
   name             String
   address          String
   locationID       String   @db.ObjectId
-  amenities        Json
+  facilities       Json
   description      String
   houseRules       Json
   imageLinks       String[]
   primaryImageLink String
   isRunning        Boolean
   rooms            Json
-  discount         String
+  discount         Float
 
   location Location  @relation(fields: [locationID], references: [locationID])
   bookings Booking[]
+  User     User[]
 }
 
 model Blog {
@@ -36,29 +37,30 @@ model Blog {
   userId       String
 }
 
-model Agent {
-  agentID     String @id @default(auto()) @map("_id") @db.ObjectId
-  fullname    String
-  displayName String
-  grade       String
-}
-
 model Grade {
   gradeID       String @id @default(auto()) @map("_id") @db.ObjectId
+  gradeName     String
   priceModifier String
+
+  User User[]
 }
 
 model User {
   userID           String           @id @default(auto()) @map("_id") @db.ObjectId
-  agencyName       String
-  username         String
+  agencyName       String?
+  firstName        String
+  lastName         String
   password         String
   email            String           @unique
   contactNumber    String
-  role             String
+  role             String //This will be either a) Hotel b) Agent c) Jambo(Admin)
   dateOfBirth      DateTime
   bookings         Booking[]
   bookingHistories BookingHistory[]
+  gradeID          String?          @db.ObjectId
+  grade            Grade?           @relation(fields: [gradeID], references: [gradeID])
+  hotelID          String?          @db.ObjectId
+  hotel            Hotel?           @relation(fields: [hotelID], references: [hotelID])
 }
 
 model Location {
@@ -70,14 +72,15 @@ model Location {
 }
 
 model Booking {
-  bookingID   String   @id @default(auto()) @map("_id") @db.ObjectId
-  userID      String   @db.ObjectId
-  hotelID     String   @db.ObjectId
-  bookingDate DateTime
-  status      String
-  guests      Int
-  rooms       Int
+  bookingID        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userID           String   @db.ObjectId
+  hotelID          String   @db.ObjectId
+  bookingStartDate DateTime
+  bookingEndDate   DateTime
 
+  status         String
+  guests         Int
+  bookingInfo    Json
   user           User             @relation(fields: [userID], references: [userID])
   hotel          Hotel            @relation(fields: [hotelID], references: [hotelID])
   bookingHistory BookingHistory[]

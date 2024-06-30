@@ -1,38 +1,58 @@
 "use client";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import { useEffect, useState } from "react";
+
 interface Hotel {
   hotelID: string;
   name: string;
   address: string;
   locationID: string;
-  amenities: { [key: string]: boolean };
+  facilities: {
+    name: string;
+    comment: string;
+    subFacilities: string[];
+  }[];
   description: string;
   houseRules: { [key: string]: boolean };
   imageLinks: string[];
   primaryImageLink: string;
+  isRunning: boolean;
+  rooms: {
+    [key: string]: {
+      type: string;
+      price: number;
+      capacity: string;
+      bed: {
+        bedType: string;
+        numberOfBeds: string;
+      };
+      amenities: { [key: string]: boolean };
+    };
+  };
+  discount: number;
 }
 
 interface Location {
-  locationId: string;
+  locationID: string;
   city: string;
   country: string;
 }
+
 export default function Home() {
   const [hotels, setHotels] = useState<Hotel[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [locations, setLocations] = useState<Location[]>([]);
+
   useEffect(() => {
     const fetchHotels = async () => {
       try {
         const response = await fetch("/api/getHotels");
         const data = await response.json();
-
         setHotels(data);
       } catch (error) {
         console.log("Error fetching hotels:", error);
       } finally {
-        // setLoading(false);
+        setLoading(false);
       }
     };
     fetchHotels();
@@ -43,7 +63,6 @@ export default function Home() {
       try {
         const response = await fetch("/api/getLocation");
         const data = await response.json();
-        console.log(data);
         setLocations(data);
       } catch (error) {
         console.log("Error fetching locations:", error);
@@ -72,8 +91,8 @@ export default function Home() {
           <ul>
             <h1 className="text-2xl font-semibold"> Locations </h1>
             {locations.map((location) => (
-              <li>
-                {location.city},{location.country}
+              <li key={location.locationID}>
+                {location.city}, {location.country}
               </li>
             ))}
           </ul>
@@ -88,14 +107,25 @@ export default function Home() {
               className="flex flex-col bg-red-50 border p-4"
             >
               {index + 1}
-              <h2>Name:{hotel.name}</h2>
-              <h2>Address:{hotel.address}</h2>
-              <h2>Description:{hotel.description}</h2>
+              <h2>Name: {hotel.name}</h2>
+              <h2>Address: {hotel.address}</h2>
+              <h2>Description: {hotel.description}</h2>
+              <h2>Discount: {hotel.discount}</h2>
               <ul>
-                <h2 className="font-semibold">Amenities</h2>
-                {Object.entries(hotel.amenities).map(([amenity, value]) => (
-                  <li key={amenity} className="pl-3">
-                    {amenity}:{value ? "Yes" : "No"}
+                <h2 className="font-semibold">Facilities</h2>
+                {hotel.facilities.map((facility, facilityIndex) => (
+                  <li key={facilityIndex} className="pl-3">
+                    <div className="font-bold">{facility.name}</div>
+                    <div>Comment: {facility.comment}</div>
+                    <ul>
+                      {facility.subFacilities.map(
+                        (subFacility, subFacilityIndex) => (
+                          <li key={subFacilityIndex} className="pl-3">
+                            {subFacility}
+                          </li>
+                        )
+                      )}
+                    </ul>
                   </li>
                 ))}
               </ul>
@@ -103,19 +133,42 @@ export default function Home() {
                 <h2 className="font-semibold">House Rules</h2>
                 {Object.entries(hotel.houseRules).map(([rule, value]) => (
                   <li key={rule} className="pl-3">
-                    {rule}:{value ? "Yes" : "No"}
+                    {rule}: {value ? "Yes" : "No"}
+                  </li>
+                ))}
+              </ul>
+              <ul>
+                <h2 className="font-semibold">Rooms</h2>
+                {Object.entries(hotel.rooms).map(([roomType, roomDetails]) => (
+                  <li key={roomType} className="pl-3">
+                    <h3 className="font-bold text-lg">
+                      Room Type: {roomDetails.type}
+                    </h3>
+                    <p>Price: {Number(roomDetails.price).toFixed(2)}</p>
+                    <p>Capacity: {roomDetails.capacity}</p>
+                    <p>Bed Type: {roomDetails.bed.bedType}</p>
+                    <p>Number of Beds: {roomDetails.bed.numberOfBeds}</p>
+                    <ul>
+                      <h4 className="font-semibold">Room Amenities</h4>
+                      {roomDetails.amenities.map((amenity, index) => {
+                        console.log(amenity);
+                        return (
+                          <li key={index} className="pl-3">
+                            {amenity}
+                          </li>
+                        );
+                      })}
+                    </ul>
                   </li>
                 ))}
               </ul>
               <ul>
                 <h2 className="font-semibold">Image Links: </h2>
-                {hotel.imageLinks.map((link) => {
-                  return (
-                    <li key={link} className="pl-3">
-                      {link}
-                    </li>
-                  );
-                })}
+                {hotel.imageLinks.map((link) => (
+                  <li key={link} className="pl-3">
+                    {link}
+                  </li>
+                ))}
               </ul>
               <h2>Primary Link: {hotel.primaryImageLink}</h2>
             </li>
