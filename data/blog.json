@@ -1,99 +1,98 @@
 {
   "blogs": [
     {
-      "POST_ID":"001",
+      "POST_ID": "001",
       "blogTitle": "The Ultimate Guide to Luxury Hotels",
-      "content": "Luxury hotels offer the finest in accommodations, service, and cuisine. Discover the best luxury hotels and resorts in the world.",
+      "content": "Luxury hotels offer the finest in <strong>accommodations</strong>, service, and cuisine. Discover the best luxury hotels and resorts in the world. jbkj ,",
       "images": [
         "https://example.com/images/luxury_hotel_1.jpg",
         "https://example.com/images/luxury_hotel_2.jpg"
       ],
-      "hero_img":"https://www.berjayahotel.com/sites/default/files/styles/gallery_slide/public/colombo_30.jpg",
-     
+      "hero_img": "https://www.berjayahotel.com/sites/default/files/styles/gallery_slide/public/colombo_30.jpg",
       "created_date": "2024-06-18T10:00:00Z",
       "active": true,
       "caption": "Experience unparalleled luxury",
       "user_id": "user_1234"
     },
     {
-      "POST_ID":"002",
+      "POST_ID": "002",
       "blogTitle": "Top 10 Budget-Friendly Hotels",
       "content": "Top ten budget friendly hotels at affordable prices",
       "images": [
         "https://example.com/images/budget_hotel_1.jpg",
         "https://example.com/images/budget_hotel_2.jpg"
       ],
-      "hero_img":"https://www.berjayahotel.com/sites/default/files/styles/gallery_slide/public/colombo_30.jpg",
+      "hero_img": "https://images.pexels.com/photos/189296/pexels-photo-189296.jpeg",
       "created_date": "2024-06-17T09:30:00Z",
       "active": false,
       "caption": "Affordable stays for every traveler",
       "user_id": "user_5678"
     },
     {
-      "POST_ID":"003",
+      "POST_ID": "003",
       "blogTitle": "Boutique Hotels You Must Visit",
       "content": "Boutique hotels offer unique experiences with personalized service and stylish decor. Here are some boutique hotels you must visit.",
       "images": [
         "https://example.com/images/boutique_hotel_1.jpg",
         "https://example.com/images/boutique_hotel_2.jpg"
       ],
-      "hero_img":"https://www.berjayahotel.com/sites/default/files/styles/gallery_slide/public/colombo_30.jpg",
+      "hero_img": "https://images.pexels.com/photos/261102/pexels-photo-261102.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
       "created_date": "2024-06-16T08:45:00Z",
       "active": true,
       "caption": "Unique stays with a personal touch",
       "user_id": "user_91011"
     },
     {
-      "POST_ID":"004",
+      "POST_ID": "004",
       "blogTitle": "Family-Friendly Hotels for Your Next Vacation",
       "content": "Planning a family vacation? These family-friendly hotels offer amenities and activities for all ages.",
       "images": [
         "https://example.com/images/family_hotel_1.jpg",
         "https://example.com/images/family_hotel_2.jpg"
       ],
-      "hero_img":"https://www.berjayahotel.com/sites/default/files/styles/gallery_slide/public/colombo_30.jpg",
+      "hero_img": "https://images.pexels.com/photos/221457/pexels-photo-221457.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
       "created_date": "2024-06-15T07:15:00Z",
       "active": true,
       "caption": "Fun and comfort for the whole family",
       "user_id": "user_1213"
     },
     {
-      "POST_ID":"005",
+      "POST_ID": "005",
       "blogTitle": "Eco-Friendly Hotels for Sustainable Travel",
       "content": "Sustainable travel is on the rise. Discover Eco-friendly hotels that prioritize the environment and sustainability.",
       "images": [
         "https://example.com/images/eco_hotel_1.jpg",
         "https://example.com/images/eco_hotel_2.jpg"
       ],
-      "hero_img":"https://www.berjayahotel.com/sites/default/files/styles/gallery_slide/public/colombo_30.jpg",
+      "hero_img": "https://images.pexels.com/photos/338504/pexels-photo-338504.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
       "created_date": "2024-06-14T06:00:00Z",
       "active": true,
       "caption": "Green stays for the eco-conscious traveler",
       "user_id": "user_1415"
     },
     {
-      "POST_ID":"006",
+      "POST_ID": "006",
       "blogTitle": "Best Pet-Friendly Hotels",
       "content": "Don't leave your furry friends behind. These pet-friendly hotels welcome pets with open arms and special amenities.",
       "images": [
         "https://example.com/images/pet_hotel_1.jpg",
         "https://example.com/images/pet_hotel_2.jpg"
       ],
-      "hero_img":"https://www.berjayahotel.com/sites/default/files/styles/gallery_slide/public/colombo_30.jpg",
+      "hero_img": "https://images.pexels.com/photos/1134176/pexels-photo-1134176.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
       "created_date": "2024-06-13T05:30:00Z",
       "active": true,
       "caption": "Perfect stays for you and your pet",
       "user_id": "user_1617"
     },
     {
-      "POST_ID":"007",
+      "POST_ID": "007",
       "blogTitle": "Hotel for comfort",
       "content": "Hotels that make you feel like you are at home and services.",
       "images": [
         "https://example.com/images/pet_hotel_1.jpg",
         "https://example.com/images/pet_hotel_2.jpg"
       ],
-      "hero_img":"https://www.berjayahotel.com/sites/default/files/styles/gallery_slide/public/colombo_30.jpg",
+      "hero_img": "https://images.pexels.com/photos/594077/pexels-photo-594077.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
       "created_date": "2024-06-13T05:30:00Z",
       "active": false,
       "caption": "Dont compramise your comfort",

@@ -4,17 +4,26 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const badgeVariants = cva(
-  "inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  "inline-flex items-center rounded-full border px-2.5   py-0.5 gap-0.625 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
   {
     variants: {
       variant: {
         default:
-          "border-transparent bg-primary text-primary-foreground shadow hover:bg-primary/80",
+          "border-transparent bg-[#22C55E] text-primary-foreground shadow hover:bg-[#16A34A]",
         secondary:
-          "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
+          "border-transparent bg-[#EAB308] text-secondary-foreground hover:bg-[#CA8A04]",
         destructive:
-          "border-transparent bg-destructive text-destructive-foreground shadow hover:bg-destructive/80",
+          "border-transparent bg-[#EF4444] text-destructive-foreground shadow hover:bg-[#DC2626]",
         outline: "text-foreground",
+        Requested:
+        "border-transparent bg-[#3B82F6] text-destructive-foreground shadow hover:bg-[#2563EB]",
+        Pending:
+        "border-transparent bg-[#EAB308] text-destructive-foreground shadow hover:bg-[#CA8A04]",
+        Rejected:
+        "border-transparent bg-[#EF4444] text-destructive-foreground shadow hover:bg-[#DC2626]",
+        Approved:
+        "border-transparent bg-[#22C55E] text-destructive-foreground shadow hover:bg-[#16A34A]",
+        
       },
     },
     defaultVariants: {

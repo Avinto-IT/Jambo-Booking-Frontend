@@ -32,7 +32,7 @@ export const columns: ColumnDef<Bloginfo>[] = [
       const value=getValue() as string;
 
       return(
-        <div className="w-32 h-20 relative">
+        <div className="w-32 h-20 relative flex justify-center items-center">
       
       <img src={value} alt="hotelphoto" className="rounded-md object-cover" />
       
@@ -61,7 +61,8 @@ export const columns: ColumnDef<Bloginfo>[] = [
       const value = getValue() as boolean;
       return (
 
-        <Badge variant="outline" className="rounded-xl" style={{ backgroundColor: value ? "lightgreen" : "white" }}>
+        
+        <Badge variant={value ? "Approved" : "outline"}>
           {value ? "Active" : "Inactive"}
           </Badge>
     

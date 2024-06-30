@@ -55,11 +55,11 @@ export default function App() {
      <BlogHeader/>
 
    
-        <div className=" px-6 gap-8  max-w-screen ">
+        <div className="px-6 gap-8  max-w-screen ">
          
-            <div className="gap-6       ">
+            <div className="gap-6 ">
          
-                <div className="gap-2     ">
+                <div className="gap-2">
       <div className="filters flex justify-between items-center 
            h-10">
      

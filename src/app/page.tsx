@@ -1,5 +1,7 @@
 "use client";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
+
+
 import { useEffect, useState } from "react";
 interface Hotel {
   hotelID: string;
@@ -70,6 +72,7 @@ export default function Home() {
               Login Page
             </a>
           </div>
+         
           <ul>
             <h1 className="text-2xl font-semibold"> Locations </h1>
             {locations.map((location) => (
@@ -78,7 +81,7 @@ export default function Home() {
               </li>
             ))}
           </ul>
-        </MaxWidthWrapper>
+          </MaxWidthWrapper>
       </section>
       <div className="p-10">
         <h1>List of Hotels</h1>
@@ -120,9 +123,11 @@ export default function Home() {
               </ul>
               <h2>Primary Link: {hotel.primaryImageLink}</h2>
             </li>
+          
           ))}
         </ul>
       </div>
+   
     </div>
   );
 }
