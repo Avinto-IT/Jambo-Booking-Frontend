@@ -1,26 +1,19 @@
 "use client";
 import { useEffect, useState } from "react";
-import Cookies from "js-cookie";
 import AdminDashboard from "../../components/dashboard/AdminDashboard";
 import React from "react";
 import { UserDetails } from "@/types";
 import AgentDashboard from "@/components/dashboard/AgentDashboard";
 import HotelDashboard from "@/components/dashboard/HotelDashboard";
+import withAuth from "@/lib/loginAuth";
 
-export default function Dashboard() {
-  const [user, setUser] = useState<UserDetails | null>(null);
+interface DashboardProps {
+  user: UserDetails;
+}
+
+const Dashboard: React.FC<DashboardProps> = ({ user }) => {
   const userRole = user?.role;
 
-  useEffect(() => {
-    const userDetails = Cookies.get("userDetails");
-    if (userDetails) {
-      setUser(JSON.parse(userDetails));
-    }
-  }, []);
-
-  if (!user) {
-    return <p>Loading...</p>;
-  }
   const renderDashboard = () => {
     if (userRole === "admin") {
       return <AdminDashboard user={user} />;
@@ -29,7 +22,10 @@ export default function Dashboard() {
     } else if (userRole === "hotel") {
       return <HotelDashboard user={user} />;
     }
+    return null; // Add a fallback return to handle any undefined role
   };
 
   return <div>{renderDashboard()}</div>;
-}
+};
+
+export default withAuth(Dashboard);

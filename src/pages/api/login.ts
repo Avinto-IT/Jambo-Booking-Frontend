@@ -33,7 +33,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     delete (user as { password?: string }).password;
     const token = jwt.sign(
-      { userId: user.userID, role: user.role },
+      { userID: user.userID, role: user.role },
       SECRET_KEY,
       { expiresIn: "1h" }
     );

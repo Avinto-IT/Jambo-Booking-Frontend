@@ -71,7 +71,6 @@ async function bookHotelRoomHandler(req: NextApiRequest, res: NextApiResponse) {
       },
     });
 
-    // Optionally, you can create a booking history record
     await prisma.bookingHistory.create({
       data: {
         bookingID: booking.bookingID,
