@@ -6,6 +6,7 @@ import Image from 'next/image';
 import Blog_Client_Header from './Blog_Client_Header';
 import arrow from "./head/arrow-up-right.svg";
 import { usePathname } from 'next/navigation';
+import TagRemover from './TagRemover';
 
 function Single_Blog_Page() {
     const pathname = usePathname();
@@ -42,9 +43,10 @@ function Single_Blog_Page() {
 
     return (
         <div className='flex flex-col items-center mt-10 mb-10'>
+     
             <MaxWidthWrapper className='text-[0.9rem]'>
                 <div className="breadcrumb mb-7">
-                    <Blog_Client_Header/>
+                    <Blog_Client_Header index={ind}/>
                 </div>
             {data &&
                 <div className="all flex justify-between " style={{ whiteSpace: 'pre-line' }}>
@@ -80,7 +82,7 @@ function Single_Blog_Page() {
                         <br/>
                         <div className="texts">
                             <p className=" font-bold  text-xl mb-3">{data.Conclusion}</p>
-                            <p className=" text-[#334155] leading-7">{data.content}</p>
+                            <p className=" text-[#334155] leading-7"><TagRemover content={data.content}/></p>
                         </div>
                     </div>
 
@@ -107,7 +109,7 @@ function Single_Blog_Page() {
                                             <Image src={arrow} alt="user" className="h-5 w-5 ml-6" />
                                         </div>
                                     </div>
-                                    <p className=" text-[#334155] leading-6">{index.content.length < 70 ? index.content : (index.content.substring(0, 70) + "...")}</p>
+                                    <p className=" text-[#334155] leading-6"><TagRemover content={index.content.length < 70 ? index.content : (index.content.substring(0, 70) + "...")}/></p>
                                 </div>
                             </div>
                         )}

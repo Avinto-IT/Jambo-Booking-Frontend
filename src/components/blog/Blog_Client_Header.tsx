@@ -8,8 +8,12 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import blogsdata from "../../../data/blog.json";
 
-function Blog_Client_Header() {
+interface BlogClientHeaderProps {
+  index: string;
+}
+const Blog_Client_Header: React.FC<BlogClientHeaderProps> = ({ index }) => {
   const [isAllBlogsPage, setIsAllBlogsPage] = useState(false);
 
   useEffect(() => {
@@ -17,6 +21,12 @@ function Blog_Client_Header() {
       setIsAllBlogsPage(window.location.href === "http://localhost:3000/blogs/blog-list");
     }
   }, []);
+
+  const getBlogTitle=(): string =>{
+    const blog = blogsdata.blogs.find(blog => blog.ID === index);
+  return blog ? blog.blogTitle : "" ;
+  }
+
 
   return (
     <Breadcrumb>
@@ -37,10 +47,12 @@ function Blog_Client_Header() {
             <BreadcrumbItem>
               <BreadcrumbLink href="http://localhost:3000/blogs/blog-list">Popular Destinations</BreadcrumbLink>
             </BreadcrumbItem>
+           
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>Exploring the Seregenti...</BreadcrumbPage>
+              <BreadcrumbPage>{getBlogTitle().length>23?(getBlogTitle().substring(0,23)+"..."):getBlogTitle()}</BreadcrumbPage>
             </BreadcrumbItem>
+         
           </>
         )}
       </BreadcrumbList>

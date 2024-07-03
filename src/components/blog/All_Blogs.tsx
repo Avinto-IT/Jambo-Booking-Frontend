@@ -7,6 +7,7 @@ import arrow from "./head/arrow-up-right.svg"
 import Image from 'next/image';
 
 import { Pagination_Blogs } from './Pagination_Blogs';
+import TagRemover from './TagRemover';
 
 function All_Blogs() {
 
@@ -47,7 +48,7 @@ function All_Blogs() {
       
       <MaxWidthWrapper>
   
-            <Blog_Client_Header />
+            <Blog_Client_Header index="" />
          
         <div className="title mt-5 mb-5">
         <p className=" font-semibold text-2xl mb-1.5">All Destinations</p>
@@ -73,8 +74,8 @@ function All_Blogs() {
         </div>
      
         {/* <p className=" text-gray-800 text-sm">{index.content.length>80?index.content.substring(0,80)+"...":index.content}</p> */}
-        <p className=" text-gray-800 text-sm">{index.content.length > 80 ?index.content.substring(0, 80) + "..." : index.content}</p>
-                </div>
+        <p className=" text-gray-800 text-sm"><TagRemover content={index.content.length > 80 ?index.content.substring(0, 80) + "..." : index.content}/></p>
+                </div>  
             
             
         

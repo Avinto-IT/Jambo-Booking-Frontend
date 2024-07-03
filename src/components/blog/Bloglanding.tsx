@@ -5,6 +5,7 @@ import blogsdata from "../../../data/blog.json";
 import arrow from "./head/arrow-up-right.svg";
 import Image from 'next/image';
 import Link from 'next/link';
+import TagRemover from './TagRemover';
 
 function Bloglanding() {
   interface Blog {
@@ -95,7 +96,7 @@ function Bloglanding() {
                 <p className=" font-semibold mb-2">{limitedData[0].blogTitle}</p>
                 <Image src={arrow} alt="user" className="h-5 w-5" />
               </div>
-              <p className=" text-gray-800 text-sm">{substring(limitedData[0].content)}</p>
+              <p className=" text-gray-800 text-sm"><TagRemover content={substring(limitedData[0].content)}/></p>
             </div>
           )}
 
@@ -108,7 +109,7 @@ function Bloglanding() {
                 <div className="w-1/2">
                   <p className=" text-[0.85rem] font-semibold text-[#2563EB] mb-2">{formatDate(blog.created_date)}</p>
                   <p className=" font-semibold mb-2">{blog.blogTitle}</p>
-                  <p className=" text-gray-800 text-sm">{substring(blog.content)}</p>
+                  <p className=" text-gray-800 text-sm"><TagRemover content={substring(blog.content)}/></p>
                 </div>
               </div>
             ))}
