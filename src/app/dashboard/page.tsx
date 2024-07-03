@@ -1,51 +1,31 @@
 "use client";
 import { useEffect, useState } from "react";
-import Cookies from "js-cookie";
-import UserDashboard from "../../components/dashboard/UserDashboard";
 import AdminDashboard from "../../components/dashboard/AdminDashboard";
-import EditorDashboard from "../../components/dashboard/EditorDashboard";
 import React from "react";
+import { UserDetails } from "@/types";
+import AgentDashboard from "@/components/dashboard/AgentDashboard";
+import HotelDashboard from "@/components/dashboard/HotelDashboard";
+import withAuth from "@/lib/loginAuth";
 
-interface UserDetails {
-  email: string;
-  username: string;
-  role: string;
-  contactNumber: number;
-  agencyName: string;
+interface DashboardProps {
+  user: UserDetails;
 }
 
-export default function Dashboard() {
-  const [user, setUser] = useState<UserDetails | null>(null);
+const Dashboard: React.FC<DashboardProps> = ({ user }) => {
   const userRole = user?.role;
-  console.log(userRole);
-  useEffect(() => {
-    const userDetails = Cookies.get("userDetails");
-    if (userDetails) {
-      setUser(JSON.parse(userDetails));
-    }
-  }, []);
 
-  if (!user) {
-    return <p>Loading...</p>;
-  }
-  const renderComponent = () => {
-    switch (userRole) {
-      case "user":
-        return <UserDashboard />;
-      case "admin":
-        return <AdminDashboard />;
-      case "editor":
-        return <EditorDashboard />;
+  const renderDashboard = () => {
+    if (userRole === "admin") {
+      return <AdminDashboard user={user} />;
+    } else if (userRole === "agent") {
+      return <AgentDashboard user={user} />;
+    } else if (userRole === "hotel") {
+      return <HotelDashboard user={user} />;
     }
+    return null; // Add a fallback return to handle any undefined role
   };
-  return (
-    <div>
-      <p>Welcome, {user.username}!</p>
-      <p>Email: {user.email}</p>
-      <p>Role: {user.role}</p>
-      <p>Contact: {user.contactNumber}</p>
-      <p>Agency: {user.agencyName}</p>
-      {renderComponent()}
-    </div>
-  );
-}
+
+  return <div>{renderDashboard()}</div>;
+};
+
+export default withAuth(Dashboard);
