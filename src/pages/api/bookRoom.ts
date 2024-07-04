@@ -14,7 +14,7 @@ async function bookHotelRoomHandler(req: NextApiRequest, res: NextApiResponse) {
     hotelID,
     bookingStartDate,
     bookingEndDate,
-    status,
+    // status,
     guests,
     bookingInfo,
   } = req.body;
@@ -31,9 +31,9 @@ async function bookHotelRoomHandler(req: NextApiRequest, res: NextApiResponse) {
   if (!bookingEndDate) {
     return res.status(400).json({ error: "Booking date is required" });
   }
-  if (!status) {
-    return res.status(400).json({ error: "Status is required" });
-  }
+  // if (!status) {
+  //   return res.status(400).json({ error: "Status is required" });
+  // }
   if (guests === undefined || guests === null) {
     return res.status(400).json({ error: "Number of guests is required" });
   }
@@ -58,6 +58,23 @@ async function bookHotelRoomHandler(req: NextApiRequest, res: NextApiResponse) {
       return res.status(404).json({ error: "Hotel not found" });
     }
 
+    const rooms = hotel.rooms as unknown as Array<{
+      type: string;
+      price: number;
+    }>;
+    console.log(rooms);
+    const room = rooms?.find((room) => room.type === bookingInfo.roomType);
+
+    if (!room) {
+      res.status(400).json({ error: "Cannot find the room type" });
+    }
+    const totalPrice = room.price * bookingInfo.rooms;
+
+    const updatedBookingInfo = {
+      ...bookingInfo,
+      totalPrice,
+    };
+
     // Create the booking
     const booking = await prisma.booking.create({
       data: {
@@ -65,9 +82,9 @@ async function bookHotelRoomHandler(req: NextApiRequest, res: NextApiResponse) {
         hotelID,
         bookingStartDate: new Date(bookingStartDate),
         bookingEndDate: new Date(bookingEndDate),
-        status,
+        status: "pending",
         guests,
-        bookingInfo,
+        bookingInfo: updatedBookingInfo,
       },
     });
 

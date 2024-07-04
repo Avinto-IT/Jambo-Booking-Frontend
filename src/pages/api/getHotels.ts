@@ -15,7 +15,7 @@ export default async function handler(
     const hotels = await prisma.hotel.findMany({
       where: { isRunning: true },
     });
-    res.status(200).json(hotels);
+    res.status(200).json({ hotels });
   } catch (error) {
     console.log("Error fetching hotels", error);
     res.status(500).json({ error: "Internal server error" });
