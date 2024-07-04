@@ -8,7 +8,7 @@ import Image from 'next/image';
 
 import { Pagination_Blogs } from './Pagination_Blogs';
 import TagRemover from './TagRemover';
-
+import topimg from './head/Header Image.svg';
 function All_Blogs() {
 
 
@@ -36,17 +36,20 @@ function All_Blogs() {
   const currentItems = data.slice(startIndex, startIndex + itemsPerPage);
 
 
-//   const stripHtmlTags = (str: string): string => {
-//   const div = document.createElement('div');
-//   div.innerHTML = str;
-//   return div.textContent || div.innerText || '';
-// };
-      
+
   return (
 
-    <div className='flex flex-col items-center mt-10 mb-10'>
+    <div className='flex flex-col items-center mb-10'>
+      <div className="w-full relative mb-14">
       
+       <Image src={topimg} alt="topimage" className=' obj ect-cover w-full '/>
+       <div className="absolute inset-0 w-full h-full bg-[#020617] opacity-75"></div>
+       <div className="w-full absolute top-1/2 flex items-center justify-center">
+       <div className=" text-white  text-5xl font-semibold">Travel Destinations for you</div>
+       </div>
+       </div>
       <MaxWidthWrapper>
+         
   
             <Blog_Client_Header index="" />
          
@@ -62,7 +65,7 @@ function All_Blogs() {
         
             <div className='flex flex-col mb-2 ' onClick={() => {
               console.log({id})
-                //  window.location.href = `http://localhost:3000/Single_Blog?user=${id}`;
+          
                  window.location.href = `http://localhost:3000/blogs/${index.ID}`;
                }}>
                 <div className="relative overflow-hidden rounded-md">
@@ -73,7 +76,7 @@ function All_Blogs() {
       
         </div>
      
-        {/* <p className=" text-gray-800 text-sm">{index.content.length>80?index.content.substring(0,80)+"...":index.content}</p> */}
+
         <p className=" text-gray-800 text-sm"><TagRemover content={index.content.length > 80 ?index.content.substring(0, 80) + "..." : index.content}/></p>
                 </div>  
             

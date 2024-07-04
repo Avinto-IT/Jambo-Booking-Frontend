@@ -11,9 +11,6 @@ import TagRemover from './TagRemover';
 function Single_Blog_Page() {
     const pathname = usePathname();
     const ind = ((pathname?.split("/").pop() || ""));
-    // const ind = parseInt((pathname?.split("/").pop() || ""), 10);
-    // Extract the last part of the path and convert it to a number
-//  const data = blogsdata.blogs[ind];
 
     const blogId = decodeURIComponent(ind);
     const data = blogsdata.blogs.find(b => b.ID === blogId);
@@ -24,8 +21,7 @@ function Single_Blog_Page() {
         const dateB = new Date(b.created_date).getTime();
         return dateB- dateA;
     })   
-    // const datam = blogsdata.blogs.filter(((_, i) => i !== ind))
-    // const datum=datam.slice(0,3);
+   
     const datum=last.slice(0,3);
    
 
@@ -35,11 +31,7 @@ function Single_Blog_Page() {
         return date.toLocaleDateString("en-US", options);
     };
 
-    // const stripHtmlTags = (str: string): string => {
-    //     const div = document.createElement('div');
-    //     div.innerHTML = str;
-    //     return div.textContent || div.innerText || '';
-    //   };
+  
 
     return (
         <div className='flex flex-col items-center mt-10 mb-10'>
@@ -94,7 +86,7 @@ function Single_Blog_Page() {
                         {datum.map((index) =>
                             <div className=" mt-2.5  mb-7    " key={index.ID} onClick={()=>{
                                 window.location.href = `http://localhost:3000/blogs/${(index.ID)}`;
-                                // console.log(id);
+                    
                             }}>
                                 <div className="relative overflow-hidden rounded-md">
                                     <img src={index.hero_img} alt="heroimage" className=' transition-transform duration-500 ease-in-out transform hover:scale-105 hover:brightness-75' />
