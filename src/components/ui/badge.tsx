@@ -1,7 +1,7 @@
-import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
+import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 const badgeVariants = cva(
   "inline-flex items-center rounded-full border px-2.5   py-0.5 gap-0.625 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
@@ -16,21 +16,20 @@ const badgeVariants = cva(
           "border-transparent bg-[#EF4444] text-destructive-foreground shadow hover:bg-[#DC2626]",
         outline: "text-foreground",
         Requested:
-        "border-transparent bg-[#3B82F6] text-destructive-foreground shadow hover:bg-[#2563EB]",
+          "border-transparent bg-[#3B82F6] text-destructive-foreground shadow hover:bg-[#2563EB]",
         Pending:
-        "border-transparent bg-[#EAB308] text-destructive-foreground shadow hover:bg-[#CA8A04]",
+          "border-transparent bg-[#EAB308] text-destructive-foreground shadow hover:bg-[#CA8A04]",
         Rejected:
-        "border-transparent bg-[#EF4444] text-destructive-foreground shadow hover:bg-[#DC2626]",
+          "border-transparent bg-[#EF4444] text-destructive-foreground shadow hover:bg-[#DC2626]",
         Approved:
-        "border-transparent bg-[#22C55E] text-destructive-foreground shadow hover:bg-[#16A34A]",
-        
+          "border-transparent bg-[#22C55E] text-destructive-foreground shadow hover:bg-[#16A34A]",
       },
     },
     defaultVariants: {
       variant: "default",
     },
   }
-)
+);
 
 export interface BadgeProps
   extends React.HTMLAttributes<HTMLDivElement>,
@@ -39,7 +38,7 @@ export interface BadgeProps
 function Badge({ className, variant, ...props }: BadgeProps) {
   return (
     <div className={cn(badgeVariants({ variant }), className)} {...props} />
-  )
+  );
 }
 
-export { Badge, badgeVariants }
+export { Badge, badgeVariants };
