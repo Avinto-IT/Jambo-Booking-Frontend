@@ -81,7 +81,7 @@ export default function Home() {
         <div className="p-10">
           <h1>List of Hotels</h1>
           <ul className="flex flex-col gap-y-5">
-            {hotels.map((hotel, index) => (
+            {/* {hotels.map((hotel, index) => (
               <li
                 key={hotel.hotelID}
                 className="flex flex-col bg-red-50 border p-4"
@@ -154,7 +154,7 @@ export default function Home() {
                 </ul>
                 <h2>Primary Link: {hotel.primaryImageLink}</h2>
               </li>
-            ))}
+            ))} */}
           </ul>
         </div>
       </main>

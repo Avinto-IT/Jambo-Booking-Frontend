@@ -1,30 +1,6 @@
 import React, { useEffect, useState } from "react";
-import AddHotel from "../AdminComponents/AddHotel";
-import { UserDetails } from "@/types";
-import AdminLayout from "../Layout/AdminLayout";
-import Image from "next/image";
-import Link from "next/link";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Copy,
-  CreditCard,
-  File,
-  Home,
-  LineChart,
-  ListFilter,
-  MoreVertical,
-  Package,
-  Package2,
-  PanelLeft,
-  Search,
-  Settings,
-  ShoppingCart,
-  Truck,
-  User,
-  Users2,
-} from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+
+import { User } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -35,24 +11,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-} from "@/components/ui/pagination";
+
 import { Progress } from "@/components/ui/progress";
-import { Separator } from "@/components/ui/separator";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+
 import {
   Table,
   TableBody,
@@ -61,7 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs } from "@/components/ui/tabs";
 import DateRangePicker from "./Sub-Components/DateRangePicker";
 interface Hotel {
   hotelID: string;
@@ -79,7 +40,43 @@ interface Hotel {
   primaryImageLink: string;
   isRunning: boolean;
   rooms: {
-    [key: string]: {
+    type: string;
+    price: number;
+    capacity: string;
+    bed: {
+      bedType: string;
+      numberOfBeds: string;
+    };
+    amenities: { [key: string]: boolean };
+  }[];
+  discount: number;
+}
+
+interface Booking {
+  bookingID: string;
+  userID: string;
+  hotelID: string;
+  bookingStartDate: string;
+  bookingEndDate: string;
+  status: string;
+  guests: number;
+  bookingInfo: {
+    roomType: string;
+    rooms: number;
+    totalPrice: number;
+  };
+  hotel: {
+    address: string;
+    description: string;
+    discount: number;
+    facilities: string[];
+    houseRules: string[];
+    imageLinks: string[];
+    isRunning: boolean;
+    locationID: string;
+    name: string;
+    primaryImageLink: string;
+    rooms: {
       type: string;
       price: number;
       capacity: string;
@@ -87,33 +84,28 @@ interface Hotel {
         bedType: string;
         numberOfBeds: string;
       };
-      amenities: { [key: string]: boolean };
-    };
+      amenities: string[];
+    }[];
   };
-  discount: number;
-}
-interface Booking {
-  bookingID: string;
-  count: number;
-  userID: string;
-  booking: {
-    bookingID: string;
+  user: {
+    agencyName: string | null;
+    contactNumber: string;
+    dateOfBirth: string;
+    email: string;
+    firstName: string;
+    gradeID: string | null;
+    hotelID: string | null;
+    lastName: string;
+    password: string;
+    role: string;
     userID: string;
-    hotelID: string;
-    bookingStartDate: string;
-    bookingEndDate: string;
-    status: string;
-    guests: number;
-    bookingInfo: {
-      roomType: string;
-      rooms: number;
-    };
   };
 }
+
 interface Agent {
   agencyName: string | null;
   contactNumber: string;
-  dateOfBirth: string; // you might want to parse this as Date if necessary
+  dateOfBirth: string;
   email: string;
   firstName: string;
   gradeID: string | null;
@@ -249,8 +241,10 @@ export default function Dashboard({}: {}) {
             <Tabs className="w-3/4">
               <Card x-chunk="dashboard-05-chunk-3">
                 <div className="p-6 flex justify-between items-center">
-                  <CardHeader className="px-7">
-                    <CardTitle>Bookings</CardTitle>
+                  <CardHeader className="p-0">
+                    <CardTitle className="text-2xl font-semibold">
+                      Bookings
+                    </CardTitle>
                     <CardDescription>
                       Recent bookings in Jambo Hotels.
                     </CardDescription>
@@ -263,18 +257,17 @@ export default function Dashboard({}: {}) {
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Customer</TableHead>
-                        <TableHead className="text-right">Amount</TableHead>
+                        <TableHead>Hotel Name</TableHead>
+                        <TableHead className="text-right">Agent Name</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {bookings.map((booking, index) => {
-                        console.log(booking);
                         return (
                           <TableRow key={index}>
-                            <TableCell>{booking.user.firstName}</TableCell>
+                            <TableCell>{booking.hotel.name} </TableCell>
                             <TableCell className="text-right">
-                              $250.00
+                              {`${booking.user.firstName} ${booking.user.lastName}`}
                             </TableCell>
                           </TableRow>
                         );
@@ -291,9 +284,9 @@ export default function Dashboard({}: {}) {
                 </CardTitle>
               </CardHeader>
               <CardContent className="flex flex-col gap-y-6 text-sm">
-                {agents.map((agent) => {
+                {agents.map((agent, index) => {
                   return (
-                    <div className="flex justify-between">
+                    <div key={index} className="flex justify-between">
                       <div className="flex gap-x-3 items-center">
                         <div>
                           <Button
