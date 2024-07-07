@@ -71,14 +71,14 @@ function Bloglanding() {
   };
 
   return (
-    <div className='flex flex-col justify-center items-center mt-20'>
+    <div className='flex flex-col justify-center items-center mt-20 mb-20'>
       <MaxWidthWrapper className=' '>
         <div className="title flex justify-between ">
           <div className="">
             <p className=" font-semibold text-2xl mb-1.5">Travel Destinations for you</p>
             <p className=" text-sm">Read out what destinations people are loving to go</p>
           </div>
-          <div className=" flex items-end text-[0.76rem] font-semibold text-[#2563EB]">
+          <div className=" flex items-end text-xs   font-semibold text-[#2563EB]">
             <u><Link href="http://localhost:3000/blogs/blog-list">View More</Link></u>
           </div>
         </div>
@@ -91,7 +91,7 @@ function Bloglanding() {
               <div className="relative overflow-hidden rounded-md">
                 <img src={limitedData[0].hero_img} alt="hotelphoto" className="rounded-md object-cover transition-transform duration-500 ease-in-out transform hover:scale-105 hover:brightness-75" />
               </div>
-              <p className=" text-[0.85rem] font-semibold text-[#2563EB] mb-2 mt-5">{formatDate(limitedData[0].created_date)}</p>
+              <p className=" text-sm font-semibold text-[#2563EB] mb-2 mt-5">{formatDate(limitedData[0].created_date)}</p>
               <div className="flex justify-between">
                 <p className=" font-semibold mb-2">{limitedData[0].blogTitle}</p>
                 <Image src={arrow} alt="user" className="h-5 w-5" />
@@ -107,7 +107,7 @@ function Bloglanding() {
                   <img src={blog.hero_img} alt="hotelphoto" className="object-cover h-full transition-transform duration-500 ease-in-out transform hover:scale-105 hover:brightness-75" />
                 </div>
                 <div className="w-1/2">
-                  <p className=" text-[0.85rem] font-semibold text-[#2563EB] mb-2">{formatDate(blog.created_date)}</p>
+                  <p className=" text-sm font-semibold text-[#2563EB] mb-2">{formatDate(blog.created_date)}</p>
                   <p className=" font-semibold mb-2">{blog.blogTitle}</p>
                   <p className=" text-gray-800 text-sm"><TagRemover content={substring(blog.content)}/></p>
                 </div>

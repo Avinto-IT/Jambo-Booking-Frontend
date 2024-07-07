@@ -36,7 +36,7 @@ function Single_Blog_Page() {
     return (
         <div className='flex flex-col items-center mt-10 mb-10'>
      
-            <MaxWidthWrapper className='text-[0.9rem]'>
+            <MaxWidthWrapper className=''>
                 <div className="breadcrumb mb-7">
                     <Blog_Client_Header index={ind}/>
                 </div>
@@ -44,7 +44,7 @@ function Single_Blog_Page() {
                 <div className="all flex justify-between " style={{ whiteSpace: 'pre-line' }}>
                     <div className="main w-4/6 pr-16">
                         <p className=" font-bold  text-2xl">{data.blogTitle}</p>
-                        <p className=" text-[0.85rem] font-bold text-[#2563EB] mb-5 mt-4">{formatDate(data.created_date)}</p>
+                        <p className=" text-sm font-bold text-[#2563EB] mb-5 mt-4">{formatDate(data.created_date)}</p>
 
                         <div className="imgone">
                             <img src={data.hero_img} alt="index" className="w-full rounded-md mb-6"/>
@@ -81,7 +81,7 @@ function Single_Blog_Page() {
                     <div className="secondary w-2/6 ">
                         <div className="title">
                             <p className=" font-bold  text-2xl mb-1.5">Destinations you may like</p>
-                            <p className="">Read out what destinations people are loving to go</p>
+                            <p className=" tracking-tight">Read out what destinations people are loving to go</p>
                         </div><br/>
                         {datum.map((index) =>
                             <div className=" mt-2.5  mb-7    " key={index.ID} onClick={()=>{
@@ -91,7 +91,7 @@ function Single_Blog_Page() {
                                 <div className="relative overflow-hidden rounded-md">
                                     <img src={index.hero_img} alt="heroimage" className=' transition-transform duration-500 ease-in-out transform hover:scale-105 hover:brightness-75' />
                                 </div>
-                                <div className="flex justify-start text-[0.85rem] font-bold text-[#2563EB] mb-2 mt-5">
+                                <div className="flex justify-start text-sm font-bold text-[#2563EB] mb-2 mt-5">
                                     <p className="">{formatDate(index.created_date)}</p>
                                 </div>
                                 <div className="">

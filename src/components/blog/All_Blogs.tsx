@@ -69,8 +69,8 @@ function All_Blogs() {
                  window.location.href = `http://localhost:3000/blogs/${index.ID}`;
                }}>
                 <div className="relative overflow-hidden rounded-md">
-                <img src={index.hero_img} alt="index" className="h-48 w-full rounded-md transition-transform duration-500 ease-in-out transform hover:scale-105 hover:brightness-75" key={index.POST_ID} /></div>
-                <p className=" text-[0.85rem] font-semibold text-[#2563EB] mb-1.5 mt-5">{formatDate(index.created_date)}</p>
+                <img src={index.hero_img} alt="index" className="h-52 w-full rounded-md transition-transform duration-500 ease-in-out transform hover:scale-105 hover:brightness-75 hover:rounded-lg" key={index.POST_ID} /></div>
+                <p className=" text-sm font-semibold text-[#2563EB] mb-1.5 mt-5">{formatDate(index.created_date)}</p>
                 <div className="flex justify-between"><p className=" font-bold mb-2">{index.blogTitle}</p>
                 <Image src={arrow} alt="user" className="h-5 w-5 ml-3" />
       

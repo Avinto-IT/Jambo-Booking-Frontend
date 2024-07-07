@@ -1,0 +1,323 @@
+import React, { useEffect, useState } from "react";
+import AddHotel from "../AdminComponents/AddHotel";
+import { UserDetails } from "@/types";
+import AdminLayout from "../Layout/AdminLayout";
+import Image from "next/image";
+import Link from "next/link";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Copy,
+  CreditCard,
+  File,
+  Home,
+  LineChart,
+  ListFilter,
+  MoreVertical,
+  Package,
+  Package2,
+  PanelLeft,
+  Search,
+  Settings,
+  ShoppingCart,
+  Truck,
+  User,
+  Users2,
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+} from "@/components/ui/pagination";
+import { Progress } from "@/components/ui/progress";
+import { Separator } from "@/components/ui/separator";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import DateRangePicker from "./Sub-Components/DateRangePicker";
+interface Hotel {
+  hotelID: string;
+  name: string;
+  address: string;
+  locationID: string;
+  facilities: {
+    name: string;
+    comment: string;
+    subFacilities: string[];
+  }[];
+  description: string;
+  houseRules: { [key: string]: boolean };
+  imageLinks: string[];
+  primaryImageLink: string;
+  isRunning: boolean;
+  rooms: {
+    [key: string]: {
+      type: string;
+      price: number;
+      capacity: string;
+      bed: {
+        bedType: string;
+        numberOfBeds: string;
+      };
+      amenities: { [key: string]: boolean };
+    };
+  };
+  discount: number;
+}
+interface Booking {
+  bookingID: string;
+  count: number;
+  userID: string;
+  booking: {
+    bookingID: string;
+    userID: string;
+    hotelID: string;
+    bookingStartDate: string;
+    bookingEndDate: string;
+    status: string;
+    guests: number;
+    bookingInfo: {
+      roomType: string;
+      rooms: number;
+    };
+  };
+}
+interface Agent {
+  agencyName: string | null;
+  contactNumber: string;
+  dateOfBirth: string; // you might want to parse this as Date if necessary
+  email: string;
+  firstName: string;
+  gradeID: string | null;
+  hotelID: string | null;
+  lastName: string;
+  password: string;
+  role: string;
+  userID: string;
+}
+
+interface Booking {}
+export default function Dashboard({}: {}) {
+  const [hotels, setHotels] = useState<Hotel[]>([]);
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [agents, setAgents] = useState<Agent[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchHotels = async () => {
+      try {
+        const response = await fetch("/api/getHotels");
+        const data = await response.json();
+        setHotels(data.hotels); // Corrected this line
+      } catch (error) {
+        console.log("Error fetching hotels:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchHotels();
+  }, []);
+  useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        const response = await fetch("/api/getAllBookings");
+        const data = await response.json();
+        setBookings(data.bookings);
+      } catch (error) {
+        console.log("Error fetching bookings:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchBookings();
+  }, []);
+  useEffect(() => {
+    const fetchAgents = async () => {
+      try {
+        const response = await fetch("/api/getAgents");
+        const data = await response.json();
+        setAgents(data.agents);
+      } catch (error) {
+        console.log("Error fetching bookings:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAgents();
+  }, []);
+  // console.log(bookings);
+
+  return (
+    <div className="flex flex-col sm:gap-4 ">
+      <div className="p-6 flex justify-between ">
+        <div className="flex flex-col">
+          <h1 className="text-2xl font-semibold">Dashboard</h1>
+          <span>Manage your details form the dashboard</span>
+        </div>
+
+        <DateRangePicker />
+      </div>
+      <main className="grid flex-1 items-start gap-4 sm:py-0 md:gap-8 ">
+        <div className="grid auto-rows-max items-start gap-4 md:gap-6">
+          <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4">
+            <Card className="" x-chunk="dashboard-05-chunk-0">
+              <CardHeader className="pb-3">
+                <CardTitle>Total Revenue</CardTitle>
+                <CardDescription className="max-w-lg text-balance leading-relaxed">
+                  Introducing Our Dynamic Orders Dashboard for Seamless
+                  Management and Insightful Analysis.
+                </CardDescription>
+              </CardHeader>
+              <CardFooter>
+                <Button>Create New Order</Button>
+              </CardFooter>
+            </Card>
+            <Card x-chunk="dashboard-05-chunk-1">
+              <CardHeader className="pb-2">
+                <CardDescription className="font-medium text-black">
+                  Hotels
+                </CardDescription>
+                <CardTitle className="text-4xl">{hotels.length}</CardTitle>
+              </CardHeader>
+              <CardContent></CardContent>
+              <CardFooter>
+                <Progress value={25} aria-label="25% increase" />
+              </CardFooter>
+            </Card>
+            <Card x-chunk="dashboard-05-chunk-2">
+              <CardHeader className="pb-2">
+                <CardDescription className="font-medium text-black">
+                  Agents
+                </CardDescription>
+                <CardTitle className="text-4xl">{agents.length}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-xs text-muted-foreground">
+                  +10% from last month
+                </div>
+              </CardContent>
+              <CardFooter>
+                <Progress value={12} aria-label="12% increase" />
+              </CardFooter>
+            </Card>
+            <Card x-chunk="dashboard-05-chunk-2">
+              <CardHeader className="pb-2">
+                <CardDescription className="font-medium text-black">
+                  Bookings
+                </CardDescription>
+                <CardTitle className="text-4xl">{bookings?.length}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-xs text-muted-foreground">
+                  +10% from last month
+                </div>
+              </CardContent>
+              <CardFooter>
+                <Progress value={12} aria-label="12% increase" />
+              </CardFooter>
+            </Card>
+          </div>
+          <div className="w-full justify-between flex gap-6">
+            <Tabs className="w-3/4">
+              <Card x-chunk="dashboard-05-chunk-3">
+                <div className="p-6 flex justify-between items-center">
+                  <CardHeader className="px-7">
+                    <CardTitle>Bookings</CardTitle>
+                    <CardDescription>
+                      Recent bookings in Jambo Hotels.
+                    </CardDescription>
+                  </CardHeader>
+                  <button className=" py-2 px-6 bg-blue-400 h-10">
+                    View All
+                  </button>
+                </div>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Customer</TableHead>
+                        <TableHead className="text-right">Amount</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {bookings.map((booking, index) => {
+                        console.log(booking);
+                        return (
+                          <TableRow key={index}>
+                            <TableCell>{booking.user.firstName}</TableCell>
+                            <TableCell className="text-right">
+                              $250.00
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            </Tabs>
+            <Card className="w-1/4" x-chunk="dashboard-05-chunk-4">
+              <CardHeader className="flex flex-row items-start ">
+                <CardTitle className="group flex items-center gap-2 text-2xl">
+                  Agents
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="flex flex-col gap-y-6 text-sm">
+                {agents.map((agent) => {
+                  return (
+                    <div className="flex justify-between">
+                      <div className="flex gap-x-3 items-center">
+                        <div>
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="overflow-hidden rounded-full"
+                          >
+                            <User />
+                          </Button>
+                        </div>
+                        <div>
+                          <div>{`${agent.firstName} ${agent.lastName}`} </div>
+                          <div>{agent.email}</div>
+                        </div>
+                      </div>
+                      <div className="self-center">{agent.agencyName}</div>
+                    </div>
+                  );
+                })}
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}

@@ -33,7 +33,7 @@ const Blog_Client_Header: React.FC<BlogClientHeaderProps> = ({ index }) => {
       <BreadcrumbList>
         <BreadcrumbItem className=''>
         
-          <BreadcrumbLink href="http://localhost:3000/blogs/blog-landing-page">Home</BreadcrumbLink>
+          <BreadcrumbLink href="http://localhost:3000">Home</BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator />
         {isAllBlogsPage ? (
