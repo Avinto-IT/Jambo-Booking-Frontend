@@ -1,8 +1,7 @@
 "use client";
-import { useEffect, useState } from "react";
 import AdminDashboard from "../../components/dashboard/AdminDashboard";
 import React from "react";
-import { UserDetails } from "@/types";
+import { UserDetails } from "@/utils/types";
 import AgentDashboard from "@/components/dashboard/AgentDashboard";
 import HotelDashboard from "@/components/dashboard/HotelDashboard";
 import withAuth from "@/lib/loginAuth";

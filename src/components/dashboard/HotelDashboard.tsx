@@ -1,6 +1,6 @@
 import React from "react";
 import AddHotel from "../AdminComponents/AddHotel";
-import { UserDetails } from "@/types";
+import { UserDetails } from "@/utils/types";
 
 export default function HotelDashboard({ user }: { user: UserDetails }) {
   return (

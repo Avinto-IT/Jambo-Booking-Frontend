@@ -117,7 +117,7 @@ interface Agent {
 }
 
 interface Booking {}
-export default function Dashboard({}: {}) {
+export default function HotelsDashboard({}: {}) {
   const [hotels, setHotels] = useState<Hotel[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [agents, setAgents] = useState<Agent[]>([]);
