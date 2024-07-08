@@ -21,16 +21,17 @@ async function addHotelHandler(req: NextApiRequest, res: NextApiResponse) {
     isRunning,
     rooms,
     discount,
+    contactDetails,
   } = req.body;
 
   if (!name) {
     return res.status(400).json({ error: "Missing or incorrect field: name" });
   }
-  if (!address) {
-    return res
-      .status(400)
-      .json({ error: "Missing or incorrect field: address" });
-  }
+  // if (!address) {
+  //   return res
+  //     .status(400)
+  //     .json({ error: "Missing or incorrect field: address" });
+  // }
   if (!locationID) {
     return res
       .status(400)
@@ -41,21 +42,21 @@ async function addHotelHandler(req: NextApiRequest, res: NextApiResponse) {
       .status(400)
       .json({ error: "Missing or incorrect field: description" });
   }
-  if (!Array.isArray(imageLinks)) {
-    return res
-      .status(400)
-      .json({ error: "Missing or incorrect field: imageLinks" });
-  }
-  if (!primaryImageLink) {
-    return res
-      .status(400)
-      .json({ error: "Missing or incorrect field: primaryImageLink" });
-  }
-  if (typeof isRunning !== "boolean") {
-    return res
-      .status(400)
-      .json({ error: "Missing or incorrect field: isRunning" });
-  }
+  // if (!Array.isArray(imageLinks)) {
+  //   return res
+  //     .status(400)
+  //     .json({ error: "Missing or incorrect field: imageLinks" });
+  // }
+  // if (!primaryImageLink) {
+  //   return res
+  //     .status(400)
+  //     .json({ error: "Missing or incorrect field: primaryImageLink" });
+  // }
+  // if (typeof isRunning !== "boolean") {
+  //   return res
+  //     .status(400)
+  //     .json({ error: "Missing or incorrect field: isRunning" });
+  // }
   if (
     !Array.isArray(facilities) ||
     !facilities.every((item) => typeof item === "object")
@@ -64,21 +65,21 @@ async function addHotelHandler(req: NextApiRequest, res: NextApiResponse) {
       .status(400)
       .json({ error: "Missing or incorrect field: facilities" });
   }
-  if (
-    !Array.isArray(houseRules) ||
-    !houseRules.every((item) => typeof item === "string")
-  ) {
-    return res
-      .status(400)
-      .json({ error: "Missing or incorrect field: houseRules" });
-  }
+  // if (
+  //   !Array.isArray(houseRules) ||
+  //   !houseRules.every((item) => typeof item === "string")
+  // ) {
+  //   return res
+  //     .status(400)
+  //     .json({ error: "Missing or incorrect field: houseRules" });
+  // }
   if (
     !Array.isArray(rooms) ||
     !rooms.every((room) => typeof room === "object")
   ) {
     return res.status(400).json({ error: "Missing or incorrect field: rooms" });
   }
-  if (typeof discount !== "number") {
+  if (!discount) {
     return res
       .status(400)
       .json({ error: "Missing or incorrect field: discount" });
@@ -98,6 +99,7 @@ async function addHotelHandler(req: NextApiRequest, res: NextApiResponse) {
         isRunning,
         rooms,
         discount,
+        contactDetails,
       },
     });
     res.status(201).json(hotel);

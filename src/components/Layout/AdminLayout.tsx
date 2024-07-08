@@ -1,4 +1,5 @@
-import React, { ReactNode } from "react";
+"use client";
+import React, { ReactNode, useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Home,
@@ -17,11 +18,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation"; // Import usePathname from next/navigation
 import Image from "next/image";
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
@@ -29,14 +29,26 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "../ui/button";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 interface LayoutProps {
   children: ReactNode;
 }
 
 const AdminLayout: React.FC<LayoutProps> = ({ children }) => {
-  const router = useRouter();
+  const pathname = usePathname(); // Use usePathname to get the current path
+  const [pathArray, setPathArray] = useState<string[]>([]);
 
+  useEffect(() => {
+    setPathArray(pathname?.split("/").filter((x) => x));
+  }, [pathname]);
   return (
     <div className="flex h-screen">
       <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
@@ -51,7 +63,9 @@ const AdminLayout: React.FC<LayoutProps> = ({ children }) => {
           </div>
           <Link
             href="/dashboard"
-            className="group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:h-8 md:w-8 md:text-base"
+            className={`group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded text-lg font-semibold md:h-8 md:w-8 md:text-base ${
+              pathname === "/dashboard" ? "bg-[#F1F5F9]" : "text-primary"
+            }`}
           >
             <Home className="h-4 w-4 transition-all group-hover:scale-110" />
             <span className="sr-only">Dashboard</span>
@@ -60,14 +74,18 @@ const AdminLayout: React.FC<LayoutProps> = ({ children }) => {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href="#"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                  href="/dashboard/hotels"
+                  className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors md:h-8 md:w-8 ${
+                    pathname === "/dashboard/hotels"
+                      ? "bg-[#F1F5F9]"
+                      : "text-primary"
+                  }`}
                 >
                   <Bed className="h-5 w-5" />
-                  <span className="sr-only">Dashboard</span>
+                  <span className="sr-only">Hotels</span>
                 </Link>
               </TooltipTrigger>
-              <TooltipContent side="right">Dashboard</TooltipContent>
+              <TooltipContent side="right">Hotels</TooltipContent>
             </Tooltip>
           </TooltipProvider>
           <TooltipProvider>
@@ -75,7 +93,11 @@ const AdminLayout: React.FC<LayoutProps> = ({ children }) => {
               <TooltipTrigger asChild>
                 <Link
                   href="#"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                  className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors md:h-8 md:w-8 ${
+                    pathname === "#"
+                      ? "bg-light-blue-500 text-white"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
                 >
                   <NotebookText className="h-5 w-5" />
                   <span className="sr-only">Orders</span>
@@ -89,7 +111,11 @@ const AdminLayout: React.FC<LayoutProps> = ({ children }) => {
               <TooltipTrigger asChild>
                 <Link
                   href="#"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                  className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors md:h-8 md:w-8 ${
+                    pathname === "#"
+                      ? "bg-light-blue-500 text-white"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
                 >
                   <Briefcase className="h-5 w-5" />
                   <span className="sr-only">Products</span>
@@ -103,7 +129,11 @@ const AdminLayout: React.FC<LayoutProps> = ({ children }) => {
               <TooltipTrigger asChild>
                 <Link
                   href="#"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                  className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors md:h-8 md:w-8 ${
+                    pathname === "#"
+                      ? "bg-light-blue-500 text-white"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
                 >
                   <PenTool className="h-5 w-5" />
                   <span className="sr-only">Customers</span>
@@ -117,7 +147,11 @@ const AdminLayout: React.FC<LayoutProps> = ({ children }) => {
               <TooltipTrigger asChild>
                 <Link
                   href="#"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                  className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors md:h-8 md:w-8 ${
+                    pathname === "#"
+                      ? "bg-light-blue-500 text-white"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
                 >
                   <Users2 className="h-5 w-5" />
                   <span className="sr-only">Analytics</span>
@@ -133,7 +167,11 @@ const AdminLayout: React.FC<LayoutProps> = ({ children }) => {
               <TooltipTrigger asChild>
                 <Link
                   href="#"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                  className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors md:h-8 md:w-8 ${
+                    pathname === "#"
+                      ? "bg-light-blue-500 text-white"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
                 >
                   <Settings className="h-5 w-5" />
                   <span className="sr-only">Settings</span>
@@ -146,7 +184,32 @@ const AdminLayout: React.FC<LayoutProps> = ({ children }) => {
       </aside>
       <main className="py-4 flex bg-gray-100 flex-col flex-1 ml-14">
         <div className="px-6 w-full flex justify-between">
-          <span className="text-lg">Dashboard</span>
+          <Breadcrumb>
+            <BreadcrumbList>
+              {pathArray.map((path, index) => {
+                const href = "/" + pathArray.slice(0, index + 1).join("/");
+                return (
+                  <React.Fragment key={path}>
+                    <BreadcrumbItem>
+                      {index === pathArray.length - 1 ? (
+                        <BreadcrumbPage className="capitalize">
+                          {path}
+                        </BreadcrumbPage>
+                      ) : (
+                        <>
+                          <BreadcrumbLink href={href} className="capitalize">
+                            {path}
+                          </BreadcrumbLink>
+                          <BreadcrumbSeparator />
+                        </>
+                      )}
+                    </BreadcrumbItem>
+                  </React.Fragment>
+                );
+              })}
+            </BreadcrumbList>
+          </Breadcrumb>
+
           <div className=" flex items-center justify-center">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -169,7 +232,7 @@ const AdminLayout: React.FC<LayoutProps> = ({ children }) => {
             </DropdownMenu>
           </div>
         </div>
-        <div className="flex-1 p-6  overflow-y-auto">{children}</div>
+        <div className="flex-1 p-6">{children}</div>
       </main>
     </div>
   );

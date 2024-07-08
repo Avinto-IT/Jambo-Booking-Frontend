@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
-import { UserDetails } from "@/types";
+import { UserDetails } from "@/utils/types";
 
 const withAuth = <P extends object>(
   WrappedComponent: React.ComponentType<P>

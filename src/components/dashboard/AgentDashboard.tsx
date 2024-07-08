@@ -1,5 +1,5 @@
 import React from "react";
-import { UserDetails } from "@/types";
+import { UserDetails } from "@/utils/types";
 
 export default function AgentDashboard({ user }: { user: UserDetails }) {
   return (

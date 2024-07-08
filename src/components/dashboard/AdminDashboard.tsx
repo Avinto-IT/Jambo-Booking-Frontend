@@ -1,5 +1,5 @@
 import React from "react";
-import { UserDetails } from "@/types";
+import { UserDetails } from "@/utils/types";
 import AdminLayout from "../Layout/AdminLayout";
 
 import Dashboard from "../AdminComponents/Dashboard";
