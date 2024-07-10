@@ -200,7 +200,7 @@ const AdminLayout: React.FC<LayoutProps> = ({ children }) => {
                           <BreadcrumbLink href={href} className="capitalize">
                             {path}
                           </BreadcrumbLink>
-                          <BreadcrumbSeparator />
+                          {/* <BreadcrumbSeparator /> */}
                         </>
                       )}
                     </BreadcrumbItem>
