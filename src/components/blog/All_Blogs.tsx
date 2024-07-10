@@ -13,7 +13,6 @@ function All_Blogs() {
 
 
 
-    
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
         const options: Intl.DateTimeFormatOptions = { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric' };
@@ -40,6 +39,7 @@ function All_Blogs() {
   return (
 
     <div className='flex flex-col items-center mb-10'>
+      
       <div className="w-full relative mb-14">
       
        <Image src={topimg} alt="topimage" className=' obj ect-cover w-full '/>

@@ -51,6 +51,16 @@ export default function Home() {
   const [hotels, setHotels] = useState<Hotel[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [locations, setLocations] = useState<Location[]>([]);
+  const[load,setLoad]=useState("loading")
+useEffect(()=>{
+
+
+  setInterval(() => {
+    // const prev="!";
+    setLoad((prev)=>prev+".")
+  }, 50);
+ 
+},[])
 
   useEffect(() => {
     const fetchHotels = async () => {
@@ -82,14 +92,25 @@ export default function Home() {
 
   return (
     <Layout>
-      <Hero />
-      <Offers_for_you/>
+    
+      {loading?(<div className=" flex justify-center items-center h-14  bg-blue-800 text-white rounded-xl">{load}</div>):(<>
+        <Hero />
+        <Offers_for_you/>
       <Explore_Africa/>
       <Find_Hotels/>
       <Static_page/>
       <Offer/>
       <Bloglanding/>
       <Worldmap/>
+      </>)}
+      {/* <Hero />
+      <Offers_for_you/>
+      <Explore_Africa/>
+      <Find_Hotels/>
+      <Static_page/>
+      <Offer/>
+      <Bloglanding/>
+      <Worldmap/> */}
 
 
 
