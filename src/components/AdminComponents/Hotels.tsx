@@ -117,7 +117,7 @@ interface Agent {
 }
 
 interface Booking {}
-export default function Dashboard({}: {}) {
+export default function HotelsDashboard({}: {}) {
   const [hotels, setHotels] = useState<Hotel[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [agents, setAgents] = useState<Agent[]>([]);
@@ -142,7 +142,6 @@ export default function Dashboard({}: {}) {
       try {
         const response = await fetch("/api/getAllBookings");
         const data = await response.json();
-        console.log(data, "1123123");
         setBookings(data.bookings);
       } catch (error) {
         console.log("Error fetching bookings:", error);
@@ -166,7 +165,7 @@ export default function Dashboard({}: {}) {
     };
     fetchAgents();
   }, []);
-  console.log(bookings);
+  // console.log(bookings);
 
   return (
     <div className="flex flex-col sm:gap-4 ">
@@ -198,7 +197,7 @@ export default function Dashboard({}: {}) {
                 <CardDescription className="font-medium text-black">
                   Hotels
                 </CardDescription>
-                <CardTitle className="text-4xl">{hotels?.length}</CardTitle>
+                <CardTitle className="text-4xl">{hotels.length}</CardTitle>
               </CardHeader>
               <CardContent></CardContent>
               <CardFooter>
@@ -263,7 +262,7 @@ export default function Dashboard({}: {}) {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {bookings?.map((booking, index) => {
+                      {bookings.map((booking, index) => {
                         return (
                           <TableRow key={index}>
                             <TableCell>{booking.hotel.name} </TableCell>

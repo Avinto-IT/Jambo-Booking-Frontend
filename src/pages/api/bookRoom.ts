@@ -62,11 +62,10 @@ async function bookHotelRoomHandler(req: NextApiRequest, res: NextApiResponse) {
       type: string;
       price: number;
     }>;
-    console.log(rooms);
     const room = rooms?.find((room) => room.type === bookingInfo.roomType);
 
     if (!room) {
-      res.status(400).json({ error: "Cannot find the room type" });
+      return res.status(400).json({ error: "Cannot find the room type" });
     }
     const totalPrice = room.price * bookingInfo.rooms;
 

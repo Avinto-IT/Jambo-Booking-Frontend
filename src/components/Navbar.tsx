@@ -63,8 +63,8 @@ export default function Navbar() {
     <NavigationMenu>
       <NavigationMenuList className="flex items-center space-x-4">
         <NavigationMenuItem>
-          <NavigationMenuLink href="/" className="hover:text-blue-600">
-         Home
+          <NavigationMenuLink className="hover:text-blue-600">
+            <Link href="/">Home</Link>
           </NavigationMenuLink>
         </NavigationMenuItem>
         <NavigationMenuItem>

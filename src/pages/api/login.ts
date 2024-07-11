@@ -35,7 +35,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     const token = jwt.sign(
       { userID: user.userID, role: user.role },
       SECRET_KEY,
-      { expiresIn: "1h" }
+      { expiresIn: "24h" }
     );
     res.status(200).json({ message: "Login successful", user: user, token });
   } catch (error) {

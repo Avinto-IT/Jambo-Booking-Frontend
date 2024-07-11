@@ -20,6 +20,7 @@ model Hotel {
   isRunning        Boolean
   rooms            Json
   discount         Float
+  contactDetails   Json
 
   location Location  @relation(fields: [locationID], references: [locationID])
   bookings Booking[]
