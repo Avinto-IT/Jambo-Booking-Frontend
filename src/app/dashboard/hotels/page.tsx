@@ -3,7 +3,6 @@ import Image from "next/image";
 import { ListFilter, MoreHorizontal, PlusCircle, Search } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -32,14 +31,17 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
+import { useRouter } from "next/navigation";
 import AdminLayout from "@/components/Layout/AdminLayout";
 import { Input } from "@/components/ui/input";
 import { Hotels } from "@/utils/types";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { toast, Toaster } from "sonner";
+
 export default function HotelsDashboard() {
   const [hotels, setHotels] = useState<Hotels[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchHotels = async () => {
@@ -53,7 +55,40 @@ export default function HotelsDashboard() {
     };
     fetchHotels();
   }, []);
-  console.log(hotels);
+
+  const handleEditClick = (hotelId: string) => {
+    router.push(`/dashboard/hotels/update-hotel?id=${hotelId}`);
+  };
+
+  const handleDeleteClick = async (hotelId: string) => {
+    const confirmDelete = confirm(
+      "Are you sure you want to delete this hotel?"
+    );
+    if (!confirmDelete) return;
+
+    try {
+      const response = await fetch(`/api/deleteHotelAdmin?hotelID=${hotelId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`, // Ensure you have the token stored in localStorage
+        },
+      });
+
+      if (response.ok) {
+        setHotels((prevHotels) =>
+          prevHotels.filter((hotel) => hotel.hotelID !== hotelId)
+        );
+        toast.message("Hotel deleted successfully");
+      } else {
+        const data = await response.json();
+        alert(`Error: ${data.error}`);
+      }
+    } catch (error) {
+      console.log("Error deleting hotel:", error);
+      toast.message("Error deleting hotel");
+    }
+  };
+
   return (
     <AdminLayout>
       <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
@@ -110,7 +145,7 @@ export default function HotelsDashboard() {
                     Hotels
                   </CardTitle>
                   <CardDescription>
-                    Manage your hotel and view thier overall details.
+                    Manage your hotel and view their overall details.
                   </CardDescription>
                 </CardHeader>
 
@@ -143,21 +178,14 @@ export default function HotelsDashboard() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {hotels.map((hotel) => {
+                    {hotels.map((hotel, index) => {
                       return (
-                        <TableRow>
+                        <TableRow key={index}>
                           <TableCell className="font-medium">
                             {hotel.hotelID}
                           </TableCell>
 
                           <TableCell className="font-medium">
-                            {/* <Image
-                              alt="Product image"
-                              className="aspect-square rounded-md object-cover"
-                              height="64"
-                              src="/placeholder.svg"
-                              width="64"
-                            /> */}
                             {hotel.name}
                           </TableCell>
                           <TableCell>
@@ -181,8 +209,18 @@ export default function HotelsDashboard() {
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
                                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                <DropdownMenuItem>Edit</DropdownMenuItem>
-                                <DropdownMenuItem>Delete</DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => handleEditClick(hotel.hotelID)}
+                                >
+                                  Edit
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    handleDeleteClick(hotel.hotelID)
+                                  }
+                                >
+                                  Delete
+                                </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
                           </TableCell>
@@ -200,6 +238,7 @@ export default function HotelsDashboard() {
             </Card>
           </TabsContent>
         </Tabs>
+        <Toaster />
       </main>
     </AdminLayout>
   );

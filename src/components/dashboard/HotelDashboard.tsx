@@ -1,5 +1,5 @@
 import React from "react";
-import AddHotel from "../AdminComponents/AddHotel";
+// import AddHotel from "../AdminComponents/AddHotel";
 import { UserDetails } from "@/utils/types";
 
 export default function HotelDashboard({ user }: { user: UserDetails }) {
@@ -10,7 +10,7 @@ export default function HotelDashboard({ user }: { user: UserDetails }) {
       <p>Email: {user?.email}</p>
       <p>Role: {user?.role}</p>
       <p>Contact: {user?.contactNumber}</p>
-      <AddHotel />
+      {/* <AddHotel /> */}
     </div>
   );
 }

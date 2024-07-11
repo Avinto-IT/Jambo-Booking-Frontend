@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   useForm,
   useFieldArray,
@@ -75,6 +75,7 @@ interface ContactDetails {
 
 interface FormData {
   basicInfo: {
+    hotelID: string;
     name: string;
     location: { value: string; label: string };
     discount: string;
@@ -87,7 +88,7 @@ interface FormData {
   isRunning: boolean;
 }
 
-export default function AddHotel() {
+export default function AdminUpdateHotel() {
   const steps = [
     { component: BasicInformation, label: "Basic Information" },
     { component: Facilities, label: "Facilities" },
@@ -96,9 +97,15 @@ export default function AddHotel() {
     { component: ContactDetails, label: "Contact Details" },
     { component: Review, label: "Review" },
   ];
+  const searchParams = useSearchParams();
+  const id = searchParams?.get("id");
+  const [hotel, setHotel] = useState(null);
 
   const [currentStep, setCurrentStep] = useState(0);
   const CurrentComponent = steps[currentStep].component;
+  const [token, setToken] = useState<string | null>(null);
+  const [locations, setLocations] = useState<Location[]>([]);
+  const router = useRouter();
   const methods = useForm<FormData>({
     defaultValues: {
       basicInfo: {
@@ -152,6 +159,101 @@ export default function AddHotel() {
       isRunning: false,
     },
   });
+  const { reset } = methods;
+
+  useEffect(() => {
+    if (id) {
+      const fetchHotel = async () => {
+        try {
+          const response = await fetch(`/api/getHotelById?id=${id}`);
+          const data = await response.json();
+          setHotel(data.hotel);
+          if (data.hotel) {
+            reset({
+              basicInfo: {
+                hotelID: id,
+                name: data.hotel.name,
+                location: {
+                  value: data.hotel.locationID,
+                  label: data.hotel.address,
+                },
+                discount: data.hotel.discount.toString(),
+                description: data.hotel.description,
+              },
+              facilities: data.hotel.facilities.map((facility, index) => ({
+                id: index,
+                name: {
+                  label: facility.name,
+                  value: facility.name,
+                },
+                description: facility.description,
+                subFacilities: facility.subFacilities.map(
+                  (subFacility, subIndex) => ({
+                    id: subIndex,
+                    name: subFacility.name,
+                  })
+                ),
+              })),
+              rooms: data.hotel.rooms.map((room, index) => ({
+                id: index,
+                type: room.type,
+                numberOfRooms: room.numberOfRooms,
+                price: room.price,
+                capacity: room.capacity,
+                bedType: room.bedType,
+                numberOfBeds: room.numberOfBeds,
+                amenities: room.amenities.map((amenity, amenityIndex) => ({
+                  id: amenityIndex,
+                  name: amenity.name,
+                })),
+              })),
+              contactForm: {
+                name: data.hotel.contactDetails.name,
+                position: data.hotel.contactDetails.position,
+                email: data.hotel.contactDetails.email,
+                number: data.hotel.contactDetails.number,
+                facebook: data.hotel.contactDetails.facebook,
+                instagram: data.hotel.contactDetails.instagram,
+                linkedin: data.hotel.contactDetails.linkedin,
+              },
+              houseRules: data.hotel.houseRules.map((houseRule, index) => ({
+                id: index,
+                type: {
+                  label: houseRule.type,
+                  value: houseRule.type,
+                },
+                details: houseRule.details,
+              })),
+              isRunning: data.hotel.isRunning,
+            });
+          }
+        } catch (error) {
+          console.log("Error fetching hotel:", error);
+        }
+      };
+      fetchHotel();
+    }
+  }, [id, reset]);
+
+  useEffect(() => {
+    const fetchLocations = async () => {
+      try {
+        const response = await fetch("/api/getLocation");
+        const data = await response.json();
+        setLocations(data);
+      } catch (error) {
+        console.error("Error fetching locations:", error);
+      }
+    };
+
+    fetchLocations();
+    console.log("fetching locations");
+  }, []);
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token");
+    setToken(storedToken);
+  }, []);
 
   const {
     fields: facilityFields,
@@ -180,32 +282,10 @@ export default function AddHotel() {
     name: "houseRules",
   });
 
-  const [token, setToken] = useState<string | null>(null);
-  const [locations, setLocations] = useState<Location[]>([]);
-  const router = useRouter();
-  useEffect(() => {
-    const fetchLocations = async () => {
-      try {
-        const response = await fetch("/api/getLocation");
-        const data = await response.json();
-        setLocations(data);
-      } catch (error) {
-        console.error("Error fetching locations:", error);
-      }
-    };
-
-    fetchLocations();
-    console.log("fetching locations");
-  }, []);
-
-  useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    setToken(storedToken);
-  }, []);
-
   const onSubmit = async (data: FormData) => {
     const payload = {
       ...data.basicInfo,
+      hotelID: data.basicInfo.hotelID,
       address: data.basicInfo.location.label,
       locationID: data.basicInfo.location.value,
       facilities: data.facilities.map((facility) => ({
@@ -236,10 +316,11 @@ export default function AddHotel() {
       isRunning: data.isRunning,
       discount: parseFloat(data.basicInfo.discount),
     };
+    console.log(payload);
 
     try {
-      const response = await fetch("/api/setHotels", {
-        method: "POST",
+      const response = await fetch("/api/updateHotelAdmin", {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -249,16 +330,16 @@ export default function AddHotel() {
 
       const result = await response.json();
       if (response.ok) {
-        toast.success("Hotel added successfully!"); // Use toast to show success message
+        toast.success("Hotel updated successfully!"); // Use toast to show success message
         setTimeout(() => {
           router.push("/dashboard/hotels");
-        }, 2000); // Redirect after success
+        }, 3000);
       } else {
         toast.error(`Error: ${result.error}`);
       }
     } catch (error) {
       console.log(error);
-      toast.error("Error: Unable to add hotel."); // Use toast to show error message
+      toast.error("Error: Unable to update hotel."); // Use toast to show error message
     }
   };
 
@@ -279,9 +360,8 @@ export default function AddHotel() {
       event.preventDefault();
     }
   };
-  const isRunning = methods.watch("isRunning");
 
-  // Log changes to isRunning
+  if (!hotel) return <>Loading...</>;
 
   function BasicInformation() {
     return (
@@ -1237,8 +1317,8 @@ export default function AddHotel() {
       <FormProvider {...methods}>
         <div className="border-2 rounded-md bg-white flex flex-col gap">
           <div className="p-6 grid w-full max-w-6xl gap-2">
-            <h1 className="text-2xl font-semibold">Add Hotel</h1>
-            <div>Manage your hotel and view their overall details.</div>
+            <h1 className="text-2xl font-semibold">Update Hotel</h1>
+            <div>Update the hotel and view their overall details.</div>
           </div>
           <form onSubmit={methods.handleSubmit(onSubmit)}>
             <div className="p-6 grid w-full max-w-6xl items-start gap-6 md:grid-cols-[180px_1fr] lg:grid-cols-[250px_1fr]">
@@ -1291,7 +1371,7 @@ export default function AddHotel() {
                     </Button>
                   ) : (
                     <Button className="bg-blue-700" type="submit">
-                      Submit
+                      Update
                     </Button>
                   )}
                 </div>
