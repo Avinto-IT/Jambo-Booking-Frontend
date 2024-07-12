@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -13,26 +13,26 @@ import blogsdata from "../../../data/blog.json";
 interface BlogClientHeaderProps {
   index: string;
 }
-const Blog_Client_Header: React.FC<BlogClientHeaderProps> = ({ index }) => {
+const BlogClientHeader: React.FC<BlogClientHeaderProps> = ({ index }) => {
   const [isAllBlogsPage, setIsAllBlogsPage] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setIsAllBlogsPage(window.location.href === "http://localhost:3000/blogs/blog-list");
+    if (typeof window !== "undefined") {
+      setIsAllBlogsPage(
+        window.location.href === "http://localhost:3000/blogs/blog-list"
+      );
     }
   }, []);
 
-  const getBlogTitle=(): string =>{
-    const blog = blogsdata.blogs.find(blog => blog.ID === index);
-  return blog ? blog.blogTitle : "" ;
-  }
-
+  const getBlogTitle = (): string => {
+    const blog = blogsdata.blogs.find((blog) => blog.ID === index);
+    return blog ? blog.blogTitle : "";
+  };
 
   return (
     <Breadcrumb>
       <BreadcrumbList>
-        <BreadcrumbItem className=''>
-        
+        <BreadcrumbItem className="">
           <BreadcrumbLink href="http://localhost:3000">Home</BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator />
@@ -45,19 +45,24 @@ const Blog_Client_Header: React.FC<BlogClientHeaderProps> = ({ index }) => {
         ) : (
           <>
             <BreadcrumbItem>
-              <BreadcrumbLink href="http://localhost:3000/blogs/blog-list">Popular Destinations</BreadcrumbLink>
+              <BreadcrumbLink href="http://localhost:3000/blogs/blog-list">
+                Popular Destinations
+              </BreadcrumbLink>
             </BreadcrumbItem>
-           
+
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>{getBlogTitle().length>23?(getBlogTitle().substring(0,23)+"..."):getBlogTitle()}</BreadcrumbPage>
+              <BreadcrumbPage>
+                {getBlogTitle().length > 23
+                  ? getBlogTitle().substring(0, 23) + "..."
+                  : getBlogTitle()}
+              </BreadcrumbPage>
             </BreadcrumbItem>
-         
           </>
         )}
       </BreadcrumbList>
     </Breadcrumb>
   );
-}
+};
 
-export default Blog_Client_Header;
+export default BlogClientHeader;

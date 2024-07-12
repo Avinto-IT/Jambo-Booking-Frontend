@@ -1,32 +1,20 @@
 "use client";
-import React, { ReactNode } from "react";
 
 import Image from "next/image";
 import Link from "next/link";
-import Navbar from "../Navbar";
-import insta from "../../../public/images/footer/Instagram.svg";
-import twitter from "../../../public/images/footer/Twitter.svg";
+import React from "react";
 
-import facebook from "../../../public/images/footer/Facebook.svg";
+import { Button } from "@/components/ui/button";
 import Jambologo from "../../../public/images/footer/Vector (2).svg";
-import { ChevronDown, CircleUserRound } from "lucide-react";
-import topimg from "../blog/head/Header Image.svg";
-import Topimg from "../Topimg";
-
-interface Layout2Props {
-  children: ReactNode;
-  title?: string;
-  imgtitle: string;
-}
-
-const Layout2: React.FC<Layout2Props> = ({
-  children,
-  title = "My App",
-  imgtitle,
-}) => {
+import facebook from "../../../public/images/footer/Facebook.svg";
+import twitter from "../../../public/images/footer/Twitter.svg";
+import insta from "../../../public/images/footer/Instagram.svg";
+import Lottie from "lottie-react";
+import animationdata from "../../../animation/Success.json";
+function page() {
   return (
     <div className="min-h-screen w-full flex flex-col">
-      <header className="p-y-4">
+      <header className="p-4">
         <nav className="px-16 py-6 flex justify-between items-center h-[88px]">
           <Link href="/">
             <Image
@@ -36,7 +24,6 @@ const Layout2: React.FC<Layout2Props> = ({
               height={40}
             />
           </Link>
-          <Navbar />
 
           <div className="flex space-x-4">
             <Link
@@ -59,10 +46,39 @@ const Layout2: React.FC<Layout2Props> = ({
             </Link>
           </div>
         </nav>
-        <Topimg title={imgtitle} />
       </header>
+      <main className="flex-grow max-w-[1920px] justify-center items-center">
+        <div className="flex flex-col justify-center items-center pt-20 pb-40">
+          <div className="w-full  flex justify-center h-32 mb-5">
+            {/* <Image src={eclipse} alt="eclipse" className=''/> */}
+            <Lottie animationData={animationdata} loop={true} />
+          </div>
+          <p className=" text-3xl font-bold leading-9 my-2">
+            Registration Successful!
+          </p>
+          <div className="text-sm text-[#64748B] text-center w-2/3  leading-5 ">
+            <p className="">
+              Thank you for registering your agency with Jambo Hotels.
+            </p>
+            <br />
 
-      <main className="flex-grow max-w-[1920px]">{children}</main>
+            <p className="">
+              Your registration details have been received and are currently
+              under review. Our team will review your submission to ensure it
+              meets our criteria for agency accounts. This process typically
+              takes 1-2 business days. Once your account is approved, you will
+              receive a confirmation email with further instructions on how to
+              access and utilize your new account.
+            </p>
+          </div>
+          <Button
+            className="w-1/4 bg-blue-700 hover:bg-blue-900 mt-10 py-4"
+            onClick={() => (window.location.href = "/")}
+          >
+            Back to Home
+          </Button>
+        </div>
+      </main>
       <footer className="bg-[#1E3A8A] text-white pb-16">
         <div className="h-full flex flex-col justify-center items-center">
           <div className=" h-11/12 flex justify-between  items-center w-full px-16 mt-6">
@@ -80,7 +96,7 @@ const Layout2: React.FC<Layout2Props> = ({
                 <Link href="/" className="">
                   Home
                 </Link>
-                <Link href="/about-us" className="">
+                <Link href="/about_us" className="">
                   About
                 </Link>
                 <Link href="" className="">
@@ -101,7 +117,7 @@ const Layout2: React.FC<Layout2Props> = ({
               </div>
               <div className="flex flex-col gap-y-4 items-center">
                 <p className="mb-1 font-semibold">LEGAL INFO</p>
-                <Link href="/privacy-policy" className="">
+                <Link href="/" className="">
                   Privacy Policy
                 </Link>
                 <Link href="/" className="">
@@ -133,6 +149,6 @@ const Layout2: React.FC<Layout2Props> = ({
       </footer>
     </div>
   );
-};
+}
 
-export default Layout2;
+export default page;

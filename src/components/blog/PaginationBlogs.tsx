@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Pagination,
   PaginationContent,
@@ -15,7 +15,11 @@ interface PaginationBlogsProps {
   onPageChange: (page: number) => void;
 }
 
-export const Pagination_Blogs: React.FC<PaginationBlogsProps> = ({ currentPage, totalPages, onPageChange }) => {
+export const PaginationBlogs: React.FC<PaginationBlogsProps> = ({
+  currentPage,
+  totalPages,
+  onPageChange,
+}) => {
   const handlePrevious = () => {
     if (currentPage > 1) {
       onPageChange(currentPage - 1);
@@ -37,12 +41,16 @@ export const Pagination_Blogs: React.FC<PaginationBlogsProps> = ({ currentPage, 
           )}
         </PaginationItem>
         <PaginationItem>
-        {currentPage > 1 && (
-               <PaginationLink href="#" onClick={handlePrevious}>{currentPage-1}</PaginationLink>
+          {currentPage > 1 && (
+            <PaginationLink href="#" onClick={handlePrevious}>
+              {currentPage - 1}
+            </PaginationLink>
           )}
-          <PaginationLink href="#" >{currentPage}</PaginationLink>
+          <PaginationLink href="#">{currentPage}</PaginationLink>
           {currentPage < totalPages && (
-               <PaginationLink href="#"  onClick={handleNext}>{currentPage+1}</PaginationLink>
+            <PaginationLink href="#" onClick={handleNext}>
+              {currentPage + 1}
+            </PaginationLink>
           )}
         </PaginationItem>
         <PaginationItem>
@@ -57,5 +65,3 @@ export const Pagination_Blogs: React.FC<PaginationBlogsProps> = ({ currentPage, 
     </Pagination>
   );
 };
-
-

@@ -2,12 +2,12 @@
 import Layout from "@/components/Layout/Layout";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import Bloglanding from "@/components/blog/Bloglanding";
-import Explore_Africa from "@/components/landing/Explore and offers/Explore_Africa";
-import Find_Hotels from "@/components/landing/Explore and offers/Find_Hotels";
-import Offers_for_you from "@/components/landing/Explore and offers/Offers_for_you";
+import Explore_Africa from "@/components/landing/Explore and offers/ExploreAfrica";
+import Find_Hotels from "@/components/landing/Explore and offers/FindHotels";
+import Offers_for_you from "@/components/landing/Explore and offers/OffersForYou";
 import Hero from "@/components/landing/Hero";
 import Offer from "@/components/landing/Offer";
-import Static_page from "@/components/landing/Static_page";
+import Static_page from "@/components/landing/StaticPage";
 import Worldmap from "@/components/landing/Worldmap";
 import { useEffect, useState } from "react";
 
@@ -51,16 +51,13 @@ export default function Home() {
   const [hotels, setHotels] = useState<Hotel[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [locations, setLocations] = useState<Location[]>([]);
-  const[load,setLoad]=useState("loading")
-useEffect(()=>{
-
-
-  setInterval(() => {
-    // const prev="!";
-    setLoad((prev)=>prev+".")
-  }, 50);
- 
-},[])
+  const [load, setLoad] = useState("loading");
+  useEffect(() => {
+    setInterval(() => {
+      // const prev="!";
+      setLoad((prev) => prev + ".");
+    }, 50);
+  }, []);
 
   useEffect(() => {
     const fetchHotels = async () => {
@@ -92,17 +89,22 @@ useEffect(()=>{
 
   return (
     <Layout>
-    
-      {loading?(<div className=" flex justify-center items-center h-14  bg-blue-800 text-white rounded-xl">{load}</div>):(<>
-        <Hero />
-        <Offers_for_you/>
-      <Explore_Africa/>
-      <Find_Hotels/>
-      <Static_page/>
-      <Offer/>
-      <Bloglanding/>
-      <Worldmap/>
-      </>)}
+      {loading ? (
+        <div className=" flex justify-center items-center h-14  bg-blue-800 text-white rounded-xl">
+          {load}
+        </div>
+      ) : (
+        <>
+          <Hero />
+          <Offers_for_you />
+          <Explore_Africa />
+          <Find_Hotels />
+          <Static_page />
+          <Offer />
+          <Bloglanding />
+          <Worldmap />
+        </>
+      )}
       {/* <Hero />
       <Offers_for_you/>
       <Explore_Africa/>
@@ -111,9 +113,6 @@ useEffect(()=>{
       <Offer/>
       <Bloglanding/>
       <Worldmap/> */}
-
-
-
     </Layout>
   );
 }
