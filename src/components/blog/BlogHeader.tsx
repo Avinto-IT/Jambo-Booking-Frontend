@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -9,22 +9,26 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 
-import userImg from "./head/search.svg";
-import Image from 'next/image';
+import userImg from "../../../public/images/head/search.svg";
+import Image from "next/image";
 
 function BlogHeader() {
   const [isClient, setIsClient] = useState(false);
   const [isBlogDetailsPage, setIsBlogDetailsPage] = useState(false);
-  const [pageName, setPageName] = useState('');
+  const [pageName, setPageName] = useState("");
 
   useEffect(() => {
     setIsClient(true);
-    if (typeof window !== 'undefined') {
-      setIsBlogDetailsPage(window.location.href === "http://localhost:3000/blogdetails");
-      if (window.location.href === "http://localhost:3000/addBlogs") {
-        setPageName('Add Blogs');
-      } else if (window.location.href.includes("http://localhost:3000/textEditor")) {
-        setPageName('Edit Blogs');
+    if (typeof window !== "undefined") {
+      setIsBlogDetailsPage(
+        window.location.href === "http://localhost:3000/blog-details"
+      );
+      if (window.location.href === "http://localhost:3000/add-blogs") {
+        setPageName("Add Blogs");
+      } else if (
+        window.location.href.includes("http://localhost:3000/text-editor")
+      ) {
+        setPageName("Edit Blogs");
       }
     }
   }, []);
@@ -38,7 +42,7 @@ function BlogHeader() {
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href="http://localhost:3000/dashboard">Dashboard</BreadcrumbLink>
+            <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
@@ -46,7 +50,7 @@ function BlogHeader() {
               <BreadcrumbPage>Blogs</BreadcrumbPage>
             ) : (
               <>
-                <BreadcrumbLink href="http://localhost:3000/blogdetails">Blogs</BreadcrumbLink>
+                <BreadcrumbLink href="/blog-details">Blogs</BreadcrumbLink>
                 <BreadcrumbSeparator />
               </>
             )}
@@ -58,7 +62,7 @@ function BlogHeader() {
           )}
         </BreadcrumbList>
       </Breadcrumb>
-      <Image src={userImg} alt="user" className='h-10' />
+      <Image src={userImg} alt="user" className="h-10" />
     </div>
   );
 }

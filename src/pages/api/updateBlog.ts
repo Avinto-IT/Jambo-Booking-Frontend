@@ -1,25 +1,25 @@
-import fs from 'fs';
-import path from 'path';
-import { NextApiRequest, NextApiResponse } from 'next';
+import fs from "fs";
+import path from "path";
+import { NextApiRequest, NextApiResponse } from "next";
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method === 'POST') {
+  if (req.method === "POST") {
     const { index, content } = req.body;
 
-    const filePath = path.join(process.cwd(), 'data', 'blog.json');
+    const filePath = path.join(process.cwd(), "data", "blog.json");
     //process.cwd() to get current working directory
-    const fileData = fs.readFileSync(filePath, 'utf8');
+    const fileData = fs.readFileSync(filePath, "utf8");
     //utf8 to convert to suitable string from binary data
-    const blogsdata = JSON.parse(fileData);
+    const blogsData = JSON.parse(fileData);
 
     // Update the content
-    blogsdata.blogs[index].content = content;
+    blogsData.blogs[index].content = content;
 
     // Write the updated data back to the file
-    fs.writeFileSync(filePath, JSON.stringify(blogsdata, null, 2));
+    fs.writeFileSync(filePath, JSON.stringify(blogsData, null, 2));
 
-    res.status(200).json({ message: 'Blog content updated successfully!' });
+    res.status(200).json({ message: "Blog content updated successfully!" });
   } else {
-    res.status(405).json({ message: 'Method not allowed' });
+    res.status(405).json({ message: "Method not allowed" });
   }
 }
