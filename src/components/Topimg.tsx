@@ -1,11 +1,11 @@
 import React from "react";
-import topimg from "../../public/images/head/Header Image.svg";
+import topimg from "../../public/images/head/Header_Image.svg";
 import Image from "next/image";
 
-interface topimgprop {
+interface TopImgProp {
   title: string;
 }
-const Topimg: React.FC<topimgprop> = ({ title }) => {
+const TopImg: React.FC<TopImgProp> = ({ title }) => {
   return (
     <div className="">
       <div className="w-full relative mb-14">
@@ -19,4 +19,4 @@ const Topimg: React.FC<topimgprop> = ({ title }) => {
   );
 };
 
-export default Topimg;
+export default TopImg;

@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Editor as TinyMCEEditor } from "@tinymce/tinymce-react";
 import React from "react";
 
-export default function page() {
+export default function Page() {
   return (
     <div className="bg-slate-50 flex justify-center items-center">
       <MaxWidthWrapper>

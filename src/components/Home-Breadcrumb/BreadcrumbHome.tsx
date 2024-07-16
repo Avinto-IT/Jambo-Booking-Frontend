@@ -1,4 +1,4 @@
-"use state";
+"use client";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import React, { useEffect, useState } from "react";
 
-function Breadcrumb_Home() {
+function BreadcrumbHome() {
   const [name, setName] = useState("");
   useEffect(() => {
     if (window.location.href === "http://localhost:3000/privacy-policy")
@@ -36,4 +36,4 @@ function Breadcrumb_Home() {
   );
 }
 
-export default Breadcrumb_Home;
+export default BreadcrumbHome;

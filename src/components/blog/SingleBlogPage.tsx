@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import MaxWidthWrapper from "../MaxWidthWrapper";
-import blogsdata from "../../../data/blog.json";
+import blogsData from "../../../data/blog.json";
 import Image from "next/image";
 import BlogClientHeader from "./BlogClientHeader";
 import arrow from "../../../public/images/head/arrow-up-right.svg";
@@ -13,9 +13,9 @@ function SingleBlogPage() {
   const ind = pathname?.split("/").pop() || "";
 
   const blogId = decodeURIComponent(ind);
-  const data = blogsdata.blogs.find((b) => b.ID === blogId);
+  const data = blogsData.blogs.find((b) => b.ID === blogId);
 
-  const datam = blogsdata.blogs.filter((b) => b.ID !== ind);
+  const datam = blogsData.blogs.filter((b) => b.ID !== ind);
   const last = datam.sort((a, b) => {
     const dateA = new Date(a.created_date).getTime();
     const dateB = new Date(b.created_date).getTime();

@@ -42,9 +42,7 @@ function BlogHeader() {
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href="http://localhost:3000/dashboard">
-              Dashboard
-            </BreadcrumbLink>
+            <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
@@ -52,9 +50,7 @@ function BlogHeader() {
               <BreadcrumbPage>Blogs</BreadcrumbPage>
             ) : (
               <>
-                <BreadcrumbLink href="http://localhost:3000/blog-details">
-                  Blogs
-                </BreadcrumbLink>
+                <BreadcrumbLink href="/blog-details">Blogs</BreadcrumbLink>
                 <BreadcrumbSeparator />
               </>
             )}

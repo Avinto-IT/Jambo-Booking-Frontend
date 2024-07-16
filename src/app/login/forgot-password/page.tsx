@@ -1,5 +1,5 @@
 "use client";
-import Forgot_Password from "@/components/Logins/ForgotPassword";
+import ForgotPassword from "@/components/Logins/ForgotPassword";
 import Image from "next/image";
 import React, { useState } from "react";
 import jamboicon from "../../../../public/images/login/Logo.svg";
@@ -7,10 +7,16 @@ import CheckEmail from "@/components/Logins/CheckEmail";
 import SetNewPassword from "@/components/Logins/SetNewPassword";
 import PasswordChangedSuccess from "@/components/Logins/PasswordChangedSuccess";
 import LoginHeader from "@/components/Logins/LoginHeader";
+import heroImage from "../../../../public/images/login/brand_1.svg";
 
-const page: React.FC = () => {
-  const [currentComponent, setCurrentComponent] = useState("A");
-  const components = ["A", "B", "C", "D"];
+const Page: React.FC = () => {
+  const [currentComponent, setCurrentComponent] = useState("forgotPassword");
+  const components = [
+    "forgotPassword",
+    "checkEmail",
+    "setNewPassword",
+    "passwordChangedSuccess",
+  ];
   const handleNextComponent = (component: string) => {
     setCurrentComponent(component);
   };
@@ -24,10 +30,10 @@ const page: React.FC = () => {
 
   return (
     <div className=" h-screen">
-      {currentComponent !== "D" && (
+      {currentComponent !== "passwordChangedSuccess" && (
         <LoginHeader
           handleBack={() =>
-            currentComponent === "A"
+            currentComponent === "forgotPassword"
               ? (window.location.href = "http://localhost:3000/login")
               : handleBack()
           }
@@ -35,22 +41,30 @@ const page: React.FC = () => {
       )}
 
       <div className="w-full grid grid-cols-2 ">
-        {currentComponent === "A" && (
-          <Forgot_Password onButtonClick={() => handleNextComponent("B")} />
+        {currentComponent === "forgotPassword" && (
+          <ForgotPassword
+            onButtonClick={() => handleNextComponent("checkEmail")}
+          />
         )}
-        {currentComponent === "B" && (
-          <CheckEmail onButtonClick={() => handleNextComponent("C")} />
+        {currentComponent === "checkEmail" && (
+          <CheckEmail
+            onButtonClick={() => handleNextComponent("setNewPassword")}
+          />
         )}
-        {currentComponent === "C" && (
-          <SetNewPassword onButtonClick={() => handleNextComponent("D")} />
+        {currentComponent === "setNewPassword" && (
+          <SetNewPassword
+            onButtonClick={() => handleNextComponent("passwordChangedSuccess")}
+          />
         )}
-        {currentComponent === "D" && <PasswordChangedSuccess />}
+        {currentComponent === "passwordChangedSuccess" && (
+          <PasswordChangedSuccess />
+        )}
 
         <div className=" relative">
-          <img
-            src="https://s3-alpha-sig.figma.com/img/6d51/a99e/aa95fe53ed8bd181c312716544d23f80?Expires=1721001600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=VkflaXHKVW4UBj3-3fvrlR-kxQmleCy25xRp-RVF8L9IN-NgbJpk4gR-PAP7WHt~X6OoiUnThur-RfX-4yp91ewRMNLyBL5wN5-WMvuVtIzwulA5jg5e6EbTusV90OzhAEvApw-RbTk0A7FEngNj97jPYGZq9mBoejy72lSxktKpEmd2wS45d-cPr0MiPrqi2YOH~jJ13q6fWwf1IH0OV0feIIfQYXFoU1hqp7Nt0PwwQfeVEL9xXQfVOfqYLHpIE6SLsoTCEyeLU9HxChIPyimOqPDQZQLLU-sLtUxvVnYO317hWVvtbBsPpzEhu0Hu7z8Q4A8NNz0XZDdZtJ8qlQ__"
+          <Image
+            src={heroImage}
             alt="Image"
-            className="w-full object-cover h-screen"
+            className="h-screen object-cover w-full"
           />
           <Image
             src={jamboicon}
@@ -65,4 +79,4 @@ const page: React.FC = () => {
   );
 };
 
-export default page;
+export default Page;

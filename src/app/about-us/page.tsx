@@ -1,22 +1,22 @@
 "use client";
-import Layout2 from "@/components/Layout/Layout2";
+import LayoutTwo from "@/components/Layout/LayoutTwo";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import Image from "next/image";
 import React from "react";
 import discoverimg from "../../../public/images/static-from-landing/image.svg";
-import bedimg from "../../../public/images/an image for hotel booking.svg";
-import Worldmap from "@/components/landing/Worldmap";
+import bedimg from "../../../public/images/an_image_for_hotel_booking.svg";
+import Worldmap from "@/components/landing/WorldMap";
 import BreadcrumbHome from "@/components/Home-Breadcrumb/BreadcrumbHome";
 
-interface topimgprop {
+interface TopImgProp {
   title: string;
 }
-const about_us: React.FC<topimgprop> = ({ title }) => {
+const AboutUs: React.FC<TopImgProp> = ({ title }) => {
   return (
     <div>
-      <Layout2 imgtitle="About Us">
+      <LayoutTwo imgTitle="About Us">
         <div className=" flex justify-center items-center">
-          <MaxWidthWrapper>
+          <MaxWidthWrapper className="mb-20">
             <BreadcrumbHome />
             <div className="text-[#0F172A] space-y-1">
               <p className="text-3xl  font-semibold">About Us</p>
@@ -101,7 +101,7 @@ const about_us: React.FC<topimgprop> = ({ title }) => {
               </div>
             </div>
             <br />
-            <div className="">
+            <div className="mb-20">
               <div className="space-y-4">
                 <p className=" font-semibold text-2xl">
                   Lorem Ipsum is simply dummy text
@@ -133,11 +133,12 @@ const about_us: React.FC<topimgprop> = ({ title }) => {
               </div>
               <Image src={bedimg} alt="bedimg" className="mt-12 rounded-md" />
             </div>
+            <br />
+            <Worldmap />
           </MaxWidthWrapper>
         </div>
-        <Worldmap />
-      </Layout2>
+      </LayoutTwo>
     </div>
   );
 };
-export default about_us;
+export default AboutUs;

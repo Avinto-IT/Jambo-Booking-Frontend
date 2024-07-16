@@ -1,15 +1,16 @@
 "use client";
 import Layout from "@/components/Layout/Layout";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
-import Bloglanding from "@/components/blog/Bloglanding";
-import Explore_Africa from "@/components/landing/Explore and offers/ExploreAfrica";
-import Find_Hotels from "@/components/landing/Explore and offers/FindHotels";
-import Offers_for_you from "@/components/landing/Explore and offers/OffersForYou";
+import BlogLanding from "@/components/blog/BlogLanding";
+import ExploreAfrica from "@/components/landing/explore/ExploreAfrica";
+import FindHotels from "@/components/landing/explore/FindHotels";
+import Offersforyou from "@/components/landing/explore/OffersForYou";
 import Hero from "@/components/landing/Hero";
 import Offer from "@/components/landing/Offer";
-import Static_page from "@/components/landing/StaticPage";
-import Worldmap from "@/components/landing/Worldmap";
+import StaticPage from "@/components/landing/StaticPage";
+import WorldMap from "@/components/landing/WorldMap";
 import { useEffect, useState } from "react";
+import DiscoverHistory from "@/components/landing/DiscoverHistory";
 
 interface Hotel {
   hotelID: string;
@@ -96,23 +97,25 @@ export default function Home() {
       ) : (
         <>
           <Hero />
-          <Offers_for_you />
-          <Explore_Africa />
-          <Find_Hotels />
-          <Static_page />
-          <Offer />
-          <Bloglanding />
-          <Worldmap />
+          <div className="flex justify-center items-center text-[#111827]">
+            <MaxWidthWrapper className="my-14 space-y-14">
+              <Offersforyou />
+              <ExploreAfrica />
+
+              <FindHotels />
+
+              <StaticPage />
+
+              <DiscoverHistory />
+              <br />
+              <Offer />
+              <BlogLanding />
+              <br />
+              <WorldMap />
+            </MaxWidthWrapper>
+          </div>
         </>
       )}
-      {/* <Hero />
-      <Offers_for_you/>
-      <Explore_Africa/>
-      <Find_Hotels/>
-      <Static_page/>
-      <Offer/>
-      <Bloglanding/>
-      <Worldmap/> */}
     </Layout>
   );
 }

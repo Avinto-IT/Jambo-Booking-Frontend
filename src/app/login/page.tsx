@@ -3,6 +3,8 @@ import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import { ChangeEvent, useState } from "react";
 import Cookies from "js-cookie";
 import { Button } from "@/components/ui/button";
+import heroImage from "../../../public/images/login/brand_1.svg";
+
 import {
   Card,
   CardContent,
@@ -154,8 +156,8 @@ export default function Login() {
           </div>
         </div>
         <div className="w-full relative">
-          <img
-            src="https://s3-alpha-sig.figma.com/img/6d51/a99e/aa95fe53ed8bd181c312716544d23f80?Expires=1721001600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=VkflaXHKVW4UBj3-3fvrlR-kxQmleCy25xRp-RVF8L9IN-NgbJpk4gR-PAP7WHt~X6OoiUnThur-RfX-4yp91ewRMNLyBL5wN5-WMvuVtIzwulA5jg5e6EbTusV90OzhAEvApw-RbTk0A7FEngNj97jPYGZq9mBoejy72lSxktKpEmd2wS45d-cPr0MiPrqi2YOH~jJ13q6fWwf1IH0OV0feIIfQYXFoU1hqp7Nt0PwwQfeVEL9xXQfVOfqYLHpIE6SLsoTCEyeLU9HxChIPyimOqPDQZQLLU-sLtUxvVnYO317hWVvtbBsPpzEhu0Hu7z8Q4A8NNz0XZDdZtJ8qlQ__"
+          <Image
+            src={heroImage}
             alt="Image"
             className="h-screen object-cover w-full"
           />

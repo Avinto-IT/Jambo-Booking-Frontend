@@ -8,7 +8,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import blogsdata from "../../../data/blog.json";
+import blogsData from "../../../data/blog.json";
 
 interface BlogClientHeaderProps {
   index: string;
@@ -18,14 +18,12 @@ const BlogClientHeader: React.FC<BlogClientHeaderProps> = ({ index }) => {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      setIsAllBlogsPage(
-        window.location.href === "http://localhost:3000/blogs/blog-list"
-      );
+      setIsAllBlogsPage(window.location.href === "/blogs/blog-list");
     }
   }, []);
 
   const getBlogTitle = (): string => {
-    const blog = blogsdata.blogs.find((blog) => blog.ID === index);
+    const blog = blogsData.blogs.find((blog) => blog.ID === index);
     return blog ? blog.blogTitle : "";
   };
 
@@ -33,7 +31,7 @@ const BlogClientHeader: React.FC<BlogClientHeaderProps> = ({ index }) => {
     <Breadcrumb>
       <BreadcrumbList>
         <BreadcrumbItem className="">
-          <BreadcrumbLink href="http://localhost:3000">Home</BreadcrumbLink>
+          <BreadcrumbLink href="/">Home</BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator />
         {isAllBlogsPage ? (
@@ -45,7 +43,7 @@ const BlogClientHeader: React.FC<BlogClientHeaderProps> = ({ index }) => {
         ) : (
           <>
             <BreadcrumbItem>
-              <BreadcrumbLink href="http://localhost:3000/blogs/blog-list">
+              <BreadcrumbLink href="/blogs/blog-list">
                 Popular Destinations
               </BreadcrumbLink>
             </BreadcrumbItem>

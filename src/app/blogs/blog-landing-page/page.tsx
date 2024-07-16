@@ -1,21 +1,13 @@
+import React from "react";
+import BlogLanding from "@/components/blog/BlogLanding";
 
-import React from 'react'
-import Bloglanding from '@/components/blog/Bloglanding';
-
-function page() {
-
-     
-
+function Page() {
   return (
-    
-    
-          <>     <Bloglanding/>
-
-     </>
-
-  )
+    <>
+      {" "}
+      <BlogLanding />
+    </>
+  );
 }
 
-export default page
-
-
+export default Page;

@@ -1,14 +1,14 @@
 "use client";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import React, { useState } from "react";
-import blogsdata from "../../../data/blog.json";
+import blogsData from "../../../data/blog.json";
 import BlogClientHeader from "@/components/blog/BlogClientHeader";
 import arrow from "../../../public/images/head/arrow-up-right.svg";
 import Image from "next/image";
 
 import { PaginationBlogs } from "./PaginationBlogs";
 import TagRemover from "./TagRemover";
-import topimg from "../../../public/images/head/Header Image.svg";
+import topimg from "../../../public/images/head/Header_Image.svg";
 function AllBlogs() {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -21,7 +21,7 @@ function AllBlogs() {
     return date.toLocaleDateString("en-US", options);
   };
 
-  const data = blogsdata.blogs.sort((a, b) => {
+  const data = blogsData.blogs.sort((a, b) => {
     return parseInt(a.POST_ID) - parseInt(b.POST_ID);
   }); //so that data is always mapped in ascending order accordding to Post_ID
 

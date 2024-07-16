@@ -8,14 +8,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import eclipse from "../../../public/images/login/Ellipse 1.svg";
+import eclipse from "../../../public/images/login/Ellipse_1.svg";
 import Image from "next/image";
 import Lottie from "lottie-react";
 import animationdata from "../../../animation/Success.json";
 
-interface PasswordChangedSuccessprop {
-  onButtonClick: () => void;
-}
+// interface PasswordChangedSuccessprop {
+//   onButtonClick: () => void;
+// }
 const PasswordChangedSuccess = ({}) => {
   return (
     <div className="flex items-center justify-center  ">

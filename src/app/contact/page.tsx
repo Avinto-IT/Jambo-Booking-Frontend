@@ -1,11 +1,11 @@
 "use client";
-import Layout2 from "@/components/Layout/Layout2";
+import LayoutTwo from "@/components/Layout/LayoutTwo";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import { Mail, MapPin, Phone } from "lucide-react";
 import React, { ChangeEvent, useState } from "react";
 
 import twitter from "../../../public/images/footer/Twitter.svg";
-import insta from "../../../public/images/footer/Instagram.svg";
+import instagram from "../../../public/images/footer/Instagram.svg";
 import facebook from "../../../public/images/footer/Facebook.svg";
 import Image from "next/image";
 import { Textarea } from "@/components/ui/textarea";
@@ -21,15 +21,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import Breadcrumb_Home from "@/components/Home-Breadcrumb/BreadcrumbHome";
+import BreadcrumbHome from "@/components/Home-Breadcrumb/BreadcrumbHome";
 
-interface topimgprop {
+interface TopImgProp {
   title: string;
 }
-const contact: React.FC<topimgprop> = ({ title }) => {
+const Contact: React.FC<TopImgProp> = ({ title }) => {
   const [info, setInfo] = useState({
-    fname: "",
-    lname: "",
+    firstName: "",
+    lastName: "",
     phone: "",
     email: "",
     subject: "",
@@ -43,10 +43,10 @@ const contact: React.FC<topimgprop> = ({ title }) => {
   };
   return (
     <div>
-      <Layout2 imgtitle="Contact">
+      <LayoutTwo imgTitle="Contact">
         <div className=" flex justify-center items-center">
           <MaxWidthWrapper>
-            <Breadcrumb_Home />
+            <BreadcrumbHome />
             <div className="text-[#0F172A] space-y-1.5">
               <p className="text-3xl  font-semibold">Contact Us</p>
               <p className="">Lorem ipsum league sparatum</p>
@@ -93,7 +93,7 @@ const contact: React.FC<topimgprop> = ({ title }) => {
 
                     <div className="flex mt-4   gap-x-2">
                       <div className="p-3 bg-opacity-10 bg-white rounded-sm relative z-10 flex items-center justify-center">
-                        <Image src={insta} alt="insta" />
+                        <Image src={instagram} alt="instagram" />
                       </div>
                       <div className="p-3 bg-opacity-10 bg-white rounded-sm relative z-10 flex items-center justify-center">
                         <Image src={facebook} alt="facebook" />
@@ -111,18 +111,18 @@ const contact: React.FC<topimgprop> = ({ title }) => {
                     <div className="grid w-full items-center  gap-y-4">
                       <div className="flex gap-x-3 w-full ">
                         <div className="flex flex-col  space-y-1.5 w-1/2">
-                          <Label htmlFor="fname">First Name</Label>
+                          <Label htmlFor="firstName">First Name</Label>
                           <Input
-                            id="fname"
+                            id="firstName"
                             placeholder="Max"
                             onChange={handleChange}
                             required
                           />
                         </div>
                         <div className="flex flex-col space-y-1.5 w-1/2">
-                          <Label htmlFor="lname">Last Name</Label>
+                          <Label htmlFor="lastName">Last Name</Label>
                           <Input
-                            id="lname"
+                            id="lastName"
                             placeholder="Robbinson"
                             onChange={handleChange}
                             required
@@ -177,9 +177,9 @@ const contact: React.FC<topimgprop> = ({ title }) => {
             </div>
           </MaxWidthWrapper>
         </div>
-      </Layout2>
+      </LayoutTwo>
     </div>
   );
 };
 
-export default contact;
+export default Contact;

@@ -5,13 +5,13 @@ import Link from "next/link";
 import React from "react";
 
 import { Button } from "@/components/ui/button";
-import Jambologo from "../../../public/images/footer/Vector (2).svg";
+import Jambologo from "../../../public/images/footer/Vector2.svg";
 import facebook from "../../../public/images/footer/Facebook.svg";
 import twitter from "../../../public/images/footer/Twitter.svg";
-import insta from "../../../public/images/footer/Instagram.svg";
+import instagram from "../../../public/images/footer/Instagram.svg";
 import Lottie from "lottie-react";
 import animationdata from "../../../animation/Success.json";
-function page() {
+function Page() {
   return (
     <div className="min-h-screen w-full flex flex-col">
       <header className="p-4">
@@ -96,7 +96,7 @@ function page() {
                 <Link href="/" className="">
                   Home
                 </Link>
-                <Link href="/about_us" className="">
+                <Link href="/about-us" className="">
                   About
                 </Link>
                 <Link href="" className="">
@@ -134,7 +134,7 @@ function page() {
                   ipsum dolor sit amet, consectetur adipiscing elit.
                 </p>
                 <div className="flex mt-5   gap-x-2">
-                  <Image src={insta} alt="insta" />
+                  <Image src={instagram} alt="instagram" />
                   <Image src={facebook} alt="facebook" />
                   <Image src={twitter} alt="twitter" />
                 </div>
@@ -151,4 +151,4 @@ function page() {
   );
 }
 
-export default page;
+export default Page;

@@ -1,18 +1,18 @@
 "use client";
-import Breadcrumb_Home from "@/components/Home-Breadcrumb/BreadcrumbHome";
-import Layout2 from "@/components/Layout/Layout2";
+import BreadcrumbHome from "@/components/Home-Breadcrumb/BreadcrumbHome";
+import LayoutTwo from "@/components/Layout/LayoutTwo";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 
-interface topimgprop {
+interface TopImgProp {
   title: string;
 }
-const policy: React.FC<topimgprop> = ({ title }) => {
+const Policy: React.FC<TopImgProp> = ({ title }) => {
   return (
     <div>
-      <Layout2 imgtitle="Privacy Policy">
+      <LayoutTwo imgTitle="Privacy Policy">
         <div className=" flex justify-center items-center">
           <MaxWidthWrapper>
-            <Breadcrumb_Home />
+            <BreadcrumbHome />
             <div className="text-[#0F172A] space-y-1">
               <p className="text-3xl  font-semibold">Privacy Policy</p>
               <p className="">Lorem ipsum league sparatum</p>
@@ -39,8 +39,8 @@ const policy: React.FC<topimgprop> = ({ title }) => {
             </div>
           </MaxWidthWrapper>
         </div>
-      </Layout2>
+      </LayoutTwo>
     </div>
   );
 };
-export default policy;
+export default Policy;

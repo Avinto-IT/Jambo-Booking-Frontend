@@ -1,6 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
+
 import {
   Card,
   CardContent,
@@ -12,12 +14,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
+import { Toaster } from "../ui/toaster";
 
 interface ForgotPasswordProps {
   onButtonClick: () => void;
 }
 
 const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onButtonClick }) => {
+  const { toast } = useToast();
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -32,6 +36,7 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onButtonClick }) => {
     });
     try {
       const data = await response.json();
+
       if (
         response.status === 200 ||
         emailRegex.test(email) ||
@@ -60,7 +65,18 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onButtonClick }) => {
   setTimeout(() => {
     setMessage("");
   }, 5000);
+  const showToast = () => {
+    if (message) {
+      toast({
+        // Ensure you're using the correct properties
+        description: message,
+        className:
+          "right-[51rem] bottom-44 text-red-900 text-center w-fit bg-red-200",
 
+        duration: 3000, // Optional: Duration of the toast in milliseconds
+      });
+    }
+  };
   return (
     // <div className="w-full grid grid-cols-2">
     <>
@@ -92,22 +108,26 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onButtonClick }) => {
                 </div>
               </CardContent>
               <CardFooter className="-mt-3">
+                <Toaster />
+
                 <Button
                   className="w-full bg-blue-600 hover:bg-blue-800"
-                  onClick={handleResetClick}
+                  onClick={() => {
+                    handleResetClick();
+                    showToast();
+                  }}
                 >
                   Reset Password
                 </Button>
               </CardFooter>
-
-              {message && (
+              {/* {message && (
                 <div className=" flex justify-center">
                   {" "}
                   <p className=" fixed w-fit px-2 shadow-xl  rounded-xl text-red-700 ">
                     {message}
                   </p>{" "}
                 </div>
-              )}
+              )} */}
             </div>
 
             {/* {message && <p>{message}</p>} */}

@@ -1,8 +1,8 @@
 import React from "react";
 import SingleBlogPage from "@/components/blog/SingleBlogPage";
 
-function page() {
+function Page() {
   return <SingleBlogPage />;
 }
 
-export default page;
+export default Page;

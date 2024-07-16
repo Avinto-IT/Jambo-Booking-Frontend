@@ -1,10 +1,10 @@
 "use client";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
-import { Bloginfo, columns } from "./columns";
+import { Bloginfo, Columns } from "./columns";
 import { DataTable } from "./data-table";
 
 import React, { useEffect, useState } from "react";
-import blogsdata from "../../../data/blog.json";
+import blogsData from "../../../data/blog.json";
 import { Button } from "@/components/ui/button";
 
 import { Input } from "@/components/ui/input";
@@ -27,10 +27,11 @@ import circle from "../../../public/images/head/plus-circle.svg";
 
 import Image from "next/image";
 import { Search } from "lucide-react";
+import Link from "next/link";
 
 export default function App() {
   const [activeTab, setActiveTab] = useState("All");
-  const data = blogsdata.blogs;
+  const data = blogsData.blogs;
   const [searchValue, setSearchValue] = useState<string>("");
 
   const filteredData = () => {
@@ -89,10 +90,10 @@ export default function App() {
                         asChild
                         className="bg-blue-600 hover:bg-blue-800  h-8"
                       >
-                        <a href="http://localhost:3000/add-blogs">
+                        <Link href="/add-blogs">
                           <Image src={circle} alt="user" className="" />
                           Add Blog
-                        </a>
+                        </Link>
                       </Button>
                     </div>
                   </div>
@@ -107,9 +108,9 @@ export default function App() {
                           </p>
                         </div>
 
-                        <div className="pr-3 w-64 flex relative">
-                          <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none ">
-                            <Search className=" opacity-50 h-5" />
+                        <div className="pr-3 w-72 flex items-center">
+                          <span className=" relative left-8 pl-3 flex items-center pointer-events-none">
+                            <Search className="opacity-50 h-5" />
                           </span>
                           <Input
                             type="search"
@@ -125,7 +126,7 @@ export default function App() {
                     </div>
 
                     <DataTable
-                      columns={columns}
+                      columns={Columns}
                       data={filteredData()}
                       searchValue={searchValue}
                     />
