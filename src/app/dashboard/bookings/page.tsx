@@ -1,5 +1,5 @@
+"use client";
 import React, { useEffect, useState } from "react";
-
 import { User } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -23,7 +23,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs } from "@/components/ui/tabs";
-import DateRangePicker from "./Sub-Components/DateRangePicker";
+import DateRangePicker from "../../../components/AdminComponents/Sub-Components/DateRangePicker";
+import AdminLayout from "@/components/Layout/AdminLayout";
 interface Hotel {
   hotelID: string;
   name: string;
@@ -117,7 +118,7 @@ interface Agent {
 }
 
 interface Booking {}
-export default function Dashboard({}: {}) {
+export default function AdminBookingDashboard({}: {}) {
   const [hotels, setHotels] = useState<Hotel[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [agents, setAgents] = useState<Agent[]>([]);
@@ -169,77 +170,72 @@ export default function Dashboard({}: {}) {
   console.log(bookings);
 
   return (
-    <div className="flex flex-col sm:gap-4 ">
-      <div className="p-6 flex justify-between ">
-        <div className="flex flex-col">
-          <h1 className="text-2xl font-semibold">Dashboard</h1>
-          <span>Manage your details form the dashboard</span>
-        </div>
-
-        <DateRangePicker />
-      </div>
-      <main className="grid flex-1 items-start gap-4 sm:py-0 md:gap-8 ">
-        <div className="grid auto-rows-max items-start gap-4 md:gap-6">
-          <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4">
-            <Card className="" x-chunk="dashboard-05-chunk-0">
-              <CardHeader className="pb-3">
-                <CardTitle>Total Revenue</CardTitle>
-                <CardDescription className="max-w-lg text-balance leading-relaxed">
-                  Introducing Our Dynamic Orders Dashboard for Seamless
-                  Management and Insightful Analysis.
-                </CardDescription>
-              </CardHeader>
-              <CardFooter>
-                <Button>Create New Order</Button>
-              </CardFooter>
-            </Card>
-            <Card x-chunk="dashboard-05-chunk-1">
-              <CardHeader className="pb-2">
-                <CardDescription className="font-medium text-black">
-                  Hotels
-                </CardDescription>
-                <CardTitle className="text-4xl">{hotels?.length}</CardTitle>
-              </CardHeader>
-              <CardContent></CardContent>
-              <CardFooter>
-                <Progress value={25} aria-label="25% increase" />
-              </CardFooter>
-            </Card>
-            <Card x-chunk="dashboard-05-chunk-2">
-              <CardHeader className="pb-2">
-                <CardDescription className="font-medium text-black">
-                  Agents
-                </CardDescription>
-                <CardTitle className="text-4xl">{agents.length}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-xs text-muted-foreground">
-                  +10% from last month
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Progress value={12} aria-label="12% increase" />
-              </CardFooter>
-            </Card>
-            <Card x-chunk="dashboard-05-chunk-2">
-              <CardHeader className="pb-2">
-                <CardDescription className="font-medium text-black">
-                  Bookings
-                </CardDescription>
-                <CardTitle className="text-4xl">{bookings?.length}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-xs text-muted-foreground">
-                  +10% from last month
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Progress value={12} aria-label="12% increase" />
-              </CardFooter>
-            </Card>
+    <AdminLayout>
+      <div className="flex flex-col sm:gap-4 ">
+        <div className="p-6 flex justify-between ">
+          <div className="flex flex-col">
+            <h1 className="text-2xl font-semibold">Booking Overview</h1>
+            <span>Manage your details form the dashboard</span>
           </div>
-          <div className="w-full justify-between flex gap-6">
-            <Tabs className="w-3/4">
+
+          <DateRangePicker />
+        </div>
+        <main className="grid flex-1 items-start gap-4 sm:py-0 md:gap-8 ">
+          <div className="grid auto-rows-max items-start gap-4 md:gap-6">
+            <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4">
+              <Card className="" x-chunk="dashboard-05-chunk-0">
+                <CardHeader className="pb-3">
+                  <CardTitle>Requested</CardTitle>
+                  <CardDescription className="max-w-lg text-balance leading-relaxed"></CardDescription>
+                </CardHeader>
+              </Card>
+              <Card x-chunk="dashboard-05-chunk-1">
+                <CardHeader className="pb-2">
+                  <CardDescription className="font-medium text-black">
+                    Hotels
+                  </CardDescription>
+                  <CardTitle className="text-4xl">{hotels?.length}</CardTitle>
+                </CardHeader>
+                <CardContent></CardContent>
+                <CardFooter>
+                  <Progress value={25} aria-label="25% increase" />
+                </CardFooter>
+              </Card>
+              <Card x-chunk="dashboard-05-chunk-2">
+                <CardHeader className="pb-2">
+                  <CardDescription className="font-medium text-black">
+                    Agents
+                  </CardDescription>
+                  <CardTitle className="text-4xl">{agents.length}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-xs text-muted-foreground">
+                    +10% from last month
+                  </div>
+                </CardContent>
+                <CardFooter>
+                  <Progress value={12} aria-label="12% increase" />
+                </CardFooter>
+              </Card>
+              <Card x-chunk="dashboard-05-chunk-2">
+                <CardHeader className="pb-2">
+                  <CardDescription className="font-medium text-black">
+                    Bookings
+                  </CardDescription>
+                  <CardTitle className="text-4xl">{bookings?.length}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-xs text-muted-foreground">
+                    +10% from last month
+                  </div>
+                </CardContent>
+                <CardFooter>
+                  <Progress value={12} aria-label="12% increase" />
+                </CardFooter>
+              </Card>
+            </div>
+
+            <Tabs className="w-full">
               <Card x-chunk="dashboard-05-chunk-3">
                 <div className="p-6 flex justify-between items-center">
                   <CardHeader className="p-0">
@@ -278,40 +274,9 @@ export default function Dashboard({}: {}) {
                 </CardContent>
               </Card>
             </Tabs>
-            <Card className="w-1/4" x-chunk="dashboard-05-chunk-4">
-              <CardHeader className="flex flex-row items-start ">
-                <CardTitle className="group flex items-center gap-2 text-2xl">
-                  Agents
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="flex flex-col gap-y-6 text-sm">
-                {agents.map((agent, index) => {
-                  return (
-                    <div key={index} className="flex justify-between">
-                      <div className="flex gap-x-3 items-center">
-                        <div>
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            className="overflow-hidden rounded-full"
-                          >
-                            <User />
-                          </Button>
-                        </div>
-                        <div>
-                          <div>{`${agent.firstName} ${agent.lastName}`} </div>
-                          <div>{agent.email}</div>
-                        </div>
-                      </div>
-                      <div className="self-center">{agent.agencyName}</div>
-                    </div>
-                  );
-                })}
-              </CardContent>
-            </Card>
           </div>
-        </div>
-      </main>
-    </div>
+        </main>
+      </div>
+    </AdminLayout>
   );
 }

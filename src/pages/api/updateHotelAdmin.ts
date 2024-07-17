@@ -12,7 +12,7 @@ async function UpdateBookingStatusHandler(
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const {
+  let {
     hotelID,
     name,
     address,
@@ -98,9 +98,7 @@ async function UpdateBookingStatusHandler(
       .json({ error: "Atleast one room type should be included." });
   }
   if (!discount) {
-    return res
-      .status(400)
-      .json({ error: "Missing or incorrect field: discount" });
+    discount = 0.0;
   }
 
   try {
@@ -143,7 +141,7 @@ async function UpdateBookingStatusHandler(
       .status(200)
       .json({ message: "Booking status updated successfully", updatedBooking });
   } catch (error) {
-    console.error("Error updating booking status:", error);
+    console.error("Error updating Hotel:", error);
     return res.status(500).json({ error: "Internal Server Error" });
   } finally {
     await prisma.$disconnect();

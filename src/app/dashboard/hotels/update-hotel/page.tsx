@@ -2,6 +2,8 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import {
   useForm,
   useFieldArray,
@@ -36,6 +38,10 @@ import {
 } from "@/components/ui/table";
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
+import {
+  Title,
+  Value,
+} from "@/components/AdminComponents/Sub-Components/ReviewComponents";
 interface HouseRule {
   id: number;
   type: {
@@ -87,7 +93,76 @@ interface FormData {
   houseRules: HouseRule[];
   isRunning: boolean;
 }
+const basicInfoSchema = z.object({
+  name: z.string().min(1, "Hotel name is required"),
+  location: z.object({
+    value: z.string().min(1, "Location is required"),
+    // label: z.string().min(1, "Location label is required"),
+  }),
+  discount: z.string().optional(),
+  description: z.string().min(1, "Description is required"),
+});
 
+const facilitySchema = z.object({
+  name: z.object({
+    label: z.string().min(1, "Facility is required"),
+    value: z.string().min(1, "Facility is required"),
+  }),
+  description: z.string().min(1, "Description is required"),
+  subFacilities: z
+    .array(
+      z.object({ name: z.string().min(1, "Sub-facility name is required") })
+    )
+    .min(1, "At least one sub-facility is required"),
+});
+
+const roomSchema = z.object({
+  type: z.string().min(1, "Room type is required"),
+  numberOfRooms: z.string().min(1, "Number of rooms is required"),
+  price: z.string().min(1, "Price is required"),
+  capacity: z.string().min(1, "Capacity is required"),
+  bedType: z.string().min(1, "Bed type is required"),
+  numberOfBeds: z.string().min(1, "Number of beds is required"),
+  amenities: z
+    .array(z.object({ name: z.string().min(1, "Amenity name is required") }))
+    .min(1, "At least one amenity is required"),
+});
+
+const contactDetailsSchema = z.object({
+  name: z.string().min(1, "Contact person name is required"),
+  position: z.string().min(1, "Position is required"),
+  email: z.string().email("Invalid email address"),
+  number: z.string().min(1, "Phone number is required"),
+  facebook: z.string().optional(),
+  instagram: z.string().optional(),
+  linkedin: z.string().optional(),
+});
+
+const houseRuleSchema = z.object({
+  type: z.object({
+    label: z.string().min(1, "House Rules is required"),
+    value: z.string().min(1, "House Rules is required"),
+  }),
+  details: z.string().min(1, "Details are required"),
+});
+
+const formSchemas = [
+  z.object({ basicInfo: basicInfoSchema }),
+  z.object({
+    facilities: z
+      .array(facilitySchema)
+      .min(1, "At least one facility is required"),
+  }),
+  z.object({
+    rooms: z.array(roomSchema).min(1, "At least one room type is required"),
+  }),
+  z.object({
+    houseRules: z
+      .array(houseRuleSchema)
+      .min(1, "At least one house rule is required"),
+  }),
+  z.object({ contactForm: contactDetailsSchema }),
+];
 export default function AdminUpdateHotel() {
   const steps = [
     { component: BasicInformation, label: "Basic Information" },
@@ -107,6 +182,10 @@ export default function AdminUpdateHotel() {
   const [locations, setLocations] = useState<Location[]>([]);
   const router = useRouter();
   const methods = useForm<FormData>({
+    resolver:
+      currentStep < formSchemas.length
+        ? zodResolver(formSchemas[currentStep])
+        : undefined,
     defaultValues: {
       basicInfo: {
         name: "",
@@ -343,8 +422,9 @@ export default function AdminUpdateHotel() {
     }
   };
 
-  const handleNext = () => {
-    if (currentStep < steps.length - 1) {
+  const handleNext = async () => {
+    const isValid = await methods.trigger();
+    if (isValid && currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -361,9 +441,12 @@ export default function AdminUpdateHotel() {
     }
   };
 
-  if (!hotel) return <>Loading...</>;
-
   function BasicInformation() {
+    const {
+      register,
+      formState: { errors },
+    } = methods;
+    console.log(errors);
     return (
       <div className="grid gap-8">
         <Card x-chunk="dashboard-04-chunk-1 p-6">
@@ -384,9 +467,14 @@ export default function AdminUpdateHotel() {
                   type="text"
                   className="w-full"
                   placeholder="Hotel's Name"
-                  {...methods.register("basicInfo.name")}
+                  {...register("basicInfo.name")}
                   onKeyDown={handleKeyDown}
                 />
+                {errors.basicInfo?.name && (
+                  <span className="text-red-500">
+                    {errors.basicInfo.name.message}
+                  </span>
+                )}
               </div>
               <div className="flex flex-col gap-3">
                 <Label htmlFor="location">Location</Label>
@@ -405,6 +493,11 @@ export default function AdminUpdateHotel() {
                     />
                   )}
                 />
+                {errors.basicInfo?.location?.value && (
+                  <span className="text-red-500">
+                    {errors.basicInfo.location.value.message}
+                  </span>
+                )}
               </div>
               <div className="flex flex-col gap-3">
                 <Label htmlFor="discount">Discount Offer</Label>
@@ -422,16 +515,26 @@ export default function AdminUpdateHotel() {
                     />
                   )}
                 />
+                {errors.basicInfo?.discount && (
+                  <span className="text-red-500">
+                    {errors.basicInfo.discount.message}
+                  </span>
+                )}
               </div>
               <div className="flex flex-col gap-3">
                 <Label htmlFor="description">Description</Label>
                 <Textarea
                   id="description"
                   className="w-full"
-                  {...methods.register("basicInfo.description")}
+                  {...register("basicInfo.description")}
                   placeholder="Description"
                   onKeyDown={handleKeyDown}
                 />
+                {errors.basicInfo?.description && (
+                  <span className="text-red-500">
+                    {errors.basicInfo.description.message}
+                  </span>
+                )}
               </div>
             </div>
           </CardContent>
@@ -484,6 +587,11 @@ export default function AdminUpdateHotel() {
   }
 
   function Facilities() {
+    const {
+      register,
+      formState: { errors },
+    } = methods;
+
     const facilitiesList = [
       "Reception/Front Desk",
       "Room Amenities",
@@ -509,7 +617,9 @@ export default function AdminUpdateHotel() {
       subFacilityIndex: number
     ) => {
       const facilities = methods.getValues("facilities");
+
       facilities[facilityIndex].subFacilities.splice(subFacilityIndex, 1);
+
       methods.setValue("facilities", facilities);
     };
 
@@ -551,18 +661,26 @@ export default function AdminUpdateHotel() {
                     />
                   )}
                 />
+                {errors.facilities?.[facilityIndex]?.name && (
+                  <span className="text-red-500">
+                    {errors.facilities[facilityIndex].name.value?.message}
+                  </span>
+                )}
                 <Label htmlFor={`facility-description-${facility.id}`}>
                   Short Description
                 </Label>
                 <Input
                   id={`facility-description-${facility.id}`}
                   type="text"
-                  {...methods.register(
-                    `facilities.${facilityIndex}.description`
-                  )}
+                  {...register(`facilities.${facilityIndex}.description`)}
                   placeholder="Lorem Ipsum"
                   onKeyDown={handleKeyDown}
                 />
+                {errors.facilities?.[facilityIndex]?.description && (
+                  <span className="text-red-500">
+                    {errors.facilities[facilityIndex].description.message}
+                  </span>
+                )}
                 <div>
                   <div className="grid gap-4">
                     <Table className="w-full">
@@ -599,15 +717,16 @@ export default function AdminUpdateHotel() {
                               <Button
                                 variant="outline"
                                 size="icon"
-                                onClick={() =>
-                                  removeSubFacility(facilityIndex, subIndex)
-                                }
+                                onClick={() => {
+                                  removeSubFacility(facilityIndex, subIndex);
+                                }}
                               >
                                 <Trash className="h-4 w-4" />
                               </Button>
                             </TableCell>
                           </TableRow>
                         ))}
+
                         <TableRow>
                           <TableCell colSpan={3} className="">
                             <Button
@@ -622,6 +741,28 @@ export default function AdminUpdateHotel() {
                         </TableRow>
                       </TableBody>
                     </Table>
+                    {Array.isArray(errors.facilities) &&
+                      errors.facilities?.map((facilityError, facilityIndex) => (
+                        <div key={facilityIndex}>
+                          {facilityError.subFacilities?.root && (
+                            <span className="text-red-500">
+                              {facilityError.subFacilities.root.message}
+                            </span>
+                          )}
+                          {Array.isArray(facilityError.subFacilities) &&
+                            facilityError.subFacilities.map(
+                              (subFacilityError, subFacilityIndex) => (
+                                <div key={subFacilityIndex}>
+                                  {subFacilityError?.name && (
+                                    <span className="text-red-500">
+                                      {subFacilityError.name.message}
+                                    </span>
+                                  )}
+                                </div>
+                              )
+                            )}
+                        </div>
+                      ))}
                   </div>
                 </div>
               </div>
@@ -645,11 +786,21 @@ export default function AdminUpdateHotel() {
             Add Facility
           </Button>
         </div>
+        {errors.facilities?.root && (
+          <span className="text-red-500">
+            {errors.facilities?.root.message}
+          </span>
+        )}
       </div>
     );
   }
 
   function AddRoom() {
+    const {
+      register,
+      formState: { errors },
+    } = methods;
+
     const addAmenity = (roomIndex: number) => {
       const newAmenity = { id: Date.now(), name: "" };
       const rooms = methods.getValues("rooms");
@@ -684,50 +835,80 @@ export default function AdminUpdateHotel() {
                 <Label htmlFor={`room-type-${room.id}`}>Room Type</Label>
                 <Input
                   id={`room-type-${room.id}`}
-                  {...methods.register(`rooms.${roomIndex}.type`)}
+                  {...register(`rooms.${roomIndex}.type`)}
                   placeholder="Lorem Ipsum"
                   onKeyDown={handleKeyDown}
                 />
+                {errors.rooms?.[roomIndex]?.type && (
+                  <span className="text-red-500">
+                    {errors.rooms[roomIndex].type.message}
+                  </span>
+                )}
                 <Label htmlFor={`number-of-rooms-${room.id}`}>
                   Number of Rooms
                 </Label>
                 <Input
                   id={`number-of-rooms-${room.id}`}
-                  {...methods.register(`rooms.${roomIndex}.numberOfRooms`)}
+                  {...register(`rooms.${roomIndex}.numberOfRooms`)}
                   placeholder="Lorem Ipsum"
                   onKeyDown={handleKeyDown}
                 />
+                {errors.rooms?.[roomIndex]?.numberOfRooms && (
+                  <span className="text-red-500">
+                    {errors.rooms[roomIndex].numberOfRooms.message}
+                  </span>
+                )}
                 <Label htmlFor={`price-${room.id}`}>Price</Label>
                 <Input
                   id={`price-${room.id}`}
-                  {...methods.register(`rooms.${roomIndex}.price`)}
+                  {...register(`rooms.${roomIndex}.price`)}
                   placeholder="Lorem Ipsum"
                   required
                   onKeyDown={handleKeyDown}
                 />
+                {errors.rooms?.[roomIndex]?.price && (
+                  <span className="text-red-500">
+                    {errors.rooms[roomIndex].price.message}
+                  </span>
+                )}
                 <Label htmlFor={`capacity-${room.id}`}>Capacity</Label>
                 <Input
                   id={`capacity-${room.id}`}
-                  {...methods.register(`rooms.${roomIndex}.capacity`)}
+                  {...register(`rooms.${roomIndex}.capacity`)}
                   placeholder="Lorem Ipsum"
                   onKeyDown={handleKeyDown}
                 />
+                {errors.rooms?.[roomIndex]?.capacity && (
+                  <span className="text-red-500">
+                    {errors.rooms[roomIndex].capacity.message}
+                  </span>
+                )}
                 <Label htmlFor={`bed-type-${room.id}`}>Bed Type</Label>
                 <Input
                   id={`bed-type-${room.id}`}
-                  {...methods.register(`rooms.${roomIndex}.bedType`)}
+                  {...register(`rooms.${roomIndex}.bedType`)}
                   placeholder="Lorem Ipsum"
                   onKeyDown={handleKeyDown}
                 />
+                {errors.rooms?.[roomIndex]?.bedType && (
+                  <span className="text-red-500">
+                    {errors.rooms[roomIndex].bedType.message}
+                  </span>
+                )}
                 <Label htmlFor={`number-of-beds-${room.id}`}>
                   Number of Beds
                 </Label>
                 <Input
                   id={`number-of-beds-${room.id}`}
-                  {...methods.register(`rooms.${roomIndex}.numberOfBeds`)}
+                  {...register(`rooms.${roomIndex}.numberOfBeds`)}
                   placeholder="Lorem Ipsum"
                   onKeyDown={handleKeyDown}
                 />
+                {errors.rooms?.[roomIndex]?.numberOfBeds && (
+                  <span className="text-red-500">
+                    {errors.rooms[roomIndex].numberOfBeds.message}
+                  </span>
+                )}
                 <div>
                   <Table className="w-full">
                     <TableHeader>
@@ -761,9 +942,9 @@ export default function AdminUpdateHotel() {
                             <Button
                               variant="outline"
                               size="icon"
-                              onClick={() =>
-                                removeAmenity(roomIndex, amenityIndex)
-                              }
+                              onClick={() => {
+                                removeAmenity(roomIndex, amenityIndex);
+                              }}
                             >
                               <Trash className="h-4 w-4" />
                             </Button>
@@ -772,6 +953,28 @@ export default function AdminUpdateHotel() {
                       ))}
                     </TableBody>
                   </Table>
+                  {Array.isArray(errors.rooms) &&
+                    errors.rooms.map((roomError, roomIndex) => (
+                      <div key={roomIndex}>
+                        {roomError.amenities?.root && (
+                          <span className="text-red-500">
+                            {roomError.amenities.root.message}
+                          </span>
+                        )}
+                        {Array.isArray(roomError.amenities) &&
+                          roomError.amenities.map(
+                            (amenityError, amenityIndex) => (
+                              <div key={amenityIndex}>
+                                {amenityError?.name && (
+                                  <span className="text-red-500">
+                                    {amenityError.name.message}
+                                  </span>
+                                )}
+                              </div>
+                            )
+                          )}
+                      </div>
+                    ))}
 
                   <Button
                     variant="ghost"
@@ -807,11 +1010,19 @@ export default function AdminUpdateHotel() {
             Add Room
           </Button>
         </div>
+        {errors.rooms?.root && (
+          <span className="text-red-500">{errors.rooms?.root.message}</span>
+        )}
       </div>
     );
   }
 
   function HouseRules() {
+    const {
+      register,
+      formState: { errors },
+    } = methods;
+
     const houseRuleOptions = [
       { value: "No Smoking", label: "No Smoking" },
       { value: "No Pets", label: "No Pets" },
@@ -850,19 +1061,35 @@ export default function AdminUpdateHotel() {
                     />
                   )}
                 />
+                {Array.isArray(errors.houseRules) &&
+                  errors.houseRules.map((houseRuleError, houseRuleIndex) => (
+                    <div key={houseRuleIndex}>
+                      {houseRuleError.type?.value && (
+                        <span className="text-red-500">
+                          {houseRuleError.type.value.message}
+                        </span>
+                      )}
+                    </div>
+                  ))}
                 <Label htmlFor={`house-rule-details-${houseRule.id}`}>
                   Details
                 </Label>
                 <Input
                   id={`house-rule-details-${houseRule.id}`}
-                  {...methods.register(`houseRules.${index}.details`)}
+                  {...register(`houseRules.${index}.details`)}
                   placeholder="Lorem Ipsum"
                   onKeyDown={handleKeyDown}
                 />
+                {errors.houseRules?.[index]?.details && (
+                  <span className="text-red-500">
+                    {errors.houseRules[index].details.message}
+                  </span>
+                )}
               </div>
             </CardContent>
           </Card>
         ))}
+
         <div className="w-full p-6 border-2  rounded-lg flex items-center justify-center">
           <Button
             variant="ghost"
@@ -882,11 +1109,21 @@ export default function AdminUpdateHotel() {
             Add House Rule
           </Button>
         </div>
+        {errors.houseRules?.root && (
+          <span className="text-red-500">
+            {errors.houseRules?.root.message}
+          </span>
+        )}
       </div>
     );
   }
 
   function ContactDetails() {
+    const {
+      register,
+      formState: { errors },
+    } = methods;
+
     return (
       <div className="p-6 space-y-6">
         <Card className="overflow-hidden">
@@ -901,34 +1138,51 @@ export default function AdminUpdateHotel() {
               <Label htmlFor="contact-person-name">Contact Person Name</Label>
               <Input
                 id="contact-person-name"
-                {...methods.register("contactForm.name")}
+                {...register("contactForm.name")}
                 placeholder="Lorem Ipsum"
                 onKeyDown={handleKeyDown}
               />
-
+              {errors.contactForm?.name && (
+                <span className="text-red-500">
+                  {errors.contactForm.name.message}
+                </span>
+              )}
               <Label htmlFor="role-position">Role / Position</Label>
               <Input
                 id="role-position"
-                {...methods.register("contactForm.position")}
+                {...register("contactForm.position")}
                 placeholder="Lorem Ipsum"
                 onKeyDown={handleKeyDown}
               />
-
+              {errors.contactForm?.position && (
+                <span className="text-red-500">
+                  {errors.contactForm.position.message}
+                </span>
+              )}
               <Label htmlFor="email-address">Email Address</Label>
               <Input
                 id="email-address"
-                {...methods.register("contactForm.email")}
+                {...register("contactForm.email")}
                 placeholder="Lorem Ipsum"
                 onKeyDown={handleKeyDown}
               />
-
+              {errors.contactForm?.email && (
+                <span className="text-red-500">
+                  {errors.contactForm.email.message}
+                </span>
+              )}
               <Label htmlFor="phone-number">Phone Number</Label>
               <Input
                 id="phone-number"
-                {...methods.register("contactForm.number")}
+                {...register("contactForm.number")}
                 placeholder="Lorem Ipsum"
                 onKeyDown={handleKeyDown}
               />
+              {errors.contactForm?.number && (
+                <span className="text-red-500">
+                  {errors.contactForm.number.message}
+                </span>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -945,26 +1199,39 @@ export default function AdminUpdateHotel() {
               <Label htmlFor="facebook">Facebook</Label>
               <Input
                 id="facebook"
-                {...methods.register("contactForm.facebook")}
+                {...register("contactForm.facebook")}
                 placeholder="www.facebook.com"
                 onKeyDown={handleKeyDown}
               />
-
+              {errors.contactForm?.facebook && (
+                <span className="text-red-500">
+                  {errors.contactForm.facebook.message}
+                </span>
+              )}
               <Label htmlFor="instagram">Instagram</Label>
               <Input
                 id="instagram"
-                {...methods.register("contactForm.instagram")}
+                {...register("contactForm.instagram")}
                 placeholder="www.instagram.com"
                 onKeyDown={handleKeyDown}
               />
-
+              {errors.contactForm?.instagram && (
+                <span className="text-red-500">
+                  {errors.contactForm.instagram.message}
+                </span>
+              )}
               <Label htmlFor="linkedin">LinkedIn</Label>
               <Input
                 id="linkedin"
-                {...methods.register("contactForm.linkedin")}
+                {...register("contactForm.linkedin")}
                 placeholder="www.linkedin.com"
                 onKeyDown={handleKeyDown}
               />
+              {errors.contactForm?.linkedin && (
+                <span className="text-red-500">
+                  {errors.contactForm.linkedin.message}
+                </span>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -976,16 +1243,15 @@ export default function AdminUpdateHotel() {
     const { getValues } = useFormContext<FormData>();
 
     const formData = getValues();
-    // console.log(formData);
     if (!formData.basicInfo) {
       return <div>Loading...</div>;
     }
     const [collapsedSections, setCollapsedSections] = useState({
       basicInformation: false,
-      facilities: true,
-      room: true,
-      houseRules: true,
-      contactDetails: true,
+      facilities: false,
+      room: false,
+      houseRules: false,
+      contactDetails: false,
     });
     const toggleSection = (section: string) => {
       setCollapsedSections((prevState) => ({
@@ -1023,26 +1289,26 @@ export default function AdminUpdateHotel() {
             </Button>
           </CardHeader>
           {!collapsedSections.basicInformation && (
-            <CardContent className="p-6">
+            <CardContent className="">
               <div className="flex flex-col gap-4">
-                <div className="flex flex-col gap-3">
-                  <Label>Name</Label>
-                  <p>{formData.basicInfo.name}</p>
+                <div className="flex justify-between items-center">
+                  <Title>Name</Title>
+                  <Value>{formData.basicInfo.name}</Value>
+                </div>
+                <div className="flex justify-between items-center">
+                  <Title>Location</Title>
+                  <Value>{formData.basicInfo.location.label}</Value>
+                </div>
+                <div className="flex justify-between items-center border-b">
+                  <Title>Discount Offer</Title>
+                  <Value>{formData.basicInfo.discount}</Value>
                 </div>
                 <div className="flex flex-col gap-3">
-                  <Label>Location</Label>
-                  <p>{formData.basicInfo.location.label}</p>
-                </div>
-                <div className="flex flex-col gap-3 border-b">
-                  <Label>Discount Offer</Label>
-                  <p>{formData.basicInfo.discount}</p>
+                  <Title>Description</Title>
+                  <Value>{formData.basicInfo.description}</Value>
                 </div>
                 <div className="flex flex-col gap-3">
-                  <Label>Description</Label>
-                  <p>{formData.basicInfo.description}</p>
-                </div>
-                <div className="flex flex-col gap-3">
-                  <Label>Hotel Images</Label>
+                  <Title>Hotel Images</Title>
                   <div className="grid grid-cols-5 gap-2 overflow-x-scroll">
                     <Image
                       alt="Product image"
@@ -1126,18 +1392,29 @@ export default function AdminUpdateHotel() {
             </Button>
           </CardHeader>
           {!collapsedSections.facilities && (
-            <CardContent className="p-6">
+            <CardContent className="px-6 flex flex-col gap-6 border-b">
               {formData.facilities.map((facility, index) => (
-                <div key={index} className="flex flex-col gap-4">
-                  <Label>Facility {index + 1}</Label>
-                  <p>{facility.name.value}</p>
-                  <p>{facility.description}</p>
-                  <Label>Sub Facilities</Label>
-                  <ul className="list-disc pl-5">
-                    {facility.subFacilities.map((subFacility, subIndex) => (
-                      <li key={subIndex}>{subFacility.name}</li>
-                    ))}
-                  </ul>
+                <div key={index} className="flex flex-col gap-3">
+                  <Label className="font-semibold text-lg">
+                    Facility {index + 1}
+                  </Label>
+                  <div className="flex items-center justify-between">
+                    <Title>Name</Title>
+                    <Value className="font-medium">{facility.name.value}</Value>
+                  </div>
+                  <div>
+                    <Title>Description </Title>
+                    <Value>{facility.description}</Value>
+                  </div>
+
+                  <div>
+                    <Title>Sub Facilities</Title>
+                    <ul className="list-disc pl-5">
+                      {facility.subFacilities.map((subFacility, subIndex) => (
+                        <li key={subIndex}>{subFacility.name}</li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
               ))}
             </CardContent>
@@ -1172,22 +1449,46 @@ export default function AdminUpdateHotel() {
           {!collapsedSections.room && (
             <CardContent className="flex flex-col gap-4">
               {formData.rooms.map((room, index) => (
-                <div key={index} className="flex flex-col gap-1">
+                <div key={index} className="flex flex-col gap-3">
                   <Label className="text-lg font-semibold">
                     Room {index + 1}
                   </Label>
-                  <p>Type: {room.type}</p>
-                  <p>Number of Rooms: {room.numberOfRooms}</p>
-                  <p>Price: {room.price}</p>
-                  <p>Capacity: {room.capacity}</p>
-                  <p>Bed Type: {room.bedType}</p>
-                  <p>Number of Beds: {room.numberOfBeds}</p>
-                  <Label className="text-base font-semibold">Amenities</Label>
-                  <ul className="list-disc pl-5">
-                    {room.amenities.map((amenity, amenityIndex) => (
-                      <li key={amenityIndex}>{amenity.name}</li>
-                    ))}
-                  </ul>
+                  <div className="flex items-center justify-between">
+                    <Title>Type</Title>
+                    <Value>{room.type}</Value>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Title>Number of Rooms</Title>
+                    <Value>{room.numberOfRooms}</Value>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <Title>Price</Title>
+                    <Value> {room.price}</Value>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <Title>Capacity</Title>
+                    <Value> {room.capacity}</Value>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <Title>Bed Type</Title>
+                    <Value> {room.bedType}</Value>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <Title>Number of Beds</Title>
+                    <Value> {room.numberOfBeds}</Value>
+                  </div>
+                  <div>
+                    <Title className="text-base font-semibold">Amenities</Title>
+                    <ul className="list-disc pl-5">
+                      {room.amenities.map((amenity, amenityIndex) => (
+                        <li key={amenityIndex}>{amenity.name}</li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
               ))}
             </CardContent>
@@ -1221,14 +1522,18 @@ export default function AdminUpdateHotel() {
           </CardHeader>
 
           {!collapsedSections.houseRules && (
-            <CardContent className="p-6 flex flex-col gap-6">
+            <CardContent className="px-6 flex flex-col gap-6">
               {formData.houseRules.map((houseRule, index) => (
                 <div key={index} className="flex flex-col gap-1">
                   <Label className="text-lg font-semibold">
                     House Rule {index + 1}
                   </Label>
-                  <p>Type: {houseRule.type.value}</p>
-                  <p>Details: {houseRule.details}</p>
+                  <div className="flex items-center justify-between">
+                    <Title>Type</Title> <Value>{houseRule.type.value}</Value>
+                  </div>
+                  <div className="flex flex-col">
+                    <Title>Details</Title> <Value> {houseRule.details}</Value>
+                  </div>
                 </div>
               ))}
             </CardContent>
@@ -1260,32 +1565,41 @@ export default function AdminUpdateHotel() {
               Edit
             </Button>
           </CardHeader>
-          {collapsedSections.contactDetails && (
-            <CardContent className="p-6">
+          {!collapsedSections.contactDetails && (
+            <CardContent className="px-6">
               <div className="flex flex-col gap-4">
-                <div className="flex items-center gap-x-2">
-                  <Label className="font-semibold">Contact Person Name:</Label>
-                  <p>{formData.contactForm.name}</p>
+                <div className="flex items-center justify-between">
+                  <Title className="font-semibold">Contact Person Name:</Title>
+                  <Value>{formData.contactForm.name}</Value>
                 </div>
-                <div className="flex items-center gap-x-2">
-                  <Label className=" font-semibold">Role / Position</Label>
-                  <p>{formData.contactForm.position}</p>
+                <div className="flex items-center justify-between">
+                  <Title className=" font-semibold">Role / Position</Title>
+                  <Value>{formData.contactForm.position}</Value>
                 </div>
-                <div className="flex items-center gap-x-2">
-                  <Label className=" font-semibold">Email Address</Label>
+                <div className="flex items-center justify-between">
+                  <Title className=" font-semibold">Email Address</Title>
 
-                  <p>{formData.contactForm.email}</p>
+                  <Value>{formData.contactForm.email}</Value>
                 </div>
 
-                <div className="flex items-center gap-x-2">
-                  <Label className=" font-semibold">Phone Number</Label>
-                  <p>{formData.contactForm.number}</p>
+                <div className="flex items-center justify-between">
+                  <Title className=" font-semibold">Phone Number</Title>
+                  <Value>{formData.contactForm.number}</Value>
                 </div>
 
                 <Label className="text-base font-semibold">Social Links</Label>
-                <p>Facebook: {formData.contactForm.facebook}</p>
-                <p>Instagram: {formData.contactForm.instagram}</p>
-                <p>LinkedIn: {formData.contactForm.linkedin}</p>
+                <div className="flex justify-between items-center">
+                  <Title>Facebook</Title>{" "}
+                  <Value>{formData.contactForm.facebook}</Value>
+                </div>
+                <div className="flex justify-between items-center">
+                  <Title>Instagram</Title>{" "}
+                  <Value>{formData.contactForm.instagram}</Value>
+                </div>
+                <div className="flex justify-between items-center">
+                  <Title>LinkedIn</Title>{" "}
+                  <Value>{formData.contactForm.linkedin}</Value>
+                </div>
               </div>
             </CardContent>
           )}
@@ -1311,14 +1625,14 @@ export default function AdminUpdateHotel() {
       </div>
     );
   }
-
+  if (!hotel) return <>Loading...</>;
   return (
     <AdminLayout>
       <FormProvider {...methods}>
         <div className="border-2 rounded-md bg-white flex flex-col gap">
           <div className="p-6 grid w-full max-w-6xl gap-2">
             <h1 className="text-2xl font-semibold">Update Hotel</h1>
-            <div>Update the hotel and view their overall details.</div>
+            <div>Manage your hotel and view their overall details.</div>
           </div>
           <form onSubmit={methods.handleSubmit(onSubmit)}>
             <div className="p-6 grid w-full max-w-6xl items-start gap-6 md:grid-cols-[180px_1fr] lg:grid-cols-[250px_1fr]">
@@ -1360,18 +1674,21 @@ export default function AdminUpdateHotel() {
                   )}
                   {currentStep < steps.length - 1 ? (
                     <Button
-                      className="bg-blue-700"
+                      className="bg-blue-700 hover:bg-blue-900"
                       type="button"
                       onClick={(e) => {
-                        handleNext();
                         e.preventDefault();
+                        handleNext();
                       }}
                     >
                       Continue
                     </Button>
                   ) : (
-                    <Button className="bg-blue-700" type="submit">
-                      Update
+                    <Button
+                      className="bg-blue-700 hover:bg-blue-900"
+                      type="submit"
+                    >
+                      Submit
                     </Button>
                   )}
                 </div>
