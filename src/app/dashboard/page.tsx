@@ -5,11 +5,7 @@ import { Agent, Booking, Hotel, UserDetails } from "@/utils/types";
 
 import withAuth from "@/lib/loginAuth";
 
-interface DashboardProps {
-  user: UserDetails;
-}
-
-const Dashboard: React.FC<DashboardProps> = ({}) => {
+const Dashboard: React.FC = ({}) => {
   const [hotels, setHotels] = useState<Hotel[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [agents, setAgents] = useState<Agent[]>([]);

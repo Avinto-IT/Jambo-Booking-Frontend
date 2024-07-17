@@ -165,6 +165,14 @@ const formSchemas = [
 ];
 
 export default function AddHotel() {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [collapsedSections, setCollapsedSections] = useState({
+    basicInformation: false,
+    facilities: true,
+    room: true,
+    houseRules: true,
+    contactDetails: true,
+  });
   const steps = [
     { component: BasicInformation, label: "Basic Information" },
     { component: Facilities, label: "Facilities" },
@@ -174,7 +182,6 @@ export default function AddHotel() {
     { component: Review, label: "Review" },
   ];
 
-  const [currentStep, setCurrentStep] = useState(0);
   const CurrentComponent = steps[currentStep].component;
   const methods = useForm<FormData>({
     resolver:
@@ -581,11 +588,12 @@ export default function AddHotel() {
                     />
                   )}
                 />
-                {errors.facilities?.[facilityIndex]?.name && (
+                {errors?.facilities?.[facilityIndex]?.name?.value?.message && (
                   <span className="text-red-500">
-                    {errors.facilities[facilityIndex].name.value?.message}
+                    {errors?.facilities[facilityIndex].name.value.message}
                   </span>
                 )}
+
                 <Label htmlFor={`facility-description-${facility.id}`}>
                   Short Description
                 </Label>
@@ -1166,13 +1174,7 @@ export default function AddHotel() {
     if (!formData.basicInfo) {
       return <div>Loading...</div>;
     }
-    const [collapsedSections, setCollapsedSections] = useState({
-      basicInformation: false,
-      facilities: false,
-      room: false,
-      houseRules: false,
-      contactDetails: false,
-    });
+
     const toggleSection = (section: string) => {
       setCollapsedSections((prevState) => ({
         ...prevState,

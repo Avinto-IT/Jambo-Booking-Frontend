@@ -175,7 +175,13 @@ export default function AdminUpdateHotel() {
   const searchParams = useSearchParams();
   const id = searchParams?.get("id");
   const [hotel, setHotel] = useState(null);
-
+  const [collapsedSections, setCollapsedSections] = useState({
+    basicInformation: false,
+    facilities: false,
+    room: false,
+    houseRules: false,
+    contactDetails: false,
+  });
   const [currentStep, setCurrentStep] = useState(0);
   const CurrentComponent = steps[currentStep].component;
   const [token, setToken] = useState<string | null>(null);
@@ -1246,13 +1252,7 @@ export default function AdminUpdateHotel() {
     if (!formData.basicInfo) {
       return <div>Loading...</div>;
     }
-    const [collapsedSections, setCollapsedSections] = useState({
-      basicInformation: false,
-      facilities: false,
-      room: false,
-      houseRules: false,
-      contactDetails: false,
-    });
+
     const toggleSection = (section: string) => {
       setCollapsedSections((prevState) => ({
         ...prevState,

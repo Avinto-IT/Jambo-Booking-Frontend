@@ -3,10 +3,7 @@ import BreadcrumbHome from "@/components/Home-Breadcrumb/BreadcrumbHome";
 import LayoutTwo from "@/components/Layout/LayoutTwo";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 
-interface TopImgProp {
-  title: string;
-}
-const Policy: React.FC<TopImgProp> = ({ title }) => {
+const Policy: React.FC = () => {
   return (
     <div>
       <LayoutTwo imgTitle="Privacy Policy">
