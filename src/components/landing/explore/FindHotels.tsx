@@ -21,7 +21,7 @@ function FindHotels() {
             onClick={() => {
               console.log({ id });
 
-              window.location.href = `http://localhost:3000/blogs/${index.ID}`;
+              window.location.href = `/blogs/${index.ID}`;
             }}
           >
             <div className="relative overflow-hidden rounded-md">

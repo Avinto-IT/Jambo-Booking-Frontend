@@ -111,7 +111,7 @@ export function DataTable<TData, TValue>({
                           className="h-full w-full"
                           onClick={() => {
                             alert("loading");
-                            window.location.href = `http://localhost:3000/text-editor?user=${index}`;
+                            window.location.href = `/text-editor?user=${index}`;
                           }}
                         >
                           Edit

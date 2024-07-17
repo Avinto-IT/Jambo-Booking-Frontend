@@ -22,8 +22,9 @@ import { Card } from "@/components/ui/card";
 import RegisterAgent from "@/components/AgentSignUp/RegisterAgent";
 import BuildSomethingGreat from "@/components/AgentSignUp/BuildSomethingGreat";
 import Staticpage from "@/components/landing/StaticPage";
-import Worldmap from "@/components/landing/WorldMap";
+
 import JoinWithUs from "@/components/AgentSignUp/JoinWithUs";
+import WorldMap from "@/components/landing/WorldMap";
 
 const AgentSignup = () => {
   return (
@@ -40,7 +41,7 @@ for Your Clients"
             <BuildSomethingGreat />
             <Staticpage />
             <JoinWithUs buttonName="Agent" />
-            <Worldmap />
+            <WorldMap />
           </MaxWidthWrapper>
         </div>
       </LayoutThree>

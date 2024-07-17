@@ -48,7 +48,9 @@ export default function Hero() {
   };
   return (
     <section
-      className="relative bg-cover w-screen bg-blue-400 bg-center h-[70vh]"
+      className="relative bg-cover 
+      
+       bg-blue-400 bg-center h-[70vh]"
       style={{ backgroundImage: "url('/images/hero.png')" }}
     >
       <div className="absolute inset-0 bg-black opacity-85"></div>

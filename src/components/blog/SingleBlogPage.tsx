@@ -111,7 +111,7 @@ function SingleBlogPage() {
                   className=" mt-2.5  mb-7    "
                   key={index.ID}
                   onClick={() => {
-                    window.location.href = `http://localhost:3000/blogs/${index.ID}`;
+                    window.location.href = `/blogs/${index.ID}`;
                   }}
                 >
                   <div className="relative overflow-hidden rounded-md">

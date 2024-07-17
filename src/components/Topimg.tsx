@@ -8,8 +8,15 @@ interface TopImgProp {
 const TopImg: React.FC<TopImgProp> = ({ title }) => {
   return (
     <div className="">
-      <div className="w-full relative mb-14">
-        <Image src={topimg} alt="topimage" className=" obj ect-cover w-full " />
+      <div className="w-full relative mb-14 h-80">
+        <Image
+          src={topimg}
+          alt="topimage"
+          className="w-full "
+          objectFit="cover"
+          fill
+          priority={true}
+        />
         <div className="absolute inset-0 w-full h-full bg-[#020617] opacity-75"></div>
         <div className="w-full absolute top-1/2 flex items-center justify-center">
           <div className=" text-white  text-5xl font-semibold">{title}</div>

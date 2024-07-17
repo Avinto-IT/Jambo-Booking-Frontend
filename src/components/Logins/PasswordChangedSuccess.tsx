@@ -40,9 +40,7 @@ const PasswordChangedSuccess = ({}) => {
             <CardFooter className="">
               <Button
                 className="w-full bg-blue-600 hover:bg-blue-800"
-                onClick={() =>
-                  (window.location.href = "http://localhost:3000/login")
-                }
+                onClick={() => (window.location.href = "/login")}
               >
                 Back to Login
               </Button>
