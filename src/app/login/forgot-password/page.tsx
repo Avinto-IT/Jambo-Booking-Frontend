@@ -34,7 +34,7 @@ const Page: React.FC = () => {
         <LoginHeader
           handleBack={() =>
             currentComponent === "forgotPassword"
-              ? (window.location.href = "http://localhost:3000/login")
+              ? (window.location.href = "/login")
               : handleBack()
           }
         />

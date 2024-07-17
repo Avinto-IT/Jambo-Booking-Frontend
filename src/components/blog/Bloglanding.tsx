@@ -68,7 +68,7 @@ function BlogLanding() {
 
   const handleBlogClick = (id: string) => {
     if (typeof window !== "undefined") {
-      window.location.href = `http://localhost:3000/blogs/${id}`;
+      window.location.href = `/blogs/${id}`;
     }
   };
 

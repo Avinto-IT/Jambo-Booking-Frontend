@@ -3,10 +3,10 @@
 import LayoutThree from "@/components/Layout/LayoutThree";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 
-import Worldmap from "@/components/landing/WorldMap";
 import JoinWithUs from "@/components/AgentSignUp/JoinWithUs";
 import RegisterHotel from "@/components/HotelSignUp/RegisterHotel";
 import GettingStarted from "@/components/HotelSignUp/GettingStarted";
+import WorldMap from "@/components/landing/WorldMap";
 
 const HotelSignup = () => {
   return (
@@ -23,7 +23,7 @@ Booking Experience"
             <GettingStarted />
 
             <JoinWithUs buttonName="Hotel" />
-            <Worldmap />
+            <WorldMap />
           </MaxWidthWrapper>
         </div>
       </LayoutThree>

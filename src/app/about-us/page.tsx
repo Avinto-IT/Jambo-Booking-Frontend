@@ -5,8 +5,9 @@ import Image from "next/image";
 import React from "react";
 import discoverimg from "../../../public/images/static-from-landing/image.svg";
 import bedimg from "../../../public/images/an_image_for_hotel_booking.svg";
-import Worldmap from "@/components/landing/WorldMap";
+
 import BreadcrumbHome from "@/components/Home-Breadcrumb/BreadcrumbHome";
+import WorldMap from "@/components/landing/WorldMap";
 
 interface TopImgProp {
   title: string;
@@ -134,7 +135,7 @@ const AboutUs: React.FC<TopImgProp> = ({ title }) => {
               <Image src={bedimg} alt="bedimg" className="mt-12 rounded-md" />
             </div>
             <br />
-            <Worldmap />
+            <WorldMap />
           </MaxWidthWrapper>
         </div>
       </LayoutTwo>

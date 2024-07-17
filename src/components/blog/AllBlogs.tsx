@@ -37,8 +37,16 @@ function AllBlogs() {
 
   return (
     <div className="flex flex-col items-center mb-10">
-      <div className="w-full relative mb-14">
-        <Image src={topimg} alt="topimage" className=" obj ect-cover w-full " />
+      <div className="w-full relative mb-14  h-80">
+        <Image
+          src={topimg}
+          alt="topimage"
+          // className=" object-cover "
+          priority={true}
+          fill={true}
+          objectFit="cover"
+        />
+
         <div className="absolute inset-0 w-full h-full bg-[#020617] opacity-75"></div>
         <div className="w-full absolute top-1/2 flex items-center justify-center">
           <div className=" text-white  text-5xl font-semibold">
@@ -64,7 +72,7 @@ function AllBlogs() {
                 onClick={() => {
                   console.log({ id });
 
-                  window.location.href = `http://localhost:3000/blogs/${index.ID}`;
+                  window.location.href = `/blogs/${index.ID}`;
                 }}
               >
                 <div className="relative overflow-hidden rounded-md">

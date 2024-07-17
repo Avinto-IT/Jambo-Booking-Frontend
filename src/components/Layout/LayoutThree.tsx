@@ -28,7 +28,7 @@ interface LayoutThreeProps {
 const Topimgs = () => {
   if (
     typeof window !== "undefined" &&
-    window.location.href === "http://localhost:3000/signup-agent"
+    window.location.href === "/signup-agent"
   ) {
     return topimg1;
   } else {
