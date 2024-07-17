@@ -1,12 +1,8 @@
-import React from 'react';
-import Single_Blog_Page from '@/components/blog/Single_Blog_Page';
+import React from "react";
+import SingleBlogPage from "@/components/blog/SingleBlogPage";
 
-
-function page() {
-  return (
-
-    <Single_Blog_Page/>
-  )
+function Page() {
+  return <SingleBlogPage />;
 }
 
-export default page
+export default Page;

@@ -1,13 +1,8 @@
-import React from 'react';
-import All_Blogs from '@/components/blog/All_Blogs';
-import Single_Blog_Page from '@/components/blog/Single_Blog_Page';
+import React from "react";
+import AllBlogs from "@/components/blog/AllBlogs";
 
-
-function page() {
-  return (
-    <All_Blogs/>
-    
-  )
+function Page() {
+  return <AllBlogs />;
 }
 
-export default page
+export default Page;
