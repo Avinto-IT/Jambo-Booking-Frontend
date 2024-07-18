@@ -56,6 +56,9 @@ export default function HotelsDashboard() {
     fetchHotels();
   }, []);
 
+  const handleViewClick = (hotelId: string) => {
+    router.push(`/dashboard/hotels/view-hotel?id=${hotelId}`);
+  };
   const handleEditClick = (hotelId: string) => {
     router.push(`/dashboard/hotels/update-hotel?id=${hotelId}`);
   };
@@ -209,6 +212,11 @@ export default function HotelsDashboard() {
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
                                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                <DropdownMenuItem
+                                  onClick={() => handleViewClick(hotel.hotelID)}
+                                >
+                                  View
+                                </DropdownMenuItem>
                                 <DropdownMenuItem
                                   onClick={() => handleEditClick(hotel.hotelID)}
                                 >

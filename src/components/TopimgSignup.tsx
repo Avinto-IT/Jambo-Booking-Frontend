@@ -1,6 +1,5 @@
 import React from "react";
-import topimg1 from "../../public/images/head/Image01.svg";
-import topimg2 from "../../public/images/head/Image02.svg";
+
 import Image from "next/image";
 import { Button } from "./ui/button";
 
