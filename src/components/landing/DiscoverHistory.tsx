@@ -19,12 +19,12 @@ function DiscoverHistory() {
                 <p className=" font-semibold text-2xl">Discover our History</p>
                 <p className="text-[#334155] leading-7 text-base">
                   Lorem Ipsum is simply dummy text of the printing and
-                  typesetting industry. Lorem Ipsum has been the industry's{" "}
+                  typesetting industry. Lorem Ipsum has been the industry&apos;s{" "}
                 </p>
 
                 <p className="text-[#334155] leading-7 text-base">
                   Lorem Ipsum is simply dummy text of the printing and
-                  typesetting industry. Lorem Ipsum has been the industry's
+                  typesetting industry. Lorem Ipsum has been the industry&apos;s
                   standard dummy Lorem Ipsum is simply dummy text of the
                   printing and typesetting industry.
                 </p>

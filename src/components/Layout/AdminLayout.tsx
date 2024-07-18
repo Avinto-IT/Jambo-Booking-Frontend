@@ -10,6 +10,7 @@ import {
   PenTool,
   User,
   Users2,
+  DollarSign,
 } from "lucide-react";
 
 import {
@@ -47,10 +48,14 @@ const AdminLayout: React.FC<LayoutProps> = ({ children }) => {
   const [pathArray, setPathArray] = useState<string[]>([]);
 
   useEffect(() => {
-    setPathArray(pathname?.split("/").filter((x) => x));
+    if (pathname) {
+      setPathArray(pathname.split("/").filter((x) => x));
+    } else {
+      setPathArray([]); // Ensure it sets an empty array if pathname is undefined
+    }
   }, [pathname]);
   return (
-    <div className="flex h-screen">
+    <div className="flex min-h-screen">
       <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
         <nav className="flex flex-col items-center gap-4 px-2 sm:py-4">
           <div className="flex items-center mb-6">
@@ -92,36 +97,36 @@ const AdminLayout: React.FC<LayoutProps> = ({ children }) => {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href="#"
+                  href="/dashboard/bookings"
                   className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors md:h-8 md:w-8 ${
-                    pathname === "#"
-                      ? "bg-light-blue-500 text-white"
-                      : "text-muted-foreground hover:text-foreground"
+                    pathname === "/dashboard/bookings"
+                      ? "bg-[#F1F5F9]"
+                      : "text-primary"
                   }`}
                 >
                   <NotebookText className="h-5 w-5" />
-                  <span className="sr-only">Orders</span>
+                  <span className="sr-only">Bookings</span>
                 </Link>
               </TooltipTrigger>
-              <TooltipContent side="right">Orders</TooltipContent>
+              <TooltipContent side="right">Bookings</TooltipContent>
             </Tooltip>
           </TooltipProvider>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href="#"
+                  href="/dashboard/agents"
                   className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors md:h-8 md:w-8 ${
-                    pathname === "#"
-                      ? "bg-light-blue-500 text-white"
-                      : "text-muted-foreground hover:text-foreground"
+                    pathname === "/dashboard/agents"
+                      ? "bg-[#F1F5F9]"
+                      : "text-primary"
                   }`}
                 >
                   <Briefcase className="h-5 w-5" />
-                  <span className="sr-only">Products</span>
+                  <span className="sr-only">Agents</span>
                 </Link>
               </TooltipTrigger>
-              <TooltipContent side="right">Products</TooltipContent>
+              <TooltipContent side="right">Agents</TooltipContent>
             </Tooltip>
           </TooltipProvider>
           <TooltipProvider>
@@ -130,9 +135,7 @@ const AdminLayout: React.FC<LayoutProps> = ({ children }) => {
                 <Link
                   href="#"
                   className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors md:h-8 md:w-8 ${
-                    pathname === "#"
-                      ? "bg-light-blue-500 text-white"
-                      : "text-muted-foreground hover:text-foreground"
+                    pathname === "#" ? "bg-[#F1F5F9]" : "text-primary"
                   }`}
                 >
                   <PenTool className="h-5 w-5" />
@@ -148,9 +151,7 @@ const AdminLayout: React.FC<LayoutProps> = ({ children }) => {
                 <Link
                   href="#"
                   className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors md:h-8 md:w-8 ${
-                    pathname === "#"
-                      ? "bg-light-blue-500 text-white"
-                      : "text-muted-foreground hover:text-foreground"
+                    pathname === "#" ? "bg-[#F1F5F9]" : "text-primary"
                   }`}
                 >
                   <Users2 className="h-5 w-5" />
@@ -158,6 +159,24 @@ const AdminLayout: React.FC<LayoutProps> = ({ children }) => {
                 </Link>
               </TooltipTrigger>
               <TooltipContent side="right">Analytics</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href="/dashboard/pricing"
+                  className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors md:h-8 md:w-8 ${
+                    pathname === "/dashboard/pricing"
+                      ? "bg-[#F1F5F9]"
+                      : "text-primary"
+                  }`}
+                >
+                  <DollarSign className="h-5 w-5" />
+                  <span className="sr-only">Calendar Pricing</span>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent side="right">Calendar Pricing</TooltipContent>
             </Tooltip>
           </TooltipProvider>
         </nav>
@@ -168,9 +187,7 @@ const AdminLayout: React.FC<LayoutProps> = ({ children }) => {
                 <Link
                   href="#"
                   className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors md:h-8 md:w-8 ${
-                    pathname === "#"
-                      ? "bg-light-blue-500 text-white"
-                      : "text-muted-foreground hover:text-foreground"
+                    pathname === "#" ? "bg-[#F1F5F9]" : "text-primary"
                   }`}
                 >
                   <Settings className="h-5 w-5" />

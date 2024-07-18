@@ -21,7 +21,7 @@ function BuildSomethingGreat() {
               <p className="text-[#2563EB] text-3xl font-semibold">4,000+</p>
               <p className="text-lg font-semibold">Global customers</p>
               <p className="text-[#475467]">
-                We've helped over 4,000 amazing global companies
+                We&apos;ve helped over 4,000 amazing global companies
               </p>
             </div>
             <div className="flex flex-col justify-center items-center space-y-2">
@@ -35,7 +35,7 @@ function BuildSomethingGreat() {
               <p className="text-[#2563EB] text-3xl font-semibold">10k</p>
               <p className="text-lg font-semibold">Global customers</p>
               <p className="text-[#475467]">
-                We've helped over 4,000 amazing global companies
+                We&apos;ve helped over 4,000 amazing global companies
               </p>
             </div>
             <div className="flex flex-col justify-center items-center space-y-2">

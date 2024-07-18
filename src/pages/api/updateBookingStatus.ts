@@ -29,6 +29,11 @@ async function UpdateBookingStatusHandler(
     }
 
     const token = authHeader.split(" ")[1];
+    if (!SECRET_KEY) {
+      return res
+        .status(500)
+        .json({ error: "Internal server error: SECRET_KEY is not set" });
+    }
     const decoded = jwt.verify(token, SECRET_KEY) as { role: string };
 
     if (decoded.role !== "admin") {

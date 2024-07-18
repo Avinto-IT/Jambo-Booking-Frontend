@@ -9,7 +9,7 @@ async function addHotelHandler(req: NextApiRequest, res: NextApiResponse) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const {
+  let {
     name,
     address,
     locationID,
@@ -91,9 +91,7 @@ async function addHotelHandler(req: NextApiRequest, res: NextApiResponse) {
       .json({ error: "Atleast one room type should be included." });
   }
   if (!discount) {
-    return res
-      .status(400)
-      .json({ error: "Missing or incorrect field: discount" });
+    discount = 0.0;
   }
 
   try {
@@ -101,7 +99,10 @@ async function addHotelHandler(req: NextApiRequest, res: NextApiResponse) {
       data: {
         name,
         address,
-        locationID,
+        location: {
+          connect: { locationID: locationID },
+        },
+        // locationID,
         facilities,
         description,
         houseRules,
