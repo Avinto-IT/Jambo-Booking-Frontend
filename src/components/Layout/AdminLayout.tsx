@@ -48,7 +48,11 @@ const AdminLayout: React.FC<LayoutProps> = ({ children }) => {
   const [pathArray, setPathArray] = useState<string[]>([]);
 
   useEffect(() => {
-    setPathArray(pathname?.split("/").filter((x) => x));
+    if (pathname) {
+      setPathArray(pathname.split("/").filter((x) => x));
+    } else {
+      setPathArray([]); // Ensure it sets an empty array if pathname is undefined
+    }
   }, [pathname]);
   return (
     <div className="flex min-h-screen">

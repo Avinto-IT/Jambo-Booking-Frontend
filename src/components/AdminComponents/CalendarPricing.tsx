@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import Select from "react-select";
+import Select, { ActionMeta, SingleValue } from "react-select";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -73,36 +73,51 @@ export default function CalendarPricing() {
         ),
       })) || [];
 
-  const handleHotelChange = (selectedOption) => {
-    const hotel = hotels?.find(
-      (hotel) => hotel.hotelID === selectedOption.value
-    );
-    setSelectedHotel(hotel || null);
-    setSelectedRoom(null); // Reset the room selection
-    setBlockedDates([]); // Clear blocked dates
+  const handleHotelChange = (
+    newValue: SingleValue<{ value: string; label: string }>,
+    actionMeta: ActionMeta<{ value: string; label: string }>
+  ) => {
+    if (newValue) {
+      const hotel = hotels?.find((hotel) => hotel.hotelID === newValue.value);
+      setSelectedHotel(hotel || null);
+      setSelectedRoom(null); // Reset the room selection
+      setBlockedDates([]); // Clear blocked dates
+    } else {
+      setSelectedHotel(null);
+      setSelectedRoom(null); // Reset the room selection
+      setBlockedDates([]); // Clear blocked dates
+    }
   };
 
-  const handleRoomChange = (selectedOption) => {
-    setSelectedRoom(selectedOption.value);
-    if (selectedHotel) {
-      const room = selectedHotel?.rooms.find(
-        (room) => room.type === selectedOption.value
-      );
-      console.log(room);
-      if (room && room.calendarPrices) {
-        const blockedDates = room.calendarPrices.flatMap((calendarPrice) => {
-          const from = parseISO(calendarPrice.from);
-          const to = parseISO(calendarPrice.to);
-          const dates = [];
-          for (let date = from; isBefore(date, to); date = addDays(date, 1)) {
-            dates.push(date);
-          }
-          return dates;
-        });
-        setBlockedDates(blockedDates);
-      } else {
-        setBlockedDates([]);
+  const handleRoomChange = (
+    newValue: SingleValue<{ label: string; value: string }>,
+    actionMeta: ActionMeta<{ label: string; value: string }>
+  ) => {
+    if (newValue) {
+      setSelectedRoom(newValue.value);
+      if (selectedHotel) {
+        const room = selectedHotel?.rooms.find(
+          (room) => room.type === newValue.value
+        );
+
+        if (room && room.calendarPrices) {
+          const blockedDates = room.calendarPrices.flatMap((calendarPrice) => {
+            const from = parseISO(calendarPrice.from);
+            const to = parseISO(calendarPrice.to);
+            const dates = [];
+            for (let date = from; isBefore(date, to); date = addDays(date, 1)) {
+              dates.push(date);
+            }
+            return dates;
+          });
+          setBlockedDates(blockedDates);
+        } else {
+          setBlockedDates([]);
+        }
       }
+    } else {
+      setSelectedRoom(null);
+      setBlockedDates([]);
     }
   };
 
@@ -230,7 +245,7 @@ export default function CalendarPricing() {
     setDate(undefined);
     setPrice("");
   };
-  const restructureHotels = (hotels) => {
+  const restructureHotels = (hotels: Hotel[]) => {
     return hotels.flatMap((hotel) => {
       return hotel.rooms.map((room) => ({
         hotelID: hotel.hotelID,
@@ -241,8 +256,6 @@ export default function CalendarPricing() {
     });
   };
   const restructuredData = restructureHotels(hotelsWithCalendarPrices);
-
-  console.log(restructuredData, "asdf");
 
   const filteredHotels = searchQuery
     ? restructuredData.filter((hotel) => {
@@ -256,14 +269,19 @@ export default function CalendarPricing() {
   // Flatten and sort the calendar prices by createdAt date in descending order
   const flattenedSortedPrices = filteredHotels
     .flatMap((hotel) =>
-      hotel.calendarPrices.map((calendarPrice) => ({
+      hotel?.calendarPrices?.map((calendarPrice) => ({
         ...calendarPrice,
         hotelName: hotel.name,
         roomType: hotel.roomType,
         hotelID: hotel.hotelID,
       }))
     )
-    .sort((a, b) => compareDesc(parseISO(a.createdAt), parseISO(b.createdAt)));
+    .sort((a, b) => {
+      if (a && b) {
+        return compareDesc(parseISO(a.createdAt), parseISO(b.createdAt));
+      }
+      return 0;
+    });
 
   if (!hotels) return <>Loading...</>;
 
@@ -421,43 +439,61 @@ export default function CalendarPricing() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {flattenedSortedPrices?.map((calendarPrice, index) => (
-                <TableRow key={index}>
-                  <TableCell className="p-4">{calendarPrice.id}</TableCell>
-                  <TableCell className="p-4">
-                    {`${format(
-                      parseISO(calendarPrice.from),
-                      "MMMM d, yyyy"
-                    )} - ${format(parseISO(calendarPrice.to), "MMMM d, yyyy")}`}
-                  </TableCell>
-                  <TableCell className="p-4">
-                    {calendarPrice.hotelName}
-                  </TableCell>
-                  <TableCell className="p-4">
-                    {calendarPrice.roomType}
-                  </TableCell>
-                  <TableCell className="p-4">{calendarPrice.price}</TableCell>
-                  <TableCell className="p-4">
-                    <ConfirmPopup
-                      title={<Trash className="h-4 w-4" />}
-                      handleClick={handleCalendarPricingDelete(
-                        calendarPrice.id,
-                        calendarPrice.hotelID,
-                        calendarPrice.roomType
-                      )}
-                      message={`Are you sure you want to delete the calendar pricing for ${
-                        calendarPrice.hotelName
-                      } for date ${format(
-                        parseISO(calendarPrice.from),
-                        "MMMM d, yyyy"
-                      )} to ${format(
-                        parseISO(calendarPrice.to),
-                        "MMMM d, yyyy"
-                      )}?`}
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
+              {flattenedSortedPrices?.map(
+                (calendarPrice, index) =>
+                  calendarPrice && (
+                    <TableRow key={index}>
+                      <TableCell className="p-4">{calendarPrice.id}</TableCell>
+                      <TableCell className="p-4">
+                        {calendarPrice.from && calendarPrice.to
+                          ? `${format(
+                              parseISO(calendarPrice.from),
+                              "MMMM d, yyyy"
+                            )} - ${format(
+                              parseISO(calendarPrice.to),
+                              "MMMM d, yyyy"
+                            )}`
+                          : "N/A"}
+                      </TableCell>
+                      <TableCell className="p-4">
+                        {calendarPrice.hotelName}
+                      </TableCell>
+                      <TableCell className="p-4">
+                        {calendarPrice.roomType}
+                      </TableCell>
+                      <TableCell className="p-4">
+                        {calendarPrice.price}
+                      </TableCell>
+                      <TableCell className="p-4">
+                        <ConfirmPopup
+                          title={<Trash className="h-4 w-4" />}
+                          handleClick={handleCalendarPricingDelete(
+                            calendarPrice.id,
+                            calendarPrice.hotelID,
+                            calendarPrice.roomType
+                          )}
+                          message={`Are you sure you want to delete the calendar pricing for ${
+                            calendarPrice.hotelName
+                          } for date ${
+                            calendarPrice.from
+                              ? format(
+                                  parseISO(calendarPrice.from),
+                                  "MMMM d, yyyy"
+                                )
+                              : "N/A"
+                          } to ${
+                            calendarPrice.to
+                              ? format(
+                                  parseISO(calendarPrice.to),
+                                  "MMMM d, yyyy"
+                                )
+                              : "N/A"
+                          }?`}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  )
+              )}
             </TableBody>
           </Table>
         </CardContent>
