@@ -15,7 +15,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (!email || !password) {
     return res.status(400).json({ error: "Missing email or password" });
   }
-
+  if (!SECRET_KEY) {
+    return res
+      .status(500)
+      .json({ error: "Internal server error: SECRET_KEY is not set" });
+  }
   try {
     const user = await prisma.user.findUnique({
       where: { email },
