@@ -72,7 +72,6 @@ export default async function updateCalendarPricingHandler(
 
     rooms?.[roomIndex]?.calendarPrices?.push(newCalendarPrice);
 
-    // Update the hotel with the new rooms JSON
     await prisma.hotel.update({
       where: { hotelID },
       data: {
