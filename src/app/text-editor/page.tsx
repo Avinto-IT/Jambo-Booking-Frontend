@@ -1,18 +1,17 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { Suspense, useRef, useState } from "react";
 import { Editor as TinyMCEEditor } from "@tinymce/tinymce-react";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import blogsData from "../../../data/blog.json";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Editor as TinyMCEEditorInstance } from "tinymce";
-
-import { usePathname, useSearchParams } from "next/navigation";
 import BlogHeader from "@/components/blog/BlogHeader";
 import { Input } from "@/components/ui/input";
+import { useSearchParams } from "next/navigation";
 
-export default function App() {
+const BlogEditor = () => {
   const editorRef = useRef<TinyMCEEditorInstance | null>(null);
 
   const searchParams = useSearchParams();
@@ -165,5 +164,13 @@ export default function App() {
         </div>
       </MaxWidthWrapper>
     </div>
+  );
+};
+
+export default function App() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <BlogEditor />
+    </Suspense>
   );
 }

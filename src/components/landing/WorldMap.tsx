@@ -1,6 +1,5 @@
 import React from "react";
 import world from "../../../public/images/static-from-landing/Locations.svg";
-import MaxWidthWrapper from "../MaxWidthWrapper";
 import Image from "next/image";
 
 function WorldMap() {

@@ -103,3 +103,12 @@ export interface Room {
     createdAt: string;
   }[];
 }
+
+export interface HouseRule {
+  id: number;
+  type: {
+    label: string;
+    value: string;
+  };
+  details: string;
+}

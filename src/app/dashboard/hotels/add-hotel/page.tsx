@@ -1,6 +1,15 @@
 "use client";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import {
+  useState,
+  useEffect,
+  AwaitedReactNode,
+  JSXElementConstructor,
+  Key,
+  ReactElement,
+  ReactNode,
+  ReactPortal,
+} from "react";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -10,6 +19,7 @@ import {
   FormProvider,
   useFormContext,
   Controller,
+  FieldError,
 } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import AdminLayout from "@/components/Layout/AdminLayout";
@@ -93,6 +103,18 @@ interface FormData {
   isRunning: boolean;
 }
 
+interface AmenityError {
+  name?: {
+    message?: string;
+  };
+}
+interface CollapsedSectionsState {
+  basicInformation: boolean;
+  facilities: boolean;
+  room: boolean;
+  houseRules: boolean;
+  contactDetails: boolean;
+}
 const basicInfoSchema = z.object({
   name: z.string().min(1, "Hotel name is required"),
   location: z.object({
@@ -165,6 +187,15 @@ const formSchemas = [
 ];
 
 export default function AddHotel() {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [collapsedSections, setCollapsedSections] =
+    useState<CollapsedSectionsState>({
+      basicInformation: false,
+      facilities: true,
+      room: true,
+      houseRules: true,
+      contactDetails: true,
+    });
   const steps = [
     { component: BasicInformation, label: "Basic Information" },
     { component: Facilities, label: "Facilities" },
@@ -174,7 +205,6 @@ export default function AddHotel() {
     { component: Review, label: "Review" },
   ];
 
-  const [currentStep, setCurrentStep] = useState(0);
   const CurrentComponent = steps[currentStep].component;
   const methods = useForm<FormData>({
     resolver:
@@ -390,9 +420,9 @@ export default function AddHotel() {
                   {...register("basicInfo.name")}
                   onKeyDown={handleKeyDown}
                 />
-                {errors.basicInfo?.name && (
+                {errors?.basicInfo?.name?.message && (
                   <span className="text-red-500">
-                    {errors.basicInfo.name.message}
+                    {errors?.basicInfo?.name.message}
                   </span>
                 )}
               </div>
@@ -413,9 +443,9 @@ export default function AddHotel() {
                     />
                   )}
                 />
-                {errors.basicInfo?.location?.value && (
+                {errors?.basicInfo?.location?.value?.message && (
                   <span className="text-red-500">
-                    {errors.basicInfo.location.value.message}
+                    {errors?.basicInfo?.location?.value.message}
                   </span>
                 )}
               </div>
@@ -435,9 +465,9 @@ export default function AddHotel() {
                     />
                   )}
                 />
-                {errors.basicInfo?.discount && (
+                {errors?.basicInfo?.discount?.message && (
                   <span className="text-red-500">
-                    {errors.basicInfo.discount.message}
+                    {errors?.basicInfo?.discount.message}
                   </span>
                 )}
               </div>
@@ -450,9 +480,9 @@ export default function AddHotel() {
                   placeholder="Description"
                   onKeyDown={handleKeyDown}
                 />
-                {errors.basicInfo?.description && (
+                {errors?.basicInfo?.description?.message && (
                   <span className="text-red-500">
-                    {errors.basicInfo.description.message}
+                    {errors?.basicInfo?.description.message}
                   </span>
                 )}
               </div>
@@ -581,11 +611,12 @@ export default function AddHotel() {
                     />
                   )}
                 />
-                {errors.facilities?.[facilityIndex]?.name && (
+                {errors?.facilities?.[facilityIndex]?.name?.value?.message && (
                   <span className="text-red-500">
-                    {errors.facilities[facilityIndex].name.value?.message}
+                    {errors?.facilities?.[facilityIndex]?.name?.value?.message}
                   </span>
                 )}
+
                 <Label htmlFor={`facility-description-${facility.id}`}>
                   Short Description
                 </Label>
@@ -596,9 +627,9 @@ export default function AddHotel() {
                   placeholder="Lorem Ipsum"
                   onKeyDown={handleKeyDown}
                 />
-                {errors.facilities?.[facilityIndex]?.description && (
+                {errors?.facilities?.[facilityIndex]?.description?.message && (
                   <span className="text-red-500">
-                    {errors.facilities[facilityIndex].description.message}
+                    {errors?.facilities?.[facilityIndex]?.description?.message}
                   </span>
                 )}
                 <div>
@@ -662,27 +693,32 @@ export default function AddHotel() {
                       </TableBody>
                     </Table>
                     {Array.isArray(errors.facilities) &&
-                      errors.facilities?.map((facilityError, facilityIndex) => (
-                        <div key={facilityIndex}>
-                          {facilityError.subFacilities?.root && (
-                            <span className="text-red-500">
-                              {facilityError.subFacilities.root.message}
-                            </span>
-                          )}
-                          {Array.isArray(facilityError.subFacilities) &&
-                            facilityError.subFacilities.map(
-                              (subFacilityError, subFacilityIndex) => (
-                                <div key={subFacilityIndex}>
-                                  {subFacilityError?.name && (
-                                    <span className="text-red-500">
-                                      {subFacilityError.name.message}
-                                    </span>
-                                  )}
-                                </div>
-                              )
+                      errors?.facilities?.map(
+                        (facilityError, facilityIndex) => (
+                          <div key={facilityIndex}>
+                            {facilityError.subFacilities?.root && (
+                              <span className="text-red-500">
+                                {facilityError.subFacilities?.root.message}
+                              </span>
                             )}
-                        </div>
-                      ))}
+                            {Array.isArray(facilityError.subFacilities) &&
+                              facilityError.subFacilities.map(
+                                (
+                                  subFacilityError: { name: FieldError },
+                                  subFacilityIndex: Key | null | undefined
+                                ) => (
+                                  <div key={subFacilityIndex}>
+                                    {subFacilityError?.name?.message && (
+                                      <span className="text-red-500">
+                                        {subFacilityError.name.message}
+                                      </span>
+                                    )}
+                                  </div>
+                                )
+                              )}
+                          </div>
+                        )
+                      )}
                   </div>
                 </div>
               </div>
@@ -706,9 +742,9 @@ export default function AddHotel() {
             Add Facility
           </Button>
         </div>
-        {errors.facilities?.root && (
+        {errors?.facilities?.root && (
           <span className="text-red-500">
-            {errors.facilities?.root.message}
+            {errors?.facilities?.root.message}
           </span>
         )}
       </div>
@@ -720,6 +756,7 @@ export default function AddHotel() {
       register,
       formState: { errors },
     } = methods;
+    console.log(errors);
 
     const addAmenity = (roomIndex: number) => {
       const newAmenity = { id: Date.now(), name: "" };
@@ -759,9 +796,9 @@ export default function AddHotel() {
                   placeholder="Lorem Ipsum"
                   onKeyDown={handleKeyDown}
                 />
-                {errors.rooms?.[roomIndex]?.type && (
+                {errors?.rooms?.[roomIndex]?.type && (
                   <span className="text-red-500">
-                    {errors.rooms[roomIndex].type.message}
+                    {(errors.rooms[roomIndex]?.type as FieldError)?.message}
                   </span>
                 )}
                 <Label htmlFor={`number-of-rooms-${room.id}`}>
@@ -773,9 +810,12 @@ export default function AddHotel() {
                   placeholder="Lorem Ipsum"
                   onKeyDown={handleKeyDown}
                 />
-                {errors.rooms?.[roomIndex]?.numberOfRooms && (
+                {errors?.rooms?.[roomIndex]?.numberOfRooms?.message && (
                   <span className="text-red-500">
-                    {errors.rooms[roomIndex].numberOfRooms.message}
+                    {
+                      (errors.rooms[roomIndex]?.numberOfRooms as FieldError)
+                        ?.message
+                    }
                   </span>
                 )}
                 <Label htmlFor={`price-${room.id}`}>Price</Label>
@@ -786,9 +826,10 @@ export default function AddHotel() {
                   required
                   onKeyDown={handleKeyDown}
                 />
-                {errors.rooms?.[roomIndex]?.price && (
+
+                {errors?.rooms?.[roomIndex]?.price?.message && (
                   <span className="text-red-500">
-                    {errors.rooms[roomIndex].price.message}
+                    {(errors.rooms[roomIndex]?.price as FieldError)?.message}
                   </span>
                 )}
                 <Label htmlFor={`capacity-${room.id}`}>Capacity</Label>
@@ -798,9 +839,9 @@ export default function AddHotel() {
                   placeholder="Lorem Ipsum"
                   onKeyDown={handleKeyDown}
                 />
-                {errors.rooms?.[roomIndex]?.capacity && (
+                {errors?.rooms?.[roomIndex]?.capacity?.message && (
                   <span className="text-red-500">
-                    {errors.rooms[roomIndex].capacity.message}
+                    {(errors.rooms[roomIndex]?.capacity as FieldError)?.message}
                   </span>
                 )}
                 <Label htmlFor={`bed-type-${room.id}`}>Bed Type</Label>
@@ -810,9 +851,9 @@ export default function AddHotel() {
                   placeholder="Lorem Ipsum"
                   onKeyDown={handleKeyDown}
                 />
-                {errors.rooms?.[roomIndex]?.bedType && (
+                {errors?.rooms?.[roomIndex]?.bedType?.message && (
                   <span className="text-red-500">
-                    {errors.rooms[roomIndex].bedType.message}
+                    {(errors.rooms[roomIndex]?.bedType as FieldError)?.message}
                   </span>
                 )}
                 <Label htmlFor={`number-of-beds-${room.id}`}>
@@ -824,9 +865,12 @@ export default function AddHotel() {
                   placeholder="Lorem Ipsum"
                   onKeyDown={handleKeyDown}
                 />
-                {errors.rooms?.[roomIndex]?.numberOfBeds && (
+                {errors?.rooms?.[roomIndex]?.numberOfBeds?.message && (
                   <span className="text-red-500">
-                    {errors.rooms[roomIndex].numberOfBeds.message}
+                    {
+                      (errors.rooms[roomIndex]?.numberOfBeds as FieldError)
+                        ?.message
+                    }
                   </span>
                 )}
                 <div>
@@ -876,22 +920,27 @@ export default function AddHotel() {
                   {Array.isArray(errors.rooms) &&
                     errors.rooms.map((roomError, roomIndex) => (
                       <div key={roomIndex}>
-                        {roomError.amenities?.root && (
+                        {roomError?.amenities?.root && (
                           <span className="text-red-500">
-                            {roomError.amenities.root.message}
+                            {roomError?.amenities?.root.message}
                           </span>
                         )}
                         {Array.isArray(roomError.amenities) &&
                           roomError.amenities.map(
-                            (amenityError, amenityIndex) => (
-                              <div key={amenityIndex}>
-                                {amenityError?.name && (
-                                  <span className="text-red-500">
-                                    {amenityError.name.message}
-                                  </span>
-                                )}
-                              </div>
-                            )
+                            (
+                              amenityError: AmenityError,
+                              amenityIndex: number
+                            ) => {
+                              return (
+                                <div key={amenityIndex}>
+                                  {amenityError?.name?.message && (
+                                    <span className="text-red-500">
+                                      {amenityError?.name.message}
+                                    </span>
+                                  )}
+                                </div>
+                              );
+                            }
                           )}
                       </div>
                     ))}
@@ -930,8 +979,8 @@ export default function AddHotel() {
             Add Room
           </Button>
         </div>
-        {errors.rooms?.root && (
-          <span className="text-red-500">{errors.rooms?.root.message}</span>
+        {errors?.rooms?.root?.message && (
+          <span className="text-red-500">{errors?.rooms?.root.message}</span>
         )}
       </div>
     );
@@ -984,9 +1033,9 @@ export default function AddHotel() {
                 {Array.isArray(errors.houseRules) &&
                   errors.houseRules.map((houseRuleError, houseRuleIndex) => (
                     <div key={houseRuleIndex}>
-                      {houseRuleError.type?.value && (
+                      {houseRuleError?.type?.value?.message && (
                         <span className="text-red-500">
-                          {houseRuleError.type.value.message}
+                          {houseRuleError?.type?.value.message}
                         </span>
                       )}
                     </div>
@@ -1000,9 +1049,10 @@ export default function AddHotel() {
                   placeholder="Lorem Ipsum"
                   onKeyDown={handleKeyDown}
                 />
-                {errors.houseRules?.[index]?.details && (
+                {(errors?.houseRules?.[index]?.details as FieldError)
+                  ?.message && (
                   <span className="text-red-500">
-                    {errors.houseRules[index].details.message}
+                    {errors?.houseRules?.[index]?.details?.message}
                   </span>
                 )}
               </div>
@@ -1029,9 +1079,9 @@ export default function AddHotel() {
             Add House Rule
           </Button>
         </div>
-        {errors.houseRules?.root && (
+        {errors?.houseRules?.root?.message && (
           <span className="text-red-500">
-            {errors.houseRules?.root.message}
+            {errors?.houseRules?.root.message}
           </span>
         )}
       </div>
@@ -1062,9 +1112,9 @@ export default function AddHotel() {
                 placeholder="Lorem Ipsum"
                 onKeyDown={handleKeyDown}
               />
-              {errors.contactForm?.name && (
+              {errors?.contactForm?.name?.message && (
                 <span className="text-red-500">
-                  {errors.contactForm.name.message}
+                  {errors?.contactForm?.name.message}
                 </span>
               )}
               <Label htmlFor="role-position">Role / Position</Label>
@@ -1074,9 +1124,9 @@ export default function AddHotel() {
                 placeholder="Lorem Ipsum"
                 onKeyDown={handleKeyDown}
               />
-              {errors.contactForm?.position && (
+              {errors?.contactForm?.position?.message && (
                 <span className="text-red-500">
-                  {errors.contactForm.position.message}
+                  {errors?.contactForm?.position.message}
                 </span>
               )}
               <Label htmlFor="email-address">Email Address</Label>
@@ -1086,9 +1136,9 @@ export default function AddHotel() {
                 placeholder="Lorem Ipsum"
                 onKeyDown={handleKeyDown}
               />
-              {errors.contactForm?.email && (
+              {errors?.contactForm?.email?.message && (
                 <span className="text-red-500">
-                  {errors.contactForm.email.message}
+                  {errors?.contactForm?.email.message}
                 </span>
               )}
               <Label htmlFor="phone-number">Phone Number</Label>
@@ -1098,9 +1148,9 @@ export default function AddHotel() {
                 placeholder="Lorem Ipsum"
                 onKeyDown={handleKeyDown}
               />
-              {errors.contactForm?.number && (
+              {errors?.contactForm?.number?.message && (
                 <span className="text-red-500">
-                  {errors.contactForm.number.message}
+                  {errors?.contactForm?.number.message}
                 </span>
               )}
             </div>
@@ -1123,9 +1173,9 @@ export default function AddHotel() {
                 placeholder="www.facebook.com"
                 onKeyDown={handleKeyDown}
               />
-              {errors.contactForm?.facebook && (
+              {errors?.contactForm?.facebook?.message && (
                 <span className="text-red-500">
-                  {errors.contactForm.facebook.message}
+                  {errors?.contactForm?.facebook.message}
                 </span>
               )}
               <Label htmlFor="instagram">Instagram</Label>
@@ -1135,9 +1185,9 @@ export default function AddHotel() {
                 placeholder="www.instagram.com"
                 onKeyDown={handleKeyDown}
               />
-              {errors.contactForm?.instagram && (
+              {errors?.contactForm?.instagram?.message && (
                 <span className="text-red-500">
-                  {errors.contactForm.instagram.message}
+                  {errors?.contactForm?.instagram.message}
                 </span>
               )}
               <Label htmlFor="linkedin">LinkedIn</Label>
@@ -1147,9 +1197,9 @@ export default function AddHotel() {
                 placeholder="www.linkedin.com"
                 onKeyDown={handleKeyDown}
               />
-              {errors.contactForm?.linkedin && (
+              {errors?.contactForm?.linkedin?.message && (
                 <span className="text-red-500">
-                  {errors.contactForm.linkedin.message}
+                  {errors?.contactForm?.linkedin.message}
                 </span>
               )}
             </div>
@@ -1166,14 +1216,15 @@ export default function AddHotel() {
     if (!formData.basicInfo) {
       return <div>Loading...</div>;
     }
-    const [collapsedSections, setCollapsedSections] = useState({
-      basicInformation: false,
-      facilities: false,
-      room: false,
-      houseRules: false,
-      contactDetails: false,
-    });
-    const toggleSection = (section: string) => {
+
+    const toggleSection = (
+      section:
+        | "basicInformation"
+        | "facilities"
+        | "room"
+        | "houseRules"
+        | "contactDetails"
+    ) => {
       setCollapsedSections((prevState) => ({
         ...prevState,
         [section]: !prevState[section],

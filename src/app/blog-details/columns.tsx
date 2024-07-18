@@ -13,7 +13,7 @@ export type Bloginfo = {
   caption: string;
   created_date: string;
 };
-
+import Image from "next/image";
 export const Columns: ColumnDef<Bloginfo>[] = [
   {
     accessorKey: "POST_ID",
@@ -32,7 +32,7 @@ export const Columns: ColumnDef<Bloginfo>[] = [
 
       return (
         <div className="w-32 h-20 relative flex justify-center items-center">
-          <img
+          <Image
             src={value}
             alt="hotelphoto"
             className="rounded-md object-cover"

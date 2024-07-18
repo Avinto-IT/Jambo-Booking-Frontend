@@ -5,50 +5,45 @@ import Image from "next/image";
 import React from "react";
 import discoverimg from "../../../public/images/static-from-landing/image.svg";
 import bedimg from "../../../public/images/an_image_for_hotel_booking.svg";
-
 import BreadcrumbHome from "@/components/Home-Breadcrumb/BreadcrumbHome";
 import WorldMap from "@/components/landing/WorldMap";
 
-interface TopImgProp {
-  title: string;
-}
-const AboutUs: React.FC<TopImgProp> = ({ title }) => {
+const AboutUs: React.FC = ({}) => {
   return (
     <div>
       <LayoutTwo imgTitle="About Us">
-        <div className=" flex justify-center items-center">
+        <div className="flex justify-center items-center">
           <MaxWidthWrapper className="mb-20">
             <BreadcrumbHome />
             <div className="text-[#0F172A] space-y-1">
-              <p className="text-3xl  font-semibold">About Us</p>
+              <p className="text-3xl font-semibold">About Us</p>
               <p className="">Lorem ipsum league sparatum</p>
             </div>
-            <div className=" flex justify-center items-start">
-              <div className="h-full  my-14">
-                <div className="  w-full flex justify-between rounded-2xl bg-[#F0FDFA] ">
-                  <div className=" w-5/12 ">
+            <div className="flex justify-center items-start">
+              <div className="h-full my-14">
+                <div className="w-full flex justify-between rounded-2xl bg-[#F0FDFA]">
+                  <div className="w-5/12">
                     <Image
                       src={discoverimg}
                       alt="discoverimg"
-                      className="h-full "
+                      className="h-full"
                     />
                   </div>
-                  <div className="w-6/12  flex justify-center items-center pr-20 pl-5  py-16">
-                    <div className="   gap-5  flex flex-col">
-                      <p className=" font-semibold text-2xl">
+                  <div className="w-6/12 flex justify-center items-center pr-20 pl-5 py-16">
+                    <div className="gap-5 flex flex-col">
+                      <p className="font-semibold text-2xl">
                         Discover our History
                       </p>
                       <p className="text-[#334155] leading-7 text-base">
                         Lorem Ipsum is simply dummy text of the printing and
                         typesetting industry. Lorem Ipsum has been the
-                        industry's{" "}
+                        industry&apos;s
                       </p>
-
                       <p className="text-[#334155] leading-7 text-base">
                         Lorem Ipsum is simply dummy text of the printing and
                         typesetting industry. Lorem Ipsum has been the
-                        industry's standard dummy Lorem Ipsum is simply dummy
-                        text of the printing and typesetting industry.
+                        industry&apos;s standard dummy Lorem Ipsum is simply
+                        dummy text of the printing and typesetting industry.
                       </p>
                     </div>
                   </div>
@@ -56,20 +51,20 @@ const AboutUs: React.FC<TopImgProp> = ({ title }) => {
               </div>
             </div>
 
-            <div className=" flex  tracking-tight">
+            <div className="flex tracking-tight">
               <div className="h-full my-14">
-                <div className="  w-full flex justify-between rounded-2xl  ">
-                  <div className="w-6/12  flex  pr-5 ">
-                    <div className="   gap-7  flex flex-col">
+                <div className="w-full flex justify-between rounded-2xl">
+                  <div className="w-6/12 flex pr-5">
+                    <div className="gap-7 flex flex-col">
                       <div className="space-y-1">
-                        <p className=" font-semibold text-2xl">
+                        <p className="font-semibold text-2xl">
                           Lorem Ipsum is simply dummy text
                         </p>
                         <p className="text-[#64748B] leading-7 text-base">
                           Cras at pellentesque eros. Nullam vitae sapien et
-                          felis eleifend luctus. Nam ac dui cursus, efficitur
-                          ante sed, tempor sapien. Praesent nec mattis enim.
-                          Mauris a laoreet purus.{" "}
+                          felis eleifend luctus. Nam ac dui cursus &apos;
+                          efficitur ante sed &apos; tempor sapien. Praesent nec
+                          mattis enim. Mauris a laoreet purus.
                         </p>
                       </div>
                       <div className="bg-[#FEFCE8] pl-10 pr-28 py-7 rounded-xl space-y-1">
@@ -78,20 +73,19 @@ const AboutUs: React.FC<TopImgProp> = ({ title }) => {
                         </p>
                         <p className="text-[#64748B] leading-7 text-base pb-5">
                           Etiam sed vulputate nisl, eu elementum arcu. Vivamus
-                          dignissim tortor in tellus dictum pellentesque.{" "}
+                          dignissim tortor in tellus dictum pellentesque.
                         </p>
-
-                        <p className=" border-t-2 pt-5 font-semibold text-xl">
+                        <p className="border-t-2 pt-5 font-semibold text-xl">
                           Lorem Ipsum is simply dummy text
                         </p>
                         <p className="text-[#64748B] leading-7 text-base">
                           Etiam sed vulputate nisl, eu elementum arcu. Vivamus
-                          dignissim tortor in tellus dictum pellentesque.{" "}
+                          dignissim tortor in tellus dictum pellentesque.
                         </p>
                       </div>
                     </div>
                   </div>
-                  <div className=" w-5/12 ">
+                  <div className="w-5/12">
                     <Image
                       src={discoverimg}
                       alt="discoverimg"
@@ -104,7 +98,7 @@ const AboutUs: React.FC<TopImgProp> = ({ title }) => {
             <br />
             <div className="mb-20">
               <div className="space-y-4">
-                <p className=" font-semibold text-2xl">
+                <p className="font-semibold text-2xl">
                   Lorem Ipsum is simply dummy text
                 </p>
                 <p className="text-[#64748B] text-sm">
@@ -142,4 +136,5 @@ const AboutUs: React.FC<TopImgProp> = ({ title }) => {
     </div>
   );
 };
+
 export default AboutUs;

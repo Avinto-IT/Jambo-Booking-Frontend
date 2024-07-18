@@ -30,6 +30,11 @@ export default async function updateCalendarPricingHandler(
       return res.status(401).json({ error: "Authorization failed" });
     }
     const token = authHeader.split(" ")[1];
+    if (!SECRET_KEY) {
+      return res
+        .status(500)
+        .json({ error: "Internal server error: SECRET_KEY is not set" });
+    }
     const decoded = jwt.verify(token, SECRET_KEY) as { role: string };
     if (decoded.role !== "admin") {
       return res
@@ -65,9 +70,8 @@ export default async function updateCalendarPricingHandler(
       ...calendarPrice,
     };
 
-    rooms[roomIndex].calendarPrices.push(newCalendarPrice);
+    rooms?.[roomIndex]?.calendarPrices?.push(newCalendarPrice);
 
-    // Update the hotel with the new rooms JSON
     await prisma.hotel.update({
       where: { hotelID },
       data: {

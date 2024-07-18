@@ -16,12 +16,10 @@ export default function ConfirmPopup({
   title,
   message,
   handleClick,
-  isConfirmed,
 }: {
   title: React.ReactNode;
   message: string;
   handleClick: () => void;
-  isConfirmed: boolean;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   return (
