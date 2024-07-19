@@ -1,15 +1,7 @@
 "use client";
+
 import Link from "next/link";
-import {
-  useState,
-  useEffect,
-  AwaitedReactNode,
-  JSXElementConstructor,
-  Key,
-  ReactElement,
-  ReactNode,
-  ReactPortal,
-} from "react";
+import { useState, useEffect, useRef, Key } from "react";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -17,13 +9,20 @@ import {
   useForm,
   useFieldArray,
   FormProvider,
-  useFormContext,
   Controller,
   FieldError,
+  useFormContext,
 } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import AdminLayout from "@/components/Layout/AdminLayout";
-import { ChevronDown, PlusCircle, Trash, Upload } from "lucide-react";
+import {
+  ChevronDown,
+  Eraser,
+  ImagePlus,
+  PlusCircle,
+  Trash,
+  Upload,
+} from "lucide-react";
 import Image from "next/image";
 import {
   Card,
@@ -32,6 +31,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import DialogBox from "@/components/AdminComponents/DialogBox";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -52,6 +52,7 @@ import {
   Title,
   Value,
 } from "@/components/AdminComponents/Sub-Components/ReviewComponents";
+
 interface HouseRule {
   id: number;
   type: {
@@ -101,6 +102,8 @@ interface FormData {
   contactForm: ContactDetails;
   houseRules: HouseRule[];
   isRunning: boolean;
+  primaryImage: File | null;
+  imageLinks: File[];
 }
 
 interface AmenityError {
@@ -115,11 +118,11 @@ interface CollapsedSectionsState {
   houseRules: boolean;
   contactDetails: boolean;
 }
+
 const basicInfoSchema = z.object({
   name: z.string().min(1, "Hotel name is required"),
   location: z.object({
     value: z.string().min(1, "Location is required"),
-    // label: z.string().min(1, "Location label is required"),
   }),
   discount: z.string().optional(),
   description: z.string().min(1, "Description is required"),
@@ -214,10 +217,7 @@ export default function AddHotel() {
     defaultValues: {
       basicInfo: {
         name: "",
-        location: {
-          value: "",
-          label: "",
-        },
+        location: { value: "", label: "" },
         discount: "",
         description: "",
       },
@@ -261,6 +261,8 @@ export default function AddHotel() {
         },
       ],
       isRunning: false,
+      primaryImage: null,
+      imageLinks: [], // Updated default value
     },
   });
 
@@ -294,6 +296,38 @@ export default function AddHotel() {
   const [token, setToken] = useState<string | null>(null);
   const [locations, setLocations] = useState<Location[]>([]);
   const router = useRouter();
+  const [isSubmitClicked, setIsSubmitClicked] = useState(false);
+  const [previewPrimaryImage, setPreviewPrimaryImage] = useState<string | null>(
+    null
+  );
+  const [previewImageLinks, setPreviewImageLinks] = useState<string[]>([]);
+  const handlePrimaryImageChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0] || null;
+    methods.setValue("primaryImage", file);
+
+    if (file) {
+      setPreviewPrimaryImage(URL.createObjectURL(file));
+    }
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files) {
+      const newFiles = Array.from(files);
+      const currentFiles = methods.getValues("imageLinks");
+
+      const allFiles = [...currentFiles, ...newFiles];
+      methods.setValue("imageLinks", allFiles);
+
+      setPreviewImageLinks((prevLinks) => [
+        ...prevLinks,
+        ...newFiles.map((file) => URL.createObjectURL(file)),
+      ]);
+    }
+  };
+
   useEffect(() => {
     const fetchLocations = async () => {
       try {
@@ -312,8 +346,41 @@ export default function AddHotel() {
     const storedToken = localStorage.getItem("token");
     setToken(storedToken);
   }, []);
+  const uploadFiles = async (files: File[], primaryImage: File | null) => {
+    const urls = [];
+
+    if (primaryImage) {
+      const primaryImageResponse = await fetch(
+        `/api/uploadImage?filename=primary/${primaryImage.name}`,
+        {
+          method: "POST",
+          body: primaryImage,
+        }
+      );
+      const primaryImageData = await primaryImageResponse.json();
+      urls.push(primaryImageData.url);
+    }
+
+    for (const file of Array.from(files)) {
+      const response = await fetch(`/api/uploadImage?filename=${file.name}`, {
+        method: "POST",
+        body: file,
+      });
+
+      const data = await response.json();
+      urls.push(data.url);
+    }
+
+    return urls;
+  };
 
   const onSubmit = async (data: FormData) => {
+    setIsSubmitClicked(true);
+    let imageLinks = [];
+    if (data.imageLinks || data.primaryImage) {
+      imageLinks = await uploadFiles(data.imageLinks, data.primaryImage);
+    }
+
     const payload = {
       ...data.basicInfo,
       address: data.basicInfo.location.label,
@@ -325,8 +392,8 @@ export default function AddHotel() {
           name: subFacility.name,
         })),
       })),
-      primaryImageLink: "asdfasdfasdf",
-      imageLinks: ["asdfasdfasdfasdf,asdfasdf"],
+      primaryImageLink: data.primaryImage ? imageLinks[0] : "", // Use the primary image link if available
+      imageLinks: imageLinks.slice(data.primaryImage ? 1 : 0), // Exclude the primary image link from imageLinks if primary image exists
       rooms: data.rooms.map((room) => ({
         type: room.type,
         numberOfRooms: room.numberOfRooms,
@@ -367,6 +434,8 @@ export default function AddHotel() {
         toast.error(`Error: ${result.error}`);
       }
     } catch (error) {
+      setIsSubmitClicked(false);
+
       console.log(error);
       toast.error("Error: Unable to add hotel.");
     }
@@ -397,6 +466,7 @@ export default function AddHotel() {
       register,
       formState: { errors },
     } = methods;
+
     return (
       <div className="grid gap-8">
         <Card x-chunk="dashboard-04-chunk-1 p-6">
@@ -486,6 +556,52 @@ export default function AddHotel() {
                   </span>
                 )}
               </div>
+              <div className="flex flex-col gap-3 w-full">
+                <Label htmlFor="primaryImage" className="text-base">
+                  Primary Image
+                </Label>
+                <label
+                  htmlFor="primaryImage"
+                  className="flex items-center border shadow max-w-max px-3 py-1.5 rounded gap-2 cursor-pointer"
+                >
+                  <ImagePlus className="w-4 h-4" />
+                  Choose File
+                  <input
+                    id="primaryImage"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handlePrimaryImageChange}
+                  />
+                </label>
+                {previewPrimaryImage ? (
+                  <div className="relative max-w-max rounded-md">
+                    <DialogBox previewPrimaryImage={previewPrimaryImage}>
+                      <Image
+                        alt="Primary image"
+                        className="w-full rounded-md object-cover max-h-96"
+                        style={{ height: "auto", objectFit: "cover" }}
+                        height={200}
+                        src={previewPrimaryImage}
+                        width={400}
+                      />
+                    </DialogBox>
+                    <Trash
+                      className="absolute top-2 right-2 text-red-500"
+                      onClick={() => setPreviewPrimaryImage(null)}
+                    />
+                  </div>
+                ) : (
+                  <Image
+                    alt="Primary image"
+                    className=" w-full rounded-md object-cover max-h-96"
+                    style={{ height: "auto", objectFit: "cover" }}
+                    height={200}
+                    src={"/images/image-placeholder.png"}
+                    width={400}
+                  />
+                )}
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -498,36 +614,82 @@ export default function AddHotel() {
           </CardHeader>
           <CardContent>
             <div className="grid gap-2">
-              <Image
-                alt="Product image"
-                className=" rounded-md object-cover"
-                height={200}
-                src="/images/image-placeholder.png"
-                width={400}
-              />
-              <div className="grid grid-cols-3 gap-2">
-                <button>
-                  <Image
-                    alt="Product image"
-                    className="w-full rounded-md object-cover"
-                    height={100}
-                    src="/images/image-placeholder.png"
-                    width={100}
+              <div className="flex flex-col gap-3">
+                <Label htmlFor="images">Upload Images</Label>
+                <label
+                  htmlFor="images"
+                  className="flex items-center max-w-max border px-3 py-1.5 rounded-md shadow  gap-2 cursor-pointer"
+                >
+                  <Upload className="w-4 h-4" />
+                  Choose Files
+                  <input
+                    id="images"
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleFileChange}
                   />
-                </button>
-                <button>
-                  <Image
-                    alt="Product image"
-                    className="w-full rounded-md object-cover"
-                    height={100}
-                    src="/images/image-placeholder.png"
-                    width={100}
-                  />
-                </button>
-                <button className="flex w-full items-center justify-center rounded-md border border-dashed">
-                  <Upload className="h-4 w-4 text-muted-foreground" />
-                  <span className="sr-only">Upload</span>
-                </button>
+                </label>
+                {previewImageLinks.length > 0 ? (
+                  <span>{previewImageLinks.length} files chosen</span>
+                ) : (
+                  <span>No files chosen</span>
+                )}
+                <div className="grid grid-cols-3 gap-2">
+                  {previewImageLinks.length > 0 ? (
+                    previewImageLinks.map((link, index) => (
+                      <div key={index} className="relative rounded-md w-full">
+                        <DialogBox previewPrimaryImage={link}>
+                          <Image
+                            alt={`Image ${index + 1}`}
+                            className="w-full rounded-md "
+                            style={{ height: "200px", objectFit: "cover" }}
+                            src={link}
+                            width={200}
+                            height={100}
+                          />
+                        </DialogBox>
+
+                        <Trash
+                          className="absolute top-1 right-1 text-red-500"
+                          onClick={() => {
+                            setPreviewImageLinks((prevLinks) =>
+                              prevLinks.filter((link, i) => i !== index)
+                            );
+                          }}
+                        />
+                      </div>
+                    ))
+                  ) : (
+                    <>
+                      <Image
+                        alt="Placeholder image"
+                        className="w-full rounded-md "
+                        style={{ height: "200px", objectFit: "cover" }}
+                        src={"/images/image-placeholder.png"}
+                        width={200}
+                        height={100}
+                      />
+                      <Image
+                        alt="Placeholder image"
+                        className="w-full rounded-md "
+                        style={{ height: "200px", objectFit: "cover" }}
+                        src={"/images/image-placeholder.png"}
+                        width={200}
+                        height={100}
+                      />
+                      <Image
+                        alt="Placeholder image"
+                        className="w-full rounded-md "
+                        style={{ height: "200px", objectFit: "cover" }}
+                        src={"/images/image-placeholder.png"}
+                        width={200}
+                        height={100}
+                      />
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           </CardContent>
@@ -1280,56 +1442,26 @@ export default function AddHotel() {
                 </div>
                 <div className="flex flex-col gap-3">
                   <Title>Hotel Images</Title>
+                  {formData.primaryImage && (
+                    <Image
+                      alt="Primary image"
+                      className="w-full rounded-md object-cover"
+                      height={100}
+                      src={URL.createObjectURL(formData.primaryImage)}
+                      width={100}
+                    />
+                  )}
                   <div className="grid grid-cols-5 gap-2 overflow-x-scroll">
-                    <Image
-                      alt="Product image"
-                      className="w-full rounded-md object-cover"
-                      height={100}
-                      src="/images/image-placeholder.png"
-                      width={100}
-                    />
-                    <Image
-                      alt="Product image"
-                      className="w-full rounded-md object-cover"
-                      height={100}
-                      src="/images/image-placeholder.png"
-                      width={100}
-                    />
-                    <Image
-                      alt="Product image"
-                      className="w-full rounded-md object-cover"
-                      height={100}
-                      src="/images/image-placeholder.png"
-                      width={100}
-                    />
-                    <Image
-                      alt="Product image"
-                      className="w-full rounded-md object-cover"
-                      height={100}
-                      src="/images/image-placeholder.png"
-                      width={100}
-                    />
-                    <Image
-                      alt="Product image"
-                      className="w-full rounded-md object-cover"
-                      height={100}
-                      src="/images/image-placeholder.png"
-                      width={100}
-                    />
-                    <Image
-                      alt="Product image"
-                      className="w-full rounded-md object-cover"
-                      height={100}
-                      src="/images/image-placeholder.png"
-                      width={100}
-                    />
-                    <Image
-                      alt="Product image"
-                      className="w-full rounded-md object-cover"
-                      height={100}
-                      src="/images/image-placeholder.png"
-                      width={100}
-                    />
+                    {formData.imageLinks?.map((file, index) => (
+                      <Image
+                        key={index}
+                        alt={`Image ${index + 1}`}
+                        className="w-full rounded-md object-cover"
+                        height={100}
+                        src={URL.createObjectURL(file)}
+                        width={100}
+                      />
+                    ))}
                   </div>
                 </div>
               </div>
@@ -1658,6 +1790,7 @@ export default function AddHotel() {
                     <Button
                       className="bg-blue-700 hover:bg-blue-900"
                       type="submit"
+                      disabled={isSubmitClicked ? true : false}
                     >
                       Submit
                     </Button>
