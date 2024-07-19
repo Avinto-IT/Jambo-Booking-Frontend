@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 const prisma = new PrismaClient();
-const SECRET_KEY = process.env.SERCRET_KEY;
+const SECRET_KEY = process.env.SECRET_KEY;
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });

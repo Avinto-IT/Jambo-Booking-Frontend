@@ -5,18 +5,25 @@ import { Hotel } from "@/utils/types";
 import { Dot } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import bed from "../../../../../public/images/Bed.svg";
-import guest from "../../../../../public/images/Guest.svg";
+import bed from "../../../../public/images/Bed.svg";
+import guest from "../../../../public/images/Guest.svg";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import facilitiesIcon from "../../../../../data/facilities.json";
+import facilitiesIcon from "../../../../data/facilities.json";
 import * as Icons from "lucide-react";
 import AdminLayout from "@/components/Layout/AdminLayout";
+import { Calendar } from "@/components/ui/calendar";
+import { Input } from "@/components/ui/input";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import DatePicker from "react-datepicker";
 
 export default function Page() {
   const [showMore, setShowMore] = useState(false);
   const [showAmenities, setShowAmentities] = useState(false);
   const [visibleFacilitiesCount, setVisibleFacilitiesCount] = useState(4);
+  const [selectedDate, setSelectedDate] = useState();
+  const [currentDate, setCurrentDate] = useState("");
   const searchParams = useSearchParams();
 
   const id = searchParams?.get("id");
@@ -55,7 +62,10 @@ export default function Page() {
       }
     };
     fetchHotels();
+    const today = new Date().toISOString().split("T")[0];
+    setCurrentDate(today);
   }, []);
+
   if (!hotel) return <>Loading...</>;
   //   console.log(hotel);
 
@@ -71,6 +81,7 @@ export default function Page() {
     }
     setShowAmentities(!showAmenities);
   };
+
   return (
     <AdminLayout>
       {" "}
@@ -91,30 +102,74 @@ export default function Page() {
                 <div className="outline outline-gray-300 rounded-xl h-96"></div>
               </div>
               <div className="space-y-4">
-                <div className="space-y-3">
-                  <p className="text-2xl font-semibold">Basic Overview</p>
-                  <p className="pb-5">{hotel.address}</p>
-                  <p className="leading-7 border-t-2 pt-7">
-                    {hotel.description.length > 350 ? (
-                      <div className="space-y-5">
-                        <p className="">
-                          {showMore
-                            ? hotel.description
-                            : hotel.description.substring(0, 350) + "..."}
-                        </p>
-                        <div
-                          className="text-blue-600 text-sm font-medium cursor-pointer"
-                          onClick={toggleShowMore}
-                        >
-                          <u>{!showMore ? "Show More" : "Show Less"}</u>
+                <div className="flex justify-between ">
+                  <div className="space-y-3 w-2/3">
+                    <p className="text-2xl font-semibold">Basic Overview</p>
+                    <p className="pb-5">{hotel.address}</p>
+                    <p className="leading-7 border-t-2 pt-7">
+                      {hotel.description.length > 350 ? (
+                        <div className="space-y-5">
+                          <p className="">
+                            {showMore
+                              ? hotel.description
+                              : hotel.description.substring(0, 350) + "..."}
+                          </p>
+                          <div
+                            className="text-blue-600 text-sm font-medium cursor-pointer"
+                            onClick={toggleShowMore}
+                          >
+                            <u>{!showMore ? "Show More" : "Show Less"}</u>
+                          </div>
                         </div>
+                      ) : (
+                        hotel.description
+                      )}
+                    </p>
+                    <div className=" border-b-2 pt-1 "></div>
+                  </div>
+                  <Card className="w-1/3  p-5 ml-20 shadow-lg">
+                    <div className="flex">${hotel.rooms[0].price} / night</div>
+                    <div className="flex  justify-between">
+                      <div className="">
+                        <Label>Check In</Label>
+                        <Input
+                          type="date"
+                          value={currentDate}
+                          onChange={(e) => setSelectedDate(e.target.value)}
+                          className="w-fit"
+                        />
                       </div>
-                    ) : (
-                      hotel.description
-                    )}
-                  </p>
+                      <Label>Check In</Label>
+                      <Input
+                        type="date"
+                        value={currentDate}
+                        onChange={(e) => setSelectedDate(e.target.value)}
+                        className="w-fit"
+                      />
+                    </div>
+                    <div className="">
+                      <p className="">Guests</p>
+                      <Input type="Number" />
+                    </div>
+                    <div className="flex items-center">
+                      <RadioGroup defaultValue="lunch" className="flex ">
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="breakfast" id="breakfast" />
+                          <Label htmlFor="breakfast">Breakfast</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="lunch" id="lunch" />
+                          <Label htmlFor="lunch">Lunch</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="dinner" id="dinner" />
+                          <Label htmlFor="dinner">Dinner</Label>
+                        </div>
+                      </RadioGroup>
+                    </div>
+                  </Card>
                 </div>
-                <div className=" border-b-2 pt-1 "></div>
+
                 <div className="space-y-7">
                   <p className="text-2xl font-semibold pt-1">Top Facilities</p>
                   <div className="grid gap-5 grid-cols-3">
@@ -200,7 +255,9 @@ export default function Page() {
                               </div>
                             </div>
 
-                            <div className="flex flex-col items-end justify-end space-y-2">
+                            <div className="flex flex-col items-start justify-start space-y-2">
+                              <p className="flex justify-start">Select Rooms</p>
+
                               <p className="text-[#64748B] text-sm">
                                 Includes taxes and fees{" "}
                               </p>

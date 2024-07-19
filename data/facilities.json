@@ -1,0 +1,40 @@
+{
+  "facilitiesIcon": [
+    {
+      "icon": "ConciergeBell",
+      "name": "Reception/Front Desk"
+    },
+    {
+      "icon": "Bed",
+      "name": "Room Amenities"
+    },
+    {
+      "icon": "Bath",
+      "name": "Bathroom Amenities"
+    },
+    {
+      "icon": "Bed",
+      "name": "Food and Beverage"
+    },
+    {
+      "icon": "HandPlatter",
+      "name": "Facilities and Services"
+    },
+    {
+      "icon": "Accessibility",
+      "name": "Accessibility"
+    },
+    {
+      "icon": "SquareParking",
+      "name": "Parking"
+    },
+    {
+      "icon": "Shield",
+      "name": "Security"
+    },
+    {
+      "icon": "TreePalm",
+      "name": "Leisure and Recreation"
+    }
+  ]
+}
