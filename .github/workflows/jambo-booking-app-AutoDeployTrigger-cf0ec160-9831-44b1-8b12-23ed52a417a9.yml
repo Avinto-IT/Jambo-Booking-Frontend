@@ -35,13 +35,9 @@ jobs:
         uses: azure/container-apps-deploy-action@v2
         with:
           appSourcePath: ${{ github.workspace }} 
-          registryUrl: 
+          registryUrl: ${{ secrets.JAMBOBOOKINGAPP_REGISTRY_URL }}
           registryUsername: ${{ secrets.JAMBOBOOKINGAPP_REGISTRY_USERNAME }}
           registryPassword: ${{ secrets.JAMBOBOOKINGAPP_REGISTRY_PASSWORD }}
           containerAppName: jambo-booking-app
           resourceGroup: JamboBookingApp
-          imageToBuild: default/[parameters('containerAppName')]:${{ github.sha }}
-          _buildArgumentsKey_: |
-            _buildArgumentsValues_
-
-
+          imageToBuild: default/${{ secrets.JAMBOBOOKINGAPP_REGISTRY_USERNAME }}/jambo-booking-app:${{ github.sha }}
