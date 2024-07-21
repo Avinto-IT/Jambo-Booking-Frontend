@@ -1,24 +1,20 @@
 name: Trigger auto deployment for jambo-booking-app
 
-# When this action will be executed
 on:
-  # Automatically trigger it when detected changes in repo
   push:
     branches: 
-      [ master ]
+      - master
     paths:
-    - '**'
-    - '.github/workflows/jambo-booking-app-AutoDeployTrigger-cf0ec160-9831-44b1-8b12-23ed52a417a9.yml'
-
-  # Allow manual trigger 
-  workflow_dispatch:      
+      - '**'
+      - '.github/workflows/jambo-booking-app-AutoDeployTrigger-cf0ec160-9831-44b1-8b12-23ed52a417a9.yml'
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     permissions: 
-      id-token: write #This is required for requesting the OIDC JWT Token
-      contents: read #Required when GH token is used to authenticate with private repo
+      id-token: write
+      contents: read
 
     steps:
       - name: Checkout to the branch
@@ -32,12 +28,11 @@ jobs:
           subscription-id: ${{ secrets.JAMBOBOOKINGAPP_AZURE_SUBSCRIPTION_ID }}
 
       - name: Build and push container image to registry
-        uses: azure/container-apps-deploy-action@v2
-        with:
-          appSourcePath: ${{ github.workspace }} 
-          registryUrl: ${{ secrets.JAMBOBOOKINGAPP_REGISTRY_URL }}
-          registryUsername: ${{ secrets.JAMBOBOOKINGAPP_REGISTRY_USERNAME }}
-          registryPassword: ${{ secrets.JAMBOBOOKINGAPP_REGISTRY_PASSWORD }}
-          containerAppName: jambo-booking-app
-          resourceGroup: JamboBookingApp
-          imageToBuild: default/${{ secrets.JAMBOBOOKINGAPP_REGISTRY_USERNAME }}/jambo-booking-app:${{ github.sha }}
+        run: |
+          az acr login --name ${{ secrets.JAMBOBOOKINGAPP_REGISTRY_NAME }}
+          docker build -t ${{ secrets.JAMBOBOOKINGAPP_REGISTRY_URL }}/jambo-booking-app:${{ github.sha }} .
+          docker push ${{ secrets.JAMBOBOOKINGAPP_REGISTRY_URL }}/jambo-booking-app:${{ github.sha }}
+
+      - name: Deploy to Azure Container Apps
+        run: |
+          az containerapp update -n jambo-booking-app -g JamboBookingApp --image ${{ secrets.JAMBOBOOKINGAPP_REGISTRY_URL }}/jambo-booking-app:${{ github.sha }}
