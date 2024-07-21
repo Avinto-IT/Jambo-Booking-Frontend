@@ -23,10 +23,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import BreadcrumbHome from "@/components/Home-Breadcrumb/BreadcrumbHome";
 
-interface TopImgProp {
-  title: string;
-}
-const Contact: React.FC<TopImgProp> = ({ title }) => {
+const Contact: React.FC = ({}) => {
   const [info, setInfo] = useState({
     firstName: "",
     lastName: "",

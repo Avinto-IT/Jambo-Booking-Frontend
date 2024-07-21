@@ -68,6 +68,7 @@ export default function Hero() {
         <div className="w-full max-w-7xl">
           <div className="flex flex-col md:flex-row items-center justify-center gap-4">
             <Select
+              instanceId="location-select"
               options={locations.map((location) => ({
                 value: location.locationID,
                 label: `${location.city}, ${location.country}`,

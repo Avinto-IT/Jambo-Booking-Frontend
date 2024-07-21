@@ -17,6 +17,7 @@ function FindHotels() {
       <div className="grid grid-cols-3 grid-rows-2   gap-x-5 gap-y-4  ">
         {data.map((index, id) => (
           <div
+            key={id}
             className="flex flex-col mb-2 border pb-5 border-gray-200 rounded-lg "
             onClick={() => {
               console.log({ id });

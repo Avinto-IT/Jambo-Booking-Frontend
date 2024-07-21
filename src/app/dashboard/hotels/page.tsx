@@ -34,13 +34,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useRouter } from "next/navigation";
 import AdminLayout from "@/components/Layout/AdminLayout";
 import { Input } from "@/components/ui/input";
-import { Hotels } from "@/utils/types";
+import { Hotel } from "@/utils/types";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { toast, Toaster } from "sonner";
 
 export default function HotelsDashboard() {
-  const [hotels, setHotels] = useState<Hotels[]>([]);
+  const [hotels, setHotels] = useState<Hotel[]>([]);
   const router = useRouter();
 
   useEffect(() => {

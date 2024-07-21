@@ -24,7 +24,6 @@ export default function Login() {
   // const [email, setEmail] = useState("");
   // const [password, setPassword] = useState("");
   const [fields, setFields] = useState({ email: "", password: "" });
-  console.log(fields);
   const [message, setMessage] = useState("");
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {

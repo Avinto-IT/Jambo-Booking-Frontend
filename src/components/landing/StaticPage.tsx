@@ -18,7 +18,7 @@ function StaticPage() {
               </p>
               <p className="h-14 leading-7">
                 Choose from a diverse selection of over 170 hotels, offering a
-                variety of options to suit every traveler's needs and
+                variety of options to suit every traveler&apos;s needs and
                 preferences.
               </p>
             </div>
