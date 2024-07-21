@@ -36,7 +36,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Select, { components, MenuListProps } from "react-select";
-import { Location } from "@/utils/types";
+import { HouseRuleInterface, Location } from "@/utils/types";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Table,
@@ -84,8 +84,14 @@ interface Room {
   numberOfRooms: string;
   price: string;
   capacity: string;
-  bedType: string;
-  numberOfBeds: string;
+  beds: {
+    bedType: {
+      label: string;
+      value: string;
+    };
+    numberOfBeds: string;
+  }[];
+
   amenities: { id: number; name: string }[];
 }
 
@@ -158,8 +164,17 @@ const roomSchema = z.object({
   numberOfRooms: z.string().min(1, "Number of rooms is required"),
   price: z.string().min(1, "Price is required"),
   capacity: z.string().min(1, "Capacity is required"),
-  bedType: z.string().min(1, "Bed type is required"),
-  numberOfBeds: z.string().min(1, "Number of beds is required"),
+  beds: z
+    .array(
+      z.object({
+        bedType: z.object({
+          label: z.string().min(1, "Bed Type is required"),
+          value: z.string().min(1, "Bed Type is required"),
+        }),
+        numberOfBeds: z.string().min(1, "Number of beds is required"),
+      })
+    )
+    .min(1, "At least one bed configuration is required"),
   amenities: z
     .array(z.object({ name: z.string().min(1, "Amenity name is required") }))
     .min(1, "At least one amenity is required"),
@@ -248,8 +263,16 @@ export default function AddHotel() {
           numberOfRooms: "",
           price: "",
           capacity: "",
-          bedType: "",
-          numberOfBeds: "",
+          beds: [
+            {
+              bedType: {
+                value: "",
+                label: "",
+              },
+              numberOfBeds: "",
+            },
+          ],
+
           amenities: [{ id: 1, name: "" }],
         },
       ],
@@ -307,7 +330,7 @@ export default function AddHotel() {
 
   const [token, setToken] = useState<string | null>(null);
   const [locations, setLocations] = useState<Location[]>([]);
-  const [newLocation, setNewLocation] = useState<SelectOption | null>(null);
+  const [houseRules, setHouseRules] = useState<HouseRuleInterface[]>([]);
 
   const router = useRouter();
   const [isSubmitClicked, setIsSubmitClicked] = useState(false);
@@ -354,9 +377,25 @@ export default function AddHotel() {
     };
     fetchLocations();
   }, []);
+  useEffect(() => {
+    const fetchHouseRules = async () => {
+      try {
+        const response = await fetch("/api/getHouseRules");
+        const data: HouseRuleInterface[] = await response.json();
+        setHouseRules(data);
+      } catch (error) {
+        console.error("Error fetching house rules:", error);
+      }
+    };
+    fetchHouseRules();
+  }, []);
   const locationOptions = locations.map((location) => ({
     value: location.locationID,
     label: `${location.address}, ${location.city}, ${location.country}, ${location.zipCode}`,
+  }));
+  const houseRulesOptions = houseRules.map((rule) => ({
+    value: rule.houseRule,
+    label: rule.houseRule,
   }));
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
@@ -387,9 +426,10 @@ export default function AddHotel() {
         type: room.type,
         numberOfRooms: room.numberOfRooms,
         price: room.price,
-        capacity: room.capacity,
-        bedType: room.bedType,
-        numberOfBeds: room.numberOfBeds,
+        beds: room.beds.map((bed) => ({
+          bedType: bed.bedType.value,
+          numberOfBeds: bed.numberOfBeds,
+        })),
         amenities: room.amenities.map((amenity) => ({
           name: amenity.name,
         })),
@@ -421,6 +461,7 @@ export default function AddHotel() {
         }, 2000);
       } else {
         toast.error(`Error: ${result.error}`);
+        setIsSubmitClicked(false);
       }
     } catch (error) {
       setIsSubmitClicked(false);
@@ -563,7 +604,6 @@ export default function AddHotel() {
         });
 
         const result = await response.json();
-        console.log(result, "result");
         if (response.ok) {
           const newLoc = {
             value: result.location.locationID,
@@ -1096,7 +1136,6 @@ export default function AddHotel() {
       register,
       formState: { errors },
     } = methods;
-    console.log(errors);
 
     const addAmenity = (roomIndex: number) => {
       const newAmenity = { id: Date.now(), name: "" };
@@ -1111,6 +1150,44 @@ export default function AddHotel() {
       methods.setValue("rooms", rooms);
     };
 
+    const addBed = (roomIndex: number) => {
+      const newBed = {
+        bedType: { label: "", value: "" },
+        numberOfBeds: "",
+      };
+      const rooms = methods.getValues("rooms");
+      rooms[roomIndex].beds.push(newBed);
+      methods.setValue("rooms", rooms);
+    };
+
+    const removeBed = (roomIndex: number, bedIndex: number) => {
+      const rooms = methods.getValues("rooms");
+      rooms[roomIndex].beds.splice(bedIndex, 1);
+      methods.setValue("rooms", rooms);
+    };
+    const bedTypeOptions = [
+      "Single",
+      "Double",
+      "Queen",
+      "King",
+      "Twin",
+      "Twin XL",
+      "Full",
+      "Full XL",
+      "California King",
+      "Eastern King",
+      "Sofa Bed",
+      "Murphy Bed",
+      "Trundle Bed",
+      "Bunk Bed",
+      "Daybed",
+      "Canopy Bed",
+      "Four Poster Bed",
+      "Hammock",
+    ];
+
+    console.log(errors);
+    console.log(methods.getValues());
     return (
       <div className="p-6 space-y-6">
         {roomFields.map((room, roomIndex) => (
@@ -1146,6 +1223,7 @@ export default function AddHotel() {
                 </Label>
                 <Input
                   id={`number-of-rooms-${room.id}`}
+                  type="number"
                   {...register(`rooms.${roomIndex}.numberOfRooms`)}
                   placeholder="Lorem Ipsum"
                   onKeyDown={handleKeyDown}
@@ -1161,6 +1239,7 @@ export default function AddHotel() {
                 <Label htmlFor={`price-${room.id}`}>Price</Label>
                 <Input
                   id={`price-${room.id}`}
+                  type="number"
                   {...register(`rooms.${roomIndex}.price`)}
                   placeholder="Lorem Ipsum"
                   required
@@ -1172,9 +1251,10 @@ export default function AddHotel() {
                     {(errors.rooms[roomIndex]?.price as FieldError)?.message}
                   </span>
                 )}
-                <Label htmlFor={`capacity-${room.id}`}>Capacity</Label>
+                <Label htmlFor={`capacity-${room.id}`}>Max Occupants</Label>
                 <Input
                   id={`capacity-${room.id}`}
+                  type="number"
                   {...register(`rooms.${roomIndex}.capacity`)}
                   placeholder="Lorem Ipsum"
                   onKeyDown={handleKeyDown}
@@ -1184,35 +1264,81 @@ export default function AddHotel() {
                     {(errors.rooms[roomIndex]?.capacity as FieldError)?.message}
                   </span>
                 )}
-                <Label htmlFor={`bed-type-${room.id}`}>Bed Type</Label>
-                <Input
-                  id={`bed-type-${room.id}`}
-                  {...register(`rooms.${roomIndex}.bedType`)}
-                  placeholder="Lorem Ipsum"
-                  onKeyDown={handleKeyDown}
-                />
-                {errors?.rooms?.[roomIndex]?.bedType?.message && (
+                <Label>Bed Types</Label>
+                {room.beds.map((bed, bedIndex) => (
+                  <div key={bedIndex} className="flex gap-4 items-center">
+                    <div className="flex-1">
+                      <Controller
+                        name={`rooms.${roomIndex}.beds.${bedIndex}.bedType`}
+                        control={methods.control}
+                        render={({ field }) => (
+                          <Select
+                            {...field}
+                            options={bedTypeOptions.map((bed) => ({
+                              value: bed,
+                              label: bed,
+                            }))}
+                            placeholder="Select Bed"
+                          />
+                        )}
+                      />
+                      {errors?.rooms?.[roomIndex]?.beds?.[bedIndex]?.bedType
+                        ?.value?.message && (
+                        <span className="text-red-500">
+                          {
+                            (
+                              errors?.rooms?.[roomIndex]?.beds?.[bedIndex]
+                                ?.bedType?.value as FieldError
+                            )?.message
+                          }
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <Input
+                        id={`rooms.${roomIndex}.beds.${bedIndex}.numberOfBeds`}
+                        {...register(
+                          `rooms.${roomIndex}.beds.${bedIndex}.numberOfBeds`
+                        )}
+                        placeholder="Number of Beds"
+                        type="number"
+                        onKeyDown={handleKeyDown}
+                      />
+                      {errors?.rooms?.[roomIndex]?.beds?.[bedIndex]
+                        ?.numberOfBeds && (
+                        <span className="text-red-500">
+                          {
+                            (
+                              errors?.rooms?.[roomIndex]?.beds?.[bedIndex]
+                                ?.numberOfBeds as FieldError
+                            )?.message
+                          }
+                        </span>
+                      )}
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => removeBed(roomIndex, bedIndex)}
+                    >
+                      <Trash className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+                <Button
+                  variant="ghost"
+                  onClick={() => addBed(roomIndex)}
+                  className="flex items-center gap-1 border"
+                >
+                  <PlusCircle className="h-4 w-4" />
+                  Add Bed
+                </Button>
+                {errors?.rooms?.[roomIndex]?.beds?.root?.message && (
                   <span className="text-red-500">
-                    {(errors.rooms[roomIndex]?.bedType as FieldError)?.message}
+                    {errors?.rooms?.[roomIndex]?.beds?.root?.message}
                   </span>
                 )}
-                <Label htmlFor={`number-of-beds-${room.id}`}>
-                  Number of Beds
-                </Label>
-                <Input
-                  id={`number-of-beds-${room.id}`}
-                  {...register(`rooms.${roomIndex}.numberOfBeds`)}
-                  placeholder="Lorem Ipsum"
-                  onKeyDown={handleKeyDown}
-                />
-                {errors?.rooms?.[roomIndex]?.numberOfBeds?.message && (
-                  <span className="text-red-500">
-                    {
-                      (errors.rooms[roomIndex]?.numberOfBeds as FieldError)
-                        ?.message
-                    }
-                  </span>
-                )}
+                <Label>Amenities</Label>
                 <div>
                   <Table className="w-full">
                     <TableHeader>
@@ -1265,7 +1391,7 @@ export default function AddHotel() {
                             {roomError?.amenities?.root.message}
                           </span>
                         )}
-                        {Array.isArray(roomError.amenities) &&
+                        {Array.isArray(roomError?.amenities) &&
                           roomError.amenities.map(
                             (
                               amenityError: AmenityError,
@@ -1308,8 +1434,7 @@ export default function AddHotel() {
                 numberOfRooms: "",
                 price: "",
                 capacity: "",
-                bedType: "",
-                numberOfBeds: "",
+                beds: [{ bedType: { label: "", value: "" }, numberOfBeds: "" }],
                 amenities: [{ id: Date.now(), name: "" }],
               })
             }
@@ -1329,14 +1454,106 @@ export default function AddHotel() {
   function HouseRules() {
     const {
       register,
+      setValue,
       formState: { errors },
     } = methods;
 
-    const houseRuleOptions = [
-      { value: "No Smoking", label: "No Smoking" },
-      { value: "No Pets", label: "No Pets" },
-      { value: "No Parties", label: "No Parties" },
-    ];
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [newHouseRule, setNewHouseRule] = useState({ newRule: "" });
+    const [houseRuleErrors, setHouseRuleErrors] = useState({
+      newRule: null as string | null,
+    });
+
+    const validateHouseRule = () => {
+      let valid = true;
+      let errors: { newRule: string | null } = { newRule: null };
+
+      if (!newHouseRule.newRule) {
+        valid = false;
+        errors.newRule = "House Rule is required";
+      }
+
+      setHouseRuleErrors(errors);
+      return valid;
+    };
+
+    const MenuList = (props: MenuListProps<any>) => {
+      return (
+        <components.MenuList {...props}>
+          {props.children}
+          <div
+            style={{
+              borderTop: "1px solid #ccc",
+              padding: "8px 12px",
+              cursor: "pointer",
+              color: "green",
+            }}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              setIsDialogOpen(true);
+            }}
+          >
+            Add new house rule
+          </div>
+        </components.MenuList>
+      );
+    };
+
+    const closeDialog = () => {
+      setIsDialogOpen(false);
+      setNewHouseRule({ newRule: "" });
+    };
+
+    const handleHouseRuleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = e.target;
+      setNewHouseRule((prevState) => ({ ...prevState, [name]: value }));
+    };
+
+    const handleAddHouseRule = async () => {
+      if (!validateHouseRule()) return;
+
+      const payload = { houseRuleName: newHouseRule.newRule };
+
+      try {
+        const response = await fetch("/api/addHouseRules", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+          const newRule = {
+            value: result.houseRule.houseRuleId,
+            label: result.houseRule.houseRule,
+          };
+          setValue("houseRules", newRule);
+          setHouseRules((prevRule) => [
+            ...prevRule,
+            {
+              houseRuleId: result.houseRule.houseRuleId,
+              houseRule: result.houseRule.houseRule,
+            },
+          ]);
+          appendHouseRule({
+            id: Date.now(),
+            type: newRule,
+            details: "",
+          });
+          closeDialog();
+          toast.success(result.message);
+        } else {
+          console.error("Error adding house rule:", result);
+          toast.error(result.error);
+        }
+      } catch (error) {
+        console.error("Error adding house rule:", error);
+        toast.error("Error adding house rule");
+      }
+    };
 
     return (
       <div className="p-6 space-y-6">
@@ -1365,7 +1582,8 @@ export default function AddHotel() {
                   render={({ field }) => (
                     <Select
                       {...field}
-                      options={houseRuleOptions}
+                      options={[...houseRulesOptions]}
+                      components={{ MenuList }}
                       placeholder="Select house rule"
                     />
                   )}
@@ -1387,7 +1605,9 @@ export default function AddHotel() {
                   id={`house-rule-details-${houseRule.id}`}
                   {...register(`houseRules.${index}.details`)}
                   placeholder="Lorem Ipsum"
-                  onKeyDown={handleKeyDown}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") e.preventDefault();
+                  }}
                 />
                 {(errors?.houseRules?.[index]?.details as FieldError)
                   ?.message && (
@@ -1424,6 +1644,33 @@ export default function AddHotel() {
             {errors?.houseRules?.root.message}
           </span>
         )}
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add New House Rule</DialogTitle>
+            </DialogHeader>
+            <div className="flex flex-col gap-3">
+              <Label htmlFor="newRule">House Rule</Label>
+              <Input
+                id="newRule"
+                name="newRule"
+                value={newHouseRule.newRule}
+                onChange={handleHouseRuleInput}
+              />
+              {houseRuleErrors.newRule && (
+                <span className="text-red-500">{houseRuleErrors.newRule}</span>
+              )}
+              <div className="flex justify-end gap-2 mt-4">
+                <Button onClick={handleAddHouseRule} type="button">
+                  Add House Rule
+                </Button>
+                <Button variant="outline" onClick={closeDialog}>
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     );
   }
@@ -1753,15 +2000,25 @@ export default function AddHotel() {
                     <Value> {room.capacity}</Value>
                   </div>
 
-                  <div className="flex items-center justify-between">
-                    <Title>Bed Type</Title>
-                    <Value> {room.bedType}</Value>
+                  <div>
+                    <Title className="text-base font-semibold">Beds</Title>
+                    {room.beds.map((bed, bedIndex) => (
+                      <div
+                        key={bedIndex}
+                        className="flex items-center justify-between"
+                      >
+                        <div className="flex items-center justify-between">
+                          <Title>Bed Type</Title>
+                          <Value> {bed.bedType.value}</Value>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <Title>Number of Beds</Title>
+                          <Value> {bed.numberOfBeds}</Value>
+                        </div>
+                      </div>
+                    ))}
                   </div>
 
-                  <div className="flex items-center justify-between">
-                    <Title>Number of Beds</Title>
-                    <Value> {room.numberOfBeds}</Value>
-                  </div>
                   <div>
                     <Title className="text-base font-semibold">Amenities</Title>
                     <ul className="list-disc pl-5">

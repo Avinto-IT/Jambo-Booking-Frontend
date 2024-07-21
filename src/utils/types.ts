@@ -106,11 +106,7 @@ export interface Room {
   }[];
 }
 
-export interface HouseRule {
-  id: number;
-  type: {
-    label: string;
-    value: string;
-  };
-  details: string;
+export interface HouseRuleInterface {
+  id: string;
+  houseRule: string;
 }
