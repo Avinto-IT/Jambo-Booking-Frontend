@@ -31,11 +31,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import DialogBox from "@/components/AdminComponents/DialogBox";
+import DialogBox from "@/components/AdminComponents/ImagePopup";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import Select from "react-select";
+import Select, { components, MenuListProps } from "react-select";
 import { Location } from "@/utils/types";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -52,6 +52,15 @@ import {
   Title,
   Value,
 } from "@/components/AdminComponents/Sub-Components/ReviewComponents";
+import { uploadFiles } from "@/components/AdminComponents/functions";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 interface HouseRule {
   id: number;
@@ -118,7 +127,10 @@ interface CollapsedSectionsState {
   houseRules: boolean;
   contactDetails: boolean;
 }
-
+interface SelectOption {
+  value: string;
+  label: string;
+}
 const basicInfoSchema = z.object({
   name: z.string().min(1, "Hotel name is required"),
   location: z.object({
@@ -295,6 +307,8 @@ export default function AddHotel() {
 
   const [token, setToken] = useState<string | null>(null);
   const [locations, setLocations] = useState<Location[]>([]);
+  const [newLocation, setNewLocation] = useState<SelectOption | null>(null);
+
   const router = useRouter();
   const [isSubmitClicked, setIsSubmitClicked] = useState(false);
   const [previewPrimaryImage, setPreviewPrimaryImage] = useState<string | null>(
@@ -332,47 +346,22 @@ export default function AddHotel() {
     const fetchLocations = async () => {
       try {
         const response = await fetch("/api/getLocation");
-        const data = await response.json();
+        const data: Location[] = await response.json();
         setLocations(data);
       } catch (error) {
         console.error("Error fetching locations:", error);
       }
     };
-
     fetchLocations();
   }, []);
-
+  const locationOptions = locations.map((location) => ({
+    value: location.locationID,
+    label: `${location.address}, ${location.city}, ${location.country}, ${location.zipCode}`,
+  }));
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     setToken(storedToken);
   }, []);
-  const uploadFiles = async (files: File[], primaryImage: File | null) => {
-    const urls = [];
-
-    if (primaryImage) {
-      const primaryImageResponse = await fetch(
-        `/api/uploadImage?filename=primary/${primaryImage.name}`,
-        {
-          method: "POST",
-          body: primaryImage,
-        }
-      );
-      const primaryImageData = await primaryImageResponse.json();
-      urls.push(primaryImageData.url);
-    }
-
-    for (const file of Array.from(files)) {
-      const response = await fetch(`/api/uploadImage?filename=${file.name}`, {
-        method: "POST",
-        body: file,
-      });
-
-      const data = await response.json();
-      urls.push(data.url);
-    }
-
-    return urls;
-  };
 
   const onSubmit = async (data: FormData) => {
     setIsSubmitClicked(true);
@@ -464,8 +453,136 @@ export default function AddHotel() {
   function BasicInformation() {
     const {
       register,
+      setValue,
       formState: { errors },
     } = methods;
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+    const [newLocation, setNewLocation] = useState({
+      newAddress: "",
+      newCity: "",
+      newCountry: "",
+      newZipCode: "",
+    });
+    const [locationErrors, setLocationErrors] = useState({
+      newAddress: null as string | null,
+      newCity: null as string | null,
+      newCountry: null as string | null,
+      newZipCode: null as string | null,
+    });
+    const validateLocation = () => {
+      let valid = true;
+      let errors: {
+        newAddress: string | null;
+        newCity: string | null;
+        newCountry: string | null;
+        newZipCode: string | null;
+      } = {
+        newAddress: null,
+        newCity: null,
+        newCountry: null,
+        newZipCode: null,
+      };
+
+      if (!newLocation.newAddress) {
+        valid = false;
+        errors.newAddress = "Address is required";
+      }
+      if (!newLocation.newCity) {
+        valid = false;
+        errors.newCity = "City is required";
+      }
+      if (!newLocation.newCountry) {
+        valid = false;
+        errors.newCountry = "Country is required";
+      }
+      if (!newLocation.newZipCode) {
+        valid = false;
+        errors.newZipCode = "Zip Code is required";
+      }
+
+      setLocationErrors(errors);
+      return valid;
+    };
+    const MenuList = (props: MenuListProps<any>) => {
+      return (
+        <components.MenuList {...props}>
+          {props.children}
+          <div
+            style={{
+              borderTop: "1px solid #ccc",
+              padding: "8px 12px",
+              cursor: "pointer",
+              color: "green",
+            }}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              setIsDialogOpen(true);
+            }}
+          >
+            Add new location
+          </div>
+        </components.MenuList>
+      );
+    };
+    const closeDialog = () => {
+      setIsDialogOpen(false);
+      setNewLocation({
+        newAddress: "",
+        newCity: "",
+        newCountry: "",
+        newZipCode: "",
+      });
+    };
+    const handleLocationInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = e.target;
+      setNewLocation((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    };
+    const handleAddLocation = async () => {
+      if (!validateLocation()) {
+        return;
+      }
+      const payload = {
+        address: newLocation.newAddress,
+        city: newLocation.newCity,
+        country: newLocation.newCountry,
+        zipCode: newLocation.newZipCode,
+      };
+
+      try {
+        const response = await fetch("/api/addLocation", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        });
+
+        const result = await response.json();
+        console.log(result, "result");
+        if (response.ok) {
+          const newLoc = {
+            value: result.location.locationID,
+            label: `${result.location.address}, ${result.location.city}, ${result.location.country}, ${result.location.zipCode}`,
+          };
+          console.log(newLoc);
+          setLocations((prevLocations) => [...prevLocations, result.location]);
+          setValue("basicInfo.location", newLoc);
+          closeDialog();
+          toast.success(result.message);
+        } else {
+          console.error("Error adding location:", result);
+          toast.error(result.error);
+        }
+      } catch (error) {
+        console.error("Error adding location:", error);
+        toast.error("Error adding location");
+      }
+    };
 
     return (
       <div className="grid gap-8">
@@ -505,10 +622,8 @@ export default function AddHotel() {
                     <Select
                       {...field}
                       instanceId="location-select"
-                      options={locations.map((location) => ({
-                        value: location.locationID,
-                        label: `${location.city}, ${location.country}`,
-                      }))}
+                      components={{ MenuList }}
+                      options={[...locationOptions]}
                       placeholder="Select Location"
                     />
                   )}
@@ -694,6 +809,69 @@ export default function AddHotel() {
             </div>
           </CardContent>
         </Card>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add New Location</DialogTitle>
+            </DialogHeader>
+            <div className="flex flex-col gap-3">
+              <Label htmlFor="newAddress">Address</Label>
+              <Input
+                id="newAddress"
+                name="newAddress"
+                value={newLocation.newAddress}
+                onChange={handleLocationInput}
+              />
+              {locationErrors.newAddress && (
+                <span className="text-red-500">
+                  {locationErrors.newAddress}
+                </span>
+              )}
+              <Label htmlFor="newCity">City</Label>
+              <Input
+                id="newCity"
+                name="newCity"
+                value={newLocation.newCity}
+                onChange={handleLocationInput}
+              />
+              {locationErrors.newCity && (
+                <span className="text-red-500">{locationErrors.newCity}</span>
+              )}
+              <Label htmlFor="newCountry">Country</Label>
+              <Input
+                id="newCountry"
+                name="newCountry"
+                value={newLocation.newCountry}
+                onChange={handleLocationInput}
+              />
+              {locationErrors.newCountry && (
+                <span className="text-red-500">
+                  {locationErrors.newCountry}
+                </span>
+              )}
+              <Label htmlFor="newZipCode">Zip Code</Label>
+              <Input
+                id="newZipCode"
+                name="newZipCode"
+                value={newLocation.newZipCode}
+                onChange={handleLocationInput}
+              />
+              {locationErrors.newZipCode && (
+                <span className="text-red-500">
+                  {locationErrors.newZipCode}
+                </span>
+              )}
+              <div className="flex justify-end gap-2 mt-4">
+                <Button onClick={handleAddLocation} type="button">
+                  Add Location
+                </Button>
+                <Button variant="outline" onClick={closeDialog}>
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     );
   }
@@ -1406,7 +1584,7 @@ export default function AddHotel() {
               />
 
               <CardTitle className="text-2xl font-semibold">
-                Basic Information
+                General Information
                 <div className="text-sm font-normal text-slate-400">
                   Lipsum dolor sit amet, consectetur adipiscing elit
                 </div>
@@ -1571,7 +1749,7 @@ export default function AddHotel() {
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <Title>Capacity</Title>
+                    <Title>Max Occupants</Title>
                     <Value> {room.capacity}</Value>
                   </div>
 
