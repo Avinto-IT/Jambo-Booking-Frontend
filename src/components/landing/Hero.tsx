@@ -46,6 +46,7 @@ export default function Hero() {
       height: "52px",
     }),
   };
+  if (!location) return <>Loading..</>;
   return (
     <section
       className="relative bg-cover 
@@ -54,7 +55,7 @@ export default function Hero() {
       style={{ backgroundImage: "url('/images/hero.png')" }}
     >
       <div className="absolute inset-0 bg-black opacity-85"></div>
-      <div className="relative z-10 flex flex-col items-center justify-center h-full text-center text-white px-6">
+      <div className="relative z-0 flex flex-col items-center justify-center h-full text-center text-white px-6">
         <h1 className="text-4xl md:text-6xl font-bold mb-4">
           Book Your Stay at Jambo Hotels
         </h1>

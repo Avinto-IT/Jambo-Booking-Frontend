@@ -66,9 +66,9 @@ export default function HotelsDashboard() {
                     }}
                   >
                     <div className="relative overflow-hidden rounded-md outline-gray-200 h-72 w-full">
-                      <Image
-                        src={randomImg}
-                        alt="index"
+                      <img
+                        src={hotel.primaryImageLink}
+                        alt="HotelImage"
                         className="h-72 w-full rounded-md transition-transform duration-500 ease-in-out transform hover:scale-105 hover:brightness-75 hover:rounded-lg object-cover"
                       />
                     </div>
