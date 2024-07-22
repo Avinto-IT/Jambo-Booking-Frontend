@@ -65,11 +65,12 @@ model User {
 }
 
 model Location {
-  locationID String @id @default(auto()) @map("_id") @db.ObjectId
+  locationID String  @id @default(auto()) @map("_id") @db.ObjectId
   city       String
   country    String
-
-  hotels Hotel[]
+  address    String
+  zipCode    String
+  hotels     Hotel[]
 }
 
 model Booking {
@@ -94,4 +95,9 @@ model BookingHistory {
   booking Booking @relation(fields: [bookingID], references: [bookingID])
   userID  String  @db.ObjectId
   user    User    @relation(fields: [userID], references: [userID])
+}
+
+model HouseRules {
+  houseRuleId String @id @default(auto()) @map("_id") @db.ObjectId
+  houseRule   String
 }

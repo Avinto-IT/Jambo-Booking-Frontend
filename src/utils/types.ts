@@ -8,8 +8,10 @@ export interface UserDetails {
 
 export interface Location {
   locationID: string;
+  address: string;
   city: string;
   country: string;
+  zipCode: string;
 }
 
 export interface Hotel {
@@ -104,11 +106,7 @@ export interface Room {
   }[];
 }
 
-export interface HouseRule {
-  id: number;
-  type: {
-    label: string;
-    value: string;
-  };
-  details: string;
+export interface HouseRuleInterface {
+  id: string;
+  houseRule: string;
 }
