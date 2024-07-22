@@ -1530,11 +1530,10 @@ export default function AddHotel() {
             value: result.houseRule.houseRuleId,
             label: result.houseRule.houseRule,
           };
-          setValue("houseRules", newRule);
           setHouseRules((prevRule) => [
             ...prevRule,
             {
-              houseRuleId: result.houseRule.houseRuleId,
+              id: result.houseRule.houseRuleId,
               houseRule: result.houseRule.houseRule,
             },
           ]);
