@@ -120,7 +120,6 @@ interface FormData {
     hotelID: string;
     name: string;
     location: { value: string; label: string };
-    discount: string;
     description: string;
   };
   facilities: Facility[];
@@ -149,7 +148,6 @@ const basicInfoSchema = z.object({
     value: z.string().min(1, "Location is required"),
     // label: z.string().min(1, "Location label is required"),
   }),
-  discount: z.string().optional(),
   description: z.string().min(1, "Description is required"),
 });
 
@@ -231,7 +229,7 @@ export default function AdminUpdateHotel() {
 }
 const AdminUpdateHotelContent = () => {
   const steps = [
-    { component: BasicInformation, label: "Basic Information" },
+    { component: BasicInformation, label: "Hotel Information" },
     { component: Facilities, label: "Facilities" },
     { component: AddRoom, label: "Room" },
     { component: HouseRules, label: "House Rules" },
@@ -273,7 +271,6 @@ const AdminUpdateHotelContent = () => {
           value: "",
           label: "",
         },
-        discount: "",
         description: "",
       },
       facilities: [
@@ -346,7 +343,6 @@ const AdminUpdateHotelContent = () => {
                   value: data.hotel.locationID,
                   label: data.hotel.address,
                 },
-                discount: data.hotel.discount.toString(),
                 description: data.hotel.description,
               },
               facilities: data.hotel.facilities.map(
@@ -546,7 +542,6 @@ const AdminUpdateHotelContent = () => {
         details: houseRule.details,
       })),
       isRunning: data.isRunning,
-      discount: parseFloat(data.basicInfo.discount),
     };
     console.log(payload);
 
@@ -565,7 +560,7 @@ const AdminUpdateHotelContent = () => {
         toast.success("Hotel updated successfully!"); // Use toast to show success message
         setTimeout(() => {
           router.push("/dashboard/hotels");
-        }, 3000);
+        }, 1500);
       } else {
         toast.error(`Error: ${result.error}`);
       }
@@ -737,7 +732,7 @@ const AdminUpdateHotelContent = () => {
               Hotel Details
             </CardTitle>
             <CardDescription>
-              Lipsum Dolor sit amet, consecteur adipiscing elit
+              Update previously set basic hotel details such as name, location
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -748,7 +743,7 @@ const AdminUpdateHotelContent = () => {
                   id="name"
                   type="text"
                   className="w-full"
-                  placeholder="Hotel's Name"
+                  placeholder="Radisson Hotel"
                   {...register("basicInfo.name")}
                   onKeyDown={handleKeyDown}
                 />
@@ -779,35 +774,14 @@ const AdminUpdateHotelContent = () => {
                   </span>
                 )}
               </div>
-              <div className="flex flex-col gap-3">
-                <Label htmlFor="discount">Discount Offer</Label>
-                <Controller
-                  name="basicInfo.discount"
-                  control={methods.control}
-                  render={({ field }) => (
-                    <Input
-                      id="discount"
-                      type="number"
-                      className="w-full"
-                      {...field}
-                      placeholder="Discount Offer"
-                      onKeyDown={handleKeyDown}
-                    />
-                  )}
-                />
-                {errors?.basicInfo?.discount?.message && (
-                  <span className="text-red-500">
-                    {errors.basicInfo.discount.message}
-                  </span>
-                )}
-              </div>
+
               <div className="flex flex-col gap-3">
                 <Label htmlFor="description">Description</Label>
                 <Textarea
                   id="description"
                   className="w-full"
                   {...register("basicInfo.description")}
-                  placeholder="Description"
+                  placeholder="Located in Kathmandu, 1.7 miles from Hanuman Dhoka, Hotel Lapha provides accommodations with a terrace, free private parking, a restaurant and a bar. "
                   onKeyDown={handleKeyDown}
                 />
                 {errors?.basicInfo?.description?.message && (
@@ -820,6 +794,9 @@ const AdminUpdateHotelContent = () => {
                 <Label htmlFor="primaryImage" className="text-base">
                   Primary Image
                 </Label>
+                <div className="-mt-2 text-sm text-muted-foreground">
+                  Update previously set main image
+                </div>
                 <label
                   htmlFor="primaryImage"
                   className="flex items-center border shadow max-w-max px-3 py-1.5 rounded gap-2 cursor-pointer"
@@ -869,7 +846,7 @@ const AdminUpdateHotelContent = () => {
           <CardHeader>
             <CardTitle>Hotel Images</CardTitle>
             <CardDescription>
-              Lipsum dolor sit amet, consectetur adipiscing elit
+              Update your previously set image list
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -1063,10 +1040,12 @@ const AdminUpdateHotelContent = () => {
         {facilityFields.map((facility, facilityIndex) => (
           <Card key={facility.id} className="overflow-hidden flex flex-col">
             <CardHeader className="flex flex-row justify-between ">
-              <div>
+              <div className="flex flex-col gap-1">
                 <CardTitle>Facility {facilityIndex + 1}</CardTitle>
                 <CardDescription>
-                  Lipsum dolor sit amet, consectetur adipiscing elit
+                  A facility could be spa, gym, rooftop bar etc. Obs! room
+                  specific facilities such as TV etc should be added in the Room
+                  section
                 </CardDescription>
               </div>
               <Button
@@ -1080,7 +1059,7 @@ const AdminUpdateHotelContent = () => {
             <CardContent>
               <div className="flex flex-col gap-4">
                 <Label htmlFor={`facility-name-${facility.id}`}>
-                  Facility Name
+                  Facility Category
                 </Label>
                 <Controller
                   name={`facilities.${facilityIndex}.name`}
@@ -1109,7 +1088,7 @@ const AdminUpdateHotelContent = () => {
                   id={`facility-description-${facility.id}`}
                   type="text"
                   {...register(`facilities.${facilityIndex}.description`)}
-                  placeholder="Lorem Ipsum"
+                  placeholder=" Our reception provides exceptional service which begins the moment you step through..."
                   onKeyDown={handleKeyDown}
                 />
                 {errors?.facilities?.[facilityIndex]?.description?.message && (
@@ -1142,7 +1121,7 @@ const AdminUpdateHotelContent = () => {
                                 render={({ field }) => (
                                   <Input
                                     {...field}
-                                    placeholder="Lorem Ipsum"
+                                    placeholder="Customer Service Desk"
                                     className="flex-1"
                                     onKeyDown={handleKeyDown}
                                   />
@@ -1295,10 +1274,11 @@ const AdminUpdateHotelContent = () => {
         {roomFields.map((room, roomIndex) => (
           <Card key={room.id} className="overflow-hidden flex flex-col">
             <CardHeader className="flex flex-row justify-between ">
-              <div>
+              <div className="flex flex-col gap-1">
                 <CardTitle>Room Type {roomIndex + 1}</CardTitle>
                 <CardDescription>
-                  Lipsum dolor sit amet, consectetur adipiscing elit
+                  Update the different types of rooms available at your hotel,
+                  including their details.
                 </CardDescription>
               </div>
               <Button variant="outline" onClick={() => removeRoom(roomIndex)}>
@@ -1312,7 +1292,7 @@ const AdminUpdateHotelContent = () => {
                 <Input
                   id={`room-type-${room.id}`}
                   {...register(`rooms.${roomIndex}.type`)}
-                  placeholder="Lorem Ipsum"
+                  placeholder="Deluxe Room"
                   onKeyDown={handleKeyDown}
                 />
                 {(errors?.rooms?.[roomIndex]?.type as FieldError)?.message && (
@@ -1327,7 +1307,7 @@ const AdminUpdateHotelContent = () => {
                   id={`number-of-rooms-${room.id}`}
                   type="number"
                   {...register(`rooms.${roomIndex}.numberOfRooms`)}
-                  placeholder="Lorem Ipsum"
+                  placeholder="4"
                   onKeyDown={handleKeyDown}
                 />
                 {errors?.rooms?.[roomIndex]?.numberOfRooms?.message && (
@@ -1340,7 +1320,7 @@ const AdminUpdateHotelContent = () => {
                   id={`price-${room.id}`}
                   type="number"
                   {...register(`rooms.${roomIndex}.price`)}
-                  placeholder="Lorem Ipsum"
+                  placeholder="60"
                   required
                   onKeyDown={handleKeyDown}
                 />
@@ -1354,7 +1334,7 @@ const AdminUpdateHotelContent = () => {
                   id={`capacity-${room.id}`}
                   type="number"
                   {...register(`rooms.${roomIndex}.capacity`)}
-                  placeholder="Lorem Ipsum"
+                  placeholder="2"
                   onKeyDown={handleKeyDown}
                 />
                 {errors?.rooms?.[roomIndex]?.capacity?.message && (
@@ -1458,7 +1438,7 @@ const AdminUpdateHotelContent = () => {
                               render={({ field }) => (
                                 <Input
                                   {...field}
-                                  placeholder="Lorem Ipsum"
+                                  placeholder="Mini Bar"
                                   className="flex-1"
                                   onKeyDown={handleKeyDown}
                                 />
@@ -1655,10 +1635,11 @@ const AdminUpdateHotelContent = () => {
         {houseRuleFields.map((houseRule, index) => (
           <Card key={houseRule.id} className=" flex flex-col">
             <CardHeader className="flex flex-row justify-between ">
-              <div>
+              <div className="flex flex-col gap-1">
                 <CardTitle>House Rule {index + 1}</CardTitle>
                 <CardDescription>
-                  Lipsum dolor sit amet, consectetur adipiscing elit
+                  Update the list of the different types of house rules for your
+                  hotel, along with their details.
                 </CardDescription>
               </div>
               <Button variant="outline" onClick={() => removeHouseRule(index)}>
@@ -1780,7 +1761,7 @@ const AdminUpdateHotelContent = () => {
           <CardHeader>
             <CardTitle>Contact Details</CardTitle>
             <CardDescription>
-              Lipsum dolor sit amet, consectetur adipiscing elit
+              Update the details of the hotel representative.{" "}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -1789,7 +1770,7 @@ const AdminUpdateHotelContent = () => {
               <Input
                 id="contact-person-name"
                 {...register("contactForm.name")}
-                placeholder="Lorem Ipsum"
+                placeholder="John Doe"
                 onKeyDown={handleKeyDown}
               />
               {errors.contactForm?.name?.message && (
@@ -1801,7 +1782,7 @@ const AdminUpdateHotelContent = () => {
               <Input
                 id="role-position"
                 {...register("contactForm.position")}
-                placeholder="Lorem Ipsum"
+                placeholder="Manager"
                 onKeyDown={handleKeyDown}
               />
               {errors.contactForm?.position?.message && (
@@ -1813,7 +1794,7 @@ const AdminUpdateHotelContent = () => {
               <Input
                 id="email-address"
                 {...register("contactForm.email")}
-                placeholder="Lorem Ipsum"
+                placeholder="m@example.com"
                 onKeyDown={handleKeyDown}
               />
               {errors.contactForm?.email?.message && (
@@ -1824,8 +1805,9 @@ const AdminUpdateHotelContent = () => {
               <Label htmlFor="phone-number">Phone Number</Label>
               <Input
                 id="phone-number"
+                type="number"
                 {...register("contactForm.number")}
-                placeholder="Lorem Ipsum"
+                placeholder="9812345678"
                 onKeyDown={handleKeyDown}
               />
               {errors.contactForm?.number?.message && (
@@ -1841,7 +1823,7 @@ const AdminUpdateHotelContent = () => {
           <CardHeader>
             <CardTitle>Social Links</CardTitle>
             <CardDescription>
-              Lipsum dolor sit amet, consectetur adipiscing elit
+              Add hotel&apos;s social media links.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -1930,9 +1912,12 @@ const AdminUpdateHotelContent = () => {
               />
 
               <CardTitle className="text-2xl font-semibold">
-                General Information
+                Hotel Information
                 <div className="text-sm font-normal text-slate-400">
-                  Lipsum dolor sit amet, consectetur adipiscing elit
+                  <div className="">General information of your hotel</div>
+                  <div className="">
+                    Click on edit to modify hotel information.
+                  </div>{" "}
                 </div>
               </CardTitle>
             </div>
@@ -1955,10 +1940,6 @@ const AdminUpdateHotelContent = () => {
                 <div className="flex justify-between items-center">
                   <Title>Location</Title>
                   <Value>{formData.basicInfo.location.label}</Value>
-                </div>
-                <div className="flex justify-between items-center border-b">
-                  <Title>Discount Offer</Title>
-                  <Value>{formData.basicInfo.discount}</Value>
                 </div>
                 <div className="flex flex-col gap-3">
                   <Title>Description</Title>
@@ -2006,7 +1987,10 @@ const AdminUpdateHotelContent = () => {
               <CardTitle className="text-2xl font-semibold">
                 Facilities
                 <div className="text-sm font-normal text-slate-400">
-                  Lipsum dolor sit amet, consectetur adipiscing elit
+                  <div className="">Facilities provided by your hotel</div>
+                  <div className="">
+                    Click on edit to modify the facilities.
+                  </div>{" "}
                 </div>
               </CardTitle>
             </div>
@@ -2026,7 +2010,7 @@ const AdminUpdateHotelContent = () => {
                     Facility {index + 1}
                   </Label>
                   <div className="flex items-center justify-between">
-                    <Title>Name</Title>
+                    <Title>Category</Title>
                     <Value className="font-medium">{facility.name.value}</Value>
                   </div>
                   <div>
@@ -2061,7 +2045,8 @@ const AdminUpdateHotelContent = () => {
               <CardTitle className="text-2xl font-semibold">
                 Rooms
                 <div className="text-sm font-normal text-slate-400">
-                  Lipsum dolor sit amet, consectetur adipiscing elit
+                  <div className="">Rooms of your hotel</div>
+                  <div className="">Click on edit to modify the rooms.</div>
                 </div>
               </CardTitle>
             </div>
@@ -2103,7 +2088,7 @@ const AdminUpdateHotelContent = () => {
                     {room.beds.map((bed, bedIndex) => (
                       <div
                         key={bedIndex}
-                        className="flex items-center justify-between"
+                        className="flex flex-col items-between justify-center"
                       >
                         <div className="flex items-center justify-between">
                           <Title>Bed Type</Title>
@@ -2143,7 +2128,10 @@ const AdminUpdateHotelContent = () => {
               <CardTitle className="text-2xl font-semibold">
                 House Rules
                 <div className="text-sm font-normal text-slate-400">
-                  Lipsum dolor sit amet, consectetur adipiscing elit
+                  <div className="">House Rules of your hotel</div>
+                  <div className="">
+                    Click on edit to modify the house rules.
+                  </div>{" "}
                 </div>
               </CardTitle>
             </div>
@@ -2188,7 +2176,10 @@ const AdminUpdateHotelContent = () => {
               <CardTitle className="text-2xl font-semibold">
                 Contact Details
                 <div className="text-sm font-normal text-slate-400">
-                  Lipsum dolor sit amet, consectetur adipiscing elit
+                  <div className="">Contact of your hotel</div>
+                  <div className="">
+                    Click on edit to modify your information.
+                  </div>{" "}
                 </div>
               </CardTitle>
             </div>

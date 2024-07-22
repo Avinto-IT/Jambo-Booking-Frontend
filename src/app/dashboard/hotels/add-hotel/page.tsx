@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect, useRef, Key } from "react";
+import { useState, useEffect, Key } from "react";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -17,7 +17,6 @@ import { Button } from "@/components/ui/button";
 import AdminLayout from "@/components/Layout/AdminLayout";
 import {
   ChevronDown,
-  Eraser,
   ImagePlus,
   PlusCircle,
   Trash,
@@ -109,7 +108,6 @@ interface FormData {
   basicInfo: {
     name: string;
     location: { value: string; label: string };
-    discount: string;
     description: string;
   };
   facilities: Facility[];
@@ -133,16 +131,12 @@ interface CollapsedSectionsState {
   houseRules: boolean;
   contactDetails: boolean;
 }
-interface SelectOption {
-  value: string;
-  label: string;
-}
+
 const basicInfoSchema = z.object({
   name: z.string().min(1, "Hotel name is required"),
   location: z.object({
     value: z.string().min(1, "Location is required"),
   }),
-  discount: z.string().optional(),
   description: z.string().min(1, "Description is required"),
 });
 
@@ -227,7 +221,7 @@ export default function AddHotel() {
       contactDetails: true,
     });
   const steps = [
-    { component: BasicInformation, label: "Basic Information" },
+    { component: BasicInformation, label: "Hotel Information" },
     { component: Facilities, label: "Facilities" },
     { component: AddRoom, label: "Room" },
     { component: HouseRules, label: "House Rules" },
@@ -245,7 +239,6 @@ export default function AddHotel() {
       basicInfo: {
         name: "",
         location: { value: "", label: "" },
-        discount: "",
         description: "",
       },
       facilities: [
@@ -440,7 +433,6 @@ export default function AddHotel() {
         details: houseRule.details,
       })),
       isRunning: data.isRunning,
-      discount: parseFloat(data.basicInfo.discount),
     };
 
     try {
@@ -458,7 +450,7 @@ export default function AddHotel() {
         toast.success("Hotel added successfully!");
         setTimeout(() => {
           router.push("/dashboard/hotels");
-        }, 2000);
+        }, 1500);
       } else {
         toast.error(`Error: ${result.error}`);
         setIsSubmitClicked(false);
@@ -633,7 +625,7 @@ export default function AddHotel() {
             </CardTitle>
             <CardDescription>
               Add basic hotel details such as name, location. You can always
-              edit your details here.
+              edit your details here
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -676,34 +668,12 @@ export default function AddHotel() {
                 )}
               </div>
               <div className="flex flex-col gap-3">
-                <Label htmlFor="discount">Discount Offer</Label>
-                <Controller
-                  name="basicInfo.discount"
-                  control={methods.control}
-                  render={({ field }) => (
-                    <Input
-                      id="discount"
-                      type="number"
-                      className="w-full"
-                      {...field}
-                      placeholder="12%"
-                      onKeyDown={handleKeyDown}
-                    />
-                  )}
-                />
-                {errors?.basicInfo?.discount?.message && (
-                  <span className="text-red-500">
-                    {errors?.basicInfo?.discount.message}
-                  </span>
-                )}
-              </div>
-              <div className="flex flex-col gap-3">
                 <Label htmlFor="description">Description</Label>
                 <Textarea
                   id="description"
                   className="w-full"
                   {...register("basicInfo.description")}
-                  placeholder="Located in Kathmandu, 1.7 miles from Hanuman Dhoka, Hotel Lapha provides accommodations with a terrace, free private parking, a restaurant and a bar. The property is around 1.8 miles from Swayambhu, 2.1 miles from Kathmandu Durbar Square and 2.5 miles from Swayambhunath Temple... "
+                  placeholder="Located in Kathmandu, 1.7 miles from Hanuman Dhoka, Hotel Lapha provides accommodations with a terrace, free private parking, a restaurant and a bar. "
                   onKeyDown={handleKeyDown}
                 />
                 {errors?.basicInfo?.description?.message && (
@@ -716,10 +686,10 @@ export default function AddHotel() {
                 <Label htmlFor="primaryImage" className="text-base">
                   Primary Image
                 </Label>
-                <CardDescription className="-mt-2">
+                <div className="-mt-2">
                   This is the main image of your hotel. Click on Choose files to
-                  upload your image.
-                </CardDescription>
+                  upload your image
+                </div>
                 <label
                   htmlFor="primaryImage"
                   className="flex items-center border shadow max-w-max px-3 py-1.5 rounded gap-2 cursor-pointer"
@@ -964,10 +934,12 @@ export default function AddHotel() {
         {facilityFields.map((facility, facilityIndex) => (
           <Card key={facility.id} className="overflow-hidden flex flex-col">
             <CardHeader className="flex flex-row justify-between ">
-              <div>
+              <div className="flex flex-col gap-1">
                 <CardTitle>Facility {facilityIndex + 1}</CardTitle>
                 <CardDescription>
-                  Add the facilities offered by your hotel.
+                  A facility could be spa, gym, rooftop bar etc. Obs! room
+                  specific facilities such as TV etc should be added in the Room
+                  section
                 </CardDescription>
               </div>
               <Button
@@ -981,7 +953,7 @@ export default function AddHotel() {
             <CardContent>
               <div className="flex flex-col gap-4">
                 <Label htmlFor={`facility-name-${facility.id}`}>
-                  Facility Name
+                  Facility Category
                 </Label>
                 <Controller
                   name={`facilities.${facilityIndex}.name`}
@@ -1199,7 +1171,7 @@ export default function AddHotel() {
         {roomFields.map((room, roomIndex) => (
           <Card key={room.id} className="overflow-hidden flex flex-col">
             <CardHeader className="flex flex-row justify-between ">
-              <div>
+              <div className="flex flex-col gap-1">
                 <CardTitle>Room Type {roomIndex + 1}</CardTitle>
                 <CardDescription>
                   Add the different types of rooms available at your hotel,
@@ -1566,7 +1538,7 @@ export default function AddHotel() {
         {houseRuleFields.map((houseRule, index) => (
           <Card key={houseRule.id} className=" flex flex-col">
             <CardHeader className="flex flex-row justify-between ">
-              <div>
+              <div className="flex flex-col gap-1">
                 <CardTitle>House Rule {index + 1}</CardTitle>
                 <CardDescription>
                   List the different types of house rules for your hotel, along
@@ -1738,6 +1710,7 @@ export default function AddHotel() {
               <Label htmlFor="phone-number">Phone Number</Label>
               <Input
                 id="phone-number"
+                type="number"
                 {...register("contactForm.number")}
                 placeholder="9812345678"
                 onKeyDown={handleKeyDown}
@@ -1764,7 +1737,7 @@ export default function AddHotel() {
               <Input
                 id="facebook"
                 {...register("contactForm.facebook")}
-                placeholder=""
+                placeholder="www.facebook.com"
                 onKeyDown={handleKeyDown}
               />
               {errors?.contactForm?.facebook?.message && (
@@ -1776,7 +1749,7 @@ export default function AddHotel() {
               <Input
                 id="instagram"
                 {...register("contactForm.instagram")}
-                placeholder=""
+                placeholder="www.instagram.com"
                 onKeyDown={handleKeyDown}
               />
               {errors?.contactForm?.instagram?.message && (
@@ -1788,7 +1761,7 @@ export default function AddHotel() {
               <Input
                 id="linkedin"
                 {...register("contactForm.linkedin")}
-                placeholder=""
+                placeholder="www.linkedin.com"
                 onKeyDown={handleKeyDown}
               />
               {errors?.contactForm?.linkedin?.message && (
@@ -1838,11 +1811,11 @@ export default function AddHotel() {
               />
 
               <CardTitle className="text-2xl font-semibold">
-                General Information
+                Hotel Information
                 <div className="text-sm font-normal text-slate-400">
-                  <div className="">Basic information of your hotel</div>
+                  <div className="">General information of your hotel</div>
                   <div className="">
-                    Click on edit to modify general information..
+                    Click on edit to modify hotel information.
                   </div>
                 </div>
               </CardTitle>
@@ -1866,10 +1839,6 @@ export default function AddHotel() {
                 <div className="flex justify-between items-center">
                   <Title>Location</Title>
                   <Value>{formData.basicInfo.location.label}</Value>
-                </div>
-                <div className="flex justify-between items-center border-b">
-                  <Title>Discount Offer</Title>
-                  <Value>{formData.basicInfo.discount}</Value>
                 </div>
                 <div className="flex flex-col gap-3">
                   <Title>Description</Title>
@@ -1940,7 +1909,7 @@ export default function AddHotel() {
                     Facility {index + 1}
                   </Label>
                   <div className="flex items-center justify-between">
-                    <Title>Name</Title>
+                    <Title>Category</Title>
                     <Value className="font-medium">{facility.name.value}</Value>
                   </div>
                   <div>
@@ -2019,7 +1988,7 @@ export default function AddHotel() {
                     {room.beds.map((bed, bedIndex) => (
                       <div
                         key={bedIndex}
-                        className="flex items-center justify-between"
+                        className="flex flex-col items-between justify-center"
                       >
                         <div className="flex items-center justify-between">
                           <Title>Bed Type</Title>
