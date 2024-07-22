@@ -12,12 +12,9 @@ import React, { useEffect, useState } from "react";
 function BreadcrumbHome() {
   const [name, setName] = useState("");
   useEffect(() => {
-    if (window.location.href === "http://localhost:3000/privacy-policy")
-      setName("Privacy Policy");
-    else if (window.location.href === "http://localhost:3000/about-us")
-      setName("About Us");
-    else if (window.location.href === "http://localhost:3000/contact")
-      setName("Contact Us");
+    if (window.location.href === "/privacy-policy") setName("Privacy Policy");
+    else if (window.location.href === "/about-us") setName("About Us");
+    else if (window.location.href === "/contact") setName("Contact Us");
   }, []);
 
   return (

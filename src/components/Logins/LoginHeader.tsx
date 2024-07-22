@@ -18,7 +18,7 @@ interface LoginHeaderprops {
 const LoginHeader: React.FC<LoginHeaderprops> = ({ handleBack }) => {
   const [isLoginPage, setIsLoginPage] = useState(false);
   useEffect(() => {
-    if (window.location.href === "http://localhost:3000/login") {
+    if (window.location.href === "/login") {
       setIsLoginPage(true);
     }
   }, []);
