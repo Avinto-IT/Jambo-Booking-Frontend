@@ -203,7 +203,7 @@ export default function Page() {
                                 src={hotel.primaryImageLink}
                                 alt="PrimaryImage"
                                 className=""
-                                layout="fill"
+
                                 // objectFit="cover"
                               />
                             </div>
@@ -216,7 +216,6 @@ export default function Page() {
                                   src={image}
                                   alt={`carouselImage-${index}`}
                                   className="w-full"
-                                  objectFit="cover"
                                 />
                               </div>
                             ))}
