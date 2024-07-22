@@ -632,7 +632,8 @@ export default function AddHotel() {
               Hotel Details
             </CardTitle>
             <CardDescription>
-              Lipsum Dolor sit amet, consecteur adipiscing elit
+              Add basic hotel details such as name, location. You can always
+              edit your details here.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -643,7 +644,7 @@ export default function AddHotel() {
                   id="name"
                   type="text"
                   className="w-full"
-                  placeholder="Hotel's Name"
+                  placeholder="Radisson Hotel"
                   {...register("basicInfo.name")}
                   onKeyDown={handleKeyDown}
                 />
@@ -664,7 +665,7 @@ export default function AddHotel() {
                       instanceId="location-select"
                       components={{ MenuList }}
                       options={[...locationOptions]}
-                      placeholder="Select Location"
+                      placeholder="Kathmandu,Nepal"
                     />
                   )}
                 />
@@ -685,7 +686,7 @@ export default function AddHotel() {
                       type="number"
                       className="w-full"
                       {...field}
-                      placeholder="Discount Offer"
+                      placeholder="12%"
                       onKeyDown={handleKeyDown}
                     />
                   )}
@@ -702,7 +703,7 @@ export default function AddHotel() {
                   id="description"
                   className="w-full"
                   {...register("basicInfo.description")}
-                  placeholder="Description"
+                  placeholder="Located in Kathmandu, 1.7 miles from Hanuman Dhoka, Hotel Lapha provides accommodations with a terrace, free private parking, a restaurant and a bar. The property is around 1.8 miles from Swayambhu, 2.1 miles from Kathmandu Durbar Square and 2.5 miles from Swayambhunath Temple... "
                   onKeyDown={handleKeyDown}
                 />
                 {errors?.basicInfo?.description?.message && (
@@ -715,6 +716,10 @@ export default function AddHotel() {
                 <Label htmlFor="primaryImage" className="text-base">
                   Primary Image
                 </Label>
+                <CardDescription className="-mt-2">
+                  This is the main image of your hotel. Click on Choose files to
+                  upload your image.
+                </CardDescription>
                 <label
                   htmlFor="primaryImage"
                   className="flex items-center border shadow max-w-max px-3 py-1.5 rounded gap-2 cursor-pointer"
@@ -764,7 +769,8 @@ export default function AddHotel() {
           <CardHeader>
             <CardTitle>Hotel Images</CardTitle>
             <CardDescription>
-              Lipsum dolor sit amet, consectetur adipiscing elit
+              These are the images that will appear along with your primary
+              image. Click on Choose files to upload your image.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -961,7 +967,7 @@ export default function AddHotel() {
               <div>
                 <CardTitle>Facility {facilityIndex + 1}</CardTitle>
                 <CardDescription>
-                  Lipsum dolor sit amet, consectetur adipiscing elit
+                  Add the facilities offered by your hotel.
                 </CardDescription>
               </div>
               <Button
@@ -987,7 +993,7 @@ export default function AddHotel() {
                         value: facility,
                         label: facility,
                       }))}
-                      placeholder="Select facility"
+                      placeholder="Reception/Front Desk"
                     />
                   )}
                 />
@@ -1004,7 +1010,7 @@ export default function AddHotel() {
                   id={`facility-description-${facility.id}`}
                   type="text"
                   {...register(`facilities.${facilityIndex}.description`)}
-                  placeholder="Lorem Ipsum"
+                  placeholder=" Our reception provides exceptional service which begins the moment you step through..."
                   onKeyDown={handleKeyDown}
                 />
                 {errors?.facilities?.[facilityIndex]?.description?.message && (
@@ -1037,7 +1043,7 @@ export default function AddHotel() {
                                 render={({ field }) => (
                                   <Input
                                     {...field}
-                                    placeholder="Lorem Ipsum"
+                                    placeholder="Customer Service Desk"
                                     className="flex-1"
                                     onKeyDown={handleKeyDown}
                                   />
@@ -1196,7 +1202,8 @@ export default function AddHotel() {
               <div>
                 <CardTitle>Room Type {roomIndex + 1}</CardTitle>
                 <CardDescription>
-                  Lipsum dolor sit amet, consectetur adipiscing elit
+                  Add the different types of rooms available at your hotel,
+                  including their details.
                 </CardDescription>
               </div>
               <Button variant="outline" onClick={() => removeRoom(roomIndex)}>
@@ -1210,7 +1217,7 @@ export default function AddHotel() {
                 <Input
                   id={`room-type-${room.id}`}
                   {...register(`rooms.${roomIndex}.type`)}
-                  placeholder="Lorem Ipsum"
+                  placeholder="Deluxe Room"
                   onKeyDown={handleKeyDown}
                 />
                 {errors?.rooms?.[roomIndex]?.type && (
@@ -1225,7 +1232,7 @@ export default function AddHotel() {
                   id={`number-of-rooms-${room.id}`}
                   type="number"
                   {...register(`rooms.${roomIndex}.numberOfRooms`)}
-                  placeholder="Lorem Ipsum"
+                  placeholder="4"
                   onKeyDown={handleKeyDown}
                 />
                 {errors?.rooms?.[roomIndex]?.numberOfRooms?.message && (
@@ -1241,7 +1248,7 @@ export default function AddHotel() {
                   id={`price-${room.id}`}
                   type="number"
                   {...register(`rooms.${roomIndex}.price`)}
-                  placeholder="Lorem Ipsum"
+                  placeholder="60"
                   required
                   onKeyDown={handleKeyDown}
                 />
@@ -1256,7 +1263,7 @@ export default function AddHotel() {
                   id={`capacity-${room.id}`}
                   type="number"
                   {...register(`rooms.${roomIndex}.capacity`)}
-                  placeholder="Lorem Ipsum"
+                  placeholder="2"
                   onKeyDown={handleKeyDown}
                 />
                 {errors?.rooms?.[roomIndex]?.capacity?.message && (
@@ -1361,7 +1368,7 @@ export default function AddHotel() {
                               render={({ field }) => (
                                 <Input
                                   {...field}
-                                  placeholder="Lorem Ipsum"
+                                  placeholder="Wi-Fi Access"
                                   className="flex-1"
                                   onKeyDown={handleKeyDown}
                                 />
@@ -1562,7 +1569,8 @@ export default function AddHotel() {
               <div>
                 <CardTitle>House Rule {index + 1}</CardTitle>
                 <CardDescription>
-                  Lipsum dolor sit amet, consectetur adipiscing elit
+                  List the different types of house rules for your hotel, along
+                  with their details.
                 </CardDescription>
               </div>
               <Button variant="outline" onClick={() => removeHouseRule(index)}>
@@ -1686,7 +1694,7 @@ export default function AddHotel() {
           <CardHeader>
             <CardTitle>Contact Details</CardTitle>
             <CardDescription>
-              Lipsum dolor sit amet, consectetur adipiscing elit
+              Add the details of the hotel representative.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -1695,7 +1703,7 @@ export default function AddHotel() {
               <Input
                 id="contact-person-name"
                 {...register("contactForm.name")}
-                placeholder="Lorem Ipsum"
+                placeholder="John Doe"
                 onKeyDown={handleKeyDown}
               />
               {errors?.contactForm?.name?.message && (
@@ -1707,7 +1715,7 @@ export default function AddHotel() {
               <Input
                 id="role-position"
                 {...register("contactForm.position")}
-                placeholder="Lorem Ipsum"
+                placeholder="Manager"
                 onKeyDown={handleKeyDown}
               />
               {errors?.contactForm?.position?.message && (
@@ -1719,7 +1727,7 @@ export default function AddHotel() {
               <Input
                 id="email-address"
                 {...register("contactForm.email")}
-                placeholder="Lorem Ipsum"
+                placeholder="m@example.com"
                 onKeyDown={handleKeyDown}
               />
               {errors?.contactForm?.email?.message && (
@@ -1731,7 +1739,7 @@ export default function AddHotel() {
               <Input
                 id="phone-number"
                 {...register("contactForm.number")}
-                placeholder="Lorem Ipsum"
+                placeholder="9812345678"
                 onKeyDown={handleKeyDown}
               />
               {errors?.contactForm?.number?.message && (
@@ -1747,7 +1755,7 @@ export default function AddHotel() {
           <CardHeader>
             <CardTitle>Social Links</CardTitle>
             <CardDescription>
-              Lipsum dolor sit amet, consectetur adipiscing elit
+              Add hotel&apos;s social media links.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -1756,7 +1764,7 @@ export default function AddHotel() {
               <Input
                 id="facebook"
                 {...register("contactForm.facebook")}
-                placeholder="www.facebook.com"
+                placeholder=""
                 onKeyDown={handleKeyDown}
               />
               {errors?.contactForm?.facebook?.message && (
@@ -1768,7 +1776,7 @@ export default function AddHotel() {
               <Input
                 id="instagram"
                 {...register("contactForm.instagram")}
-                placeholder="www.instagram.com"
+                placeholder=""
                 onKeyDown={handleKeyDown}
               />
               {errors?.contactForm?.instagram?.message && (
@@ -1780,7 +1788,7 @@ export default function AddHotel() {
               <Input
                 id="linkedin"
                 {...register("contactForm.linkedin")}
-                placeholder="www.linkedin.com"
+                placeholder=""
                 onKeyDown={handleKeyDown}
               />
               {errors?.contactForm?.linkedin?.message && (
@@ -1832,7 +1840,10 @@ export default function AddHotel() {
               <CardTitle className="text-2xl font-semibold">
                 General Information
                 <div className="text-sm font-normal text-slate-400">
-                  Lipsum dolor sit amet, consectetur adipiscing elit
+                  <div className="">Basic information of your hotel</div>
+                  <div className="">
+                    Click on edit to modify general information..
+                  </div>
                 </div>
               </CardTitle>
             </div>
@@ -1906,7 +1917,10 @@ export default function AddHotel() {
               <CardTitle className="text-2xl font-semibold">
                 Facilities
                 <div className="text-sm font-normal text-slate-400">
-                  Lipsum dolor sit amet, consectetur adipiscing elit
+                  <div className="">Facilities provided by your hotel</div>
+                  <div className="">
+                    Click on edit to modify the facilities.
+                  </div>
                 </div>
               </CardTitle>
             </div>
@@ -1961,7 +1975,8 @@ export default function AddHotel() {
               <CardTitle className="text-2xl font-semibold">
                 Rooms
                 <div className="text-sm font-normal text-slate-400">
-                  Lipsum dolor sit amet, consectetur adipiscing elit
+                  <div className="">Rooms of your hotel</div>
+                  <div className="">Click on edit to modify the rooms.</div>
                 </div>
               </CardTitle>
             </div>
@@ -2045,7 +2060,10 @@ export default function AddHotel() {
               <CardTitle className="text-2xl font-semibold">
                 House Rules
                 <div className="text-sm font-normal text-slate-400">
-                  Lipsum dolor sit amet, consectetur adipiscing elit
+                  <div className="">House Rules of your hotel</div>
+                  <div className="">
+                    Click on edit to modify the house rules.
+                  </div>
                 </div>
               </CardTitle>
             </div>
@@ -2090,7 +2108,10 @@ export default function AddHotel() {
               <CardTitle className="text-2xl font-semibold">
                 Contact Details
                 <div className="text-sm font-normal text-slate-400">
-                  Lipsum dolor sit amet, consectetur adipiscing elit
+                  <div className="">Contact of your hotel</div>
+                  <div className="">
+                    Click on edit to modify your information.
+                  </div>
                 </div>
               </CardTitle>
             </div>

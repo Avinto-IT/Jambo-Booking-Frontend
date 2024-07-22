@@ -41,6 +41,8 @@ import {
 
 interface LayoutProps {
   children: ReactNode;
+
+  // hotelName: string;
 }
 
 const AdminLayout: React.FC<LayoutProps> = ({ children }) => {

@@ -25,7 +25,8 @@ export interface Hotel {
     subFacilities: string[];
   }[];
   description: string;
-  houseRules: { [key: string]: boolean };
+  // houseRules: { [key: string]: boolean };
+  houseRules: string[];
   imageLinks: string[];
   primaryImageLink: string;
   isRunning: boolean;

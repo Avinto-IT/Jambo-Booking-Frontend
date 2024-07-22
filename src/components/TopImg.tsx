@@ -1,5 +1,5 @@
 import React from "react";
-import topimg from "../../public/images/head/Header_Image.svg";
+import topImg from "../../public/images/head/Header_Image.svg";
 import Image from "next/image";
 
 interface TopImgProp {
@@ -10,7 +10,7 @@ const TopImg: React.FC<TopImgProp> = ({ title }) => {
     <div className="">
       <div className="w-full relative mb-14 h-80">
         <Image
-          src={topimg}
+          src={topImg}
           alt="topimage"
           className="w-full "
           objectFit="cover"

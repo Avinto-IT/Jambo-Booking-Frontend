@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useState, useEffect, Key, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { number, z } from "zod";
 import {
   useForm,
   useFieldArray,
@@ -29,6 +29,19 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
+import { Dot } from "lucide-react";
+
+import bed from "../../../../../public/images/Bed.svg";
+import guest from "../../../../../public/images/Guest.svg";
+
+import facilitiesIcon from "../../../../../data/facilities.json";
+import * as Icons from "lucide-react";
+
+import staticimg from "../../../../../public/images/static-from-landing/image.svg";
+import staticimg2 from "../../../../../public/images/an_image_for_hotel_booking.svg";
+import staticimg3 from "../../../../../public/images/explore-east-africa/Photo1.svg";
+
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
