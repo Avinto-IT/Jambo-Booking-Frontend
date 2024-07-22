@@ -1508,7 +1508,9 @@ export default function AddHotel() {
         <Card className="overflow-hidden">
           <CardHeader>
             <CardTitle>Social Links</CardTitle>
-            <CardDescription>Add hotel's social media links.</CardDescription>
+            <CardDescription>
+              Add hotel&apos;s social media links.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex flex-col gap-4">
