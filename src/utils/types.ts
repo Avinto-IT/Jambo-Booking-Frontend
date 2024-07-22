@@ -8,8 +8,10 @@ export interface UserDetails {
 
 export interface Location {
   locationID: string;
+  address: string;
   city: string;
   country: string;
+  zipCode: string;
 }
 
 export interface Hotel {

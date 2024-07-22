@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import DatePicker from "react-datepicker";
+import { Dialog, DialogContent, DialogOverlay } from "@/components/ui/dialog";
 
 export default function Page() {
   const [showMore, setShowMore] = useState(false);
@@ -25,12 +26,16 @@ export default function Page() {
   const [selectedDate, setSelectedDate] = useState();
   const [currentDate, setCurrentDate] = useState("");
   const searchParams = useSearchParams();
+  const [isCarouselOpen, setIsCarouselOpen] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   const id = searchParams?.get("id");
   //   const [hotel, setHotel] = useState<Hotel>();
   const [hotel, setHotel] = useState<{
     name: string;
     address: string;
+    primaryImageLink: string;
+    imageLinks: string[];
     description: string;
     facilities: { name: string; subFacilities: { name: string }[] }[];
     rooms: {
@@ -82,6 +87,26 @@ export default function Page() {
     setShowAmentities(!showAmenities);
   };
 
+  const handleImageClick = (index) => {
+    setCurrentIndex(index);
+    setIsCarouselOpen(true);
+  };
+
+  const handleCloseCarousel = () => {
+    setIsCarouselOpen(false);
+  };
+  const handlePrevClick = () => {
+    setCurrentIndex((prevIndex) =>
+      prevIndex === 0 ? hotel.imageLinks.length : prevIndex - 1
+    );
+  };
+
+  const handleNextClick = () => {
+    setCurrentIndex((prevIndex) =>
+      prevIndex === hotel.imageLinks.length ? 0 : prevIndex + 1
+    );
+  };
+
   return (
     <AdminLayout>
       {" "}
@@ -99,7 +124,92 @@ export default function Page() {
                   </p>
                   <p className="">{hotel.address}</p>
                 </div>
-                <div className="outline outline-gray-300 rounded-xl h-96"></div>
+                <div className="  flex h-[550px] gap-2  ">
+                  <div className="w-1/2 relative overflow-hidden rounded-l-xl">
+                    <img
+                      src={hotel.primaryImageLink}
+                      alt="PrimaryImage"
+                      className="h-full transition-transform duration-500 ease-in-out transform hover:scale-105 hover:brightness-75"
+                      onClick={() => handleImageClick(0)}
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 w-1/2 gap-2">
+                    {hotel.imageLinks.slice(0, 4).map((image, index) => (
+                      <div
+                        className={`relative overflow-hidden ${
+                          index === 1
+                            ? "rounded-tr-xl"
+                            : index === 3
+                            ? "rounded-br-xl"
+                            : ""
+                        }`}
+                        onClick={() => handleImageClick(index + 1)}
+                        key={index}
+                      >
+                        <img
+                          src={image}
+                          alt={`smallImage-${index}`}
+                          className="h-full object-cover transition-transform duration-500 ease-in-out transform hover:scale-105 hover:brightness-75"
+                        />
+                      </div>
+                    ))}
+                  </div>
+
+                  <Dialog
+                    open={isCarouselOpen}
+                    onOpenChange={setIsCarouselOpen}
+                  >
+                    <DialogOverlay className="bg-black bg-opacity-50" />
+                    <DialogContent className="flex items-center justify-center p-1 min-w-fit max-h-fit bg-transparent border-none">
+                      <div className=" w-full">
+                        <div className="flex overflow-hidden">
+                          <div
+                            className="flex transition-transform duration-500 ease-in-out"
+                            style={{
+                              transform: `translateX(-${currentIndex * 100}%)`,
+                            }}
+                          >
+                            <div className="flex-shrink-0 w-full">
+                              <img
+                                // src={staticimg3}
+                                src={hotel.primaryImageLink}
+                                alt="PrimaryImage"
+                                className=""
+                                // layout="fill"
+                                // objectFit="cover"
+                              />
+                            </div>
+                            {hotel.imageLinks.map((image, index) => (
+                              <div
+                                className="flex-shrink-0 w-full "
+                                key={index}
+                              >
+                                <img
+                                  src={image}
+                                  alt={`carouselImage-${index}`}
+                                  className="w-full object-cover"
+                                  // objectFit="cover"
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        <Button
+                          className="absolute top-1/2 -right-4 text-white bg-black bg-opacity-75 rounded-full"
+                          onClick={handleNextClick}
+                        >
+                          &gt;
+                        </Button>
+                        <Button
+                          className="absolute top-1/2 -left-4 text-white bg-black bg-opacity-75 rounded-full"
+                          onClick={handlePrevClick}
+                        >
+                          &lt;
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </div>
               </div>
               <div className="space-y-4">
                 <div className="flex justify-between ">

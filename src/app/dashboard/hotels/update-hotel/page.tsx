@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useState, useEffect, Key, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { number, z } from "zod";
 import {
   useForm,
   useFieldArray,
@@ -14,7 +14,13 @@ import {
 } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import AdminLayout from "@/components/Layout/AdminLayout";
-import { ChevronDown, PlusCircle, Trash, Upload } from "lucide-react";
+import {
+  ChevronDown,
+  ImagePlus,
+  PlusCircle,
+  Trash,
+  Upload,
+} from "lucide-react";
 import Image from "next/image";
 import {
   Card,
@@ -56,6 +62,8 @@ import {
   Title,
   Value,
 } from "@/components/AdminComponents/Sub-Components/ReviewComponents";
+import DialogBox from "@/components/AdminComponents/ImagePopup";
+import { uploadFiles } from "@/components/AdminComponents/functions";
 import { Dialog, DialogContent, DialogOverlay } from "@/components/ui/dialog";
 interface HouseRule {
   id: number;
@@ -107,9 +115,8 @@ interface FormData {
   contactForm: ContactDetails;
   houseRules: HouseRule[];
   isRunning: boolean;
-
-  primaryImageLink: string;
-  imageLinks: string[];
+  primaryImage: File | null;
+  imageLinks: File[];
 }
 interface CollapsedSectionsState {
   basicInformation: boolean;
@@ -222,6 +229,12 @@ const AdminUpdateHotelContent = () => {
   const [token, setToken] = useState<string | null>(null);
   const [locations, setLocations] = useState<Location[]>([]);
   const router = useRouter();
+  const [isSubmitClicked, setIsSubmitClicked] = useState(false);
+  const [previewPrimaryImage, setPreviewPrimaryImage] = useState<string | null>(
+    null
+  );
+  const [previewImageLinks, setPreviewImageLinks] = useState<string[]>([]);
+
   const methods = useForm<FormData>({
     resolver:
       currentStep < formSchemas.length
@@ -277,10 +290,11 @@ const AdminUpdateHotelContent = () => {
         },
       ],
       isRunning: false,
+      primaryImage: null,
+      imageLinks: [],
     },
   });
   const { reset } = methods;
-
   useEffect(() => {
     if (id) {
       const fetchHotel = async () => {
@@ -288,6 +302,8 @@ const AdminUpdateHotelContent = () => {
           const response = await fetch(`/api/getHotelById?id=${id}`);
           const data = await response.json();
           setHotel(data.hotel);
+          setPreviewPrimaryImage(data.hotel.primaryImageLink);
+          setPreviewImageLinks(data.hotel.imageLinks);
           if (data.hotel) {
             reset({
               basicInfo: {
@@ -349,6 +365,8 @@ const AdminUpdateHotelContent = () => {
                 })
               ),
               isRunning: data.hotel.isRunning,
+              primaryImage: data.hotel.primaryImageLink,
+              imageLinks: data.hotel.imageLinks.map((link: File) => link),
             });
           }
         } catch (error) {
@@ -358,7 +376,6 @@ const AdminUpdateHotelContent = () => {
       fetchHotel();
     }
   }, [id, reset]);
-
   useEffect(() => {
     const fetchLocations = async () => {
       try {
@@ -406,7 +423,37 @@ const AdminUpdateHotelContent = () => {
     name: "houseRules",
   });
 
+  const handlePrimaryImageChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0] || null;
+    methods.setValue("primaryImage", file);
+
+    if (file) {
+      setPreviewPrimaryImage(URL.createObjectURL(file));
+    }
+  };
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files) {
+      const newFiles = Array.from(files);
+      const currentFiles = methods.getValues("imageLinks");
+
+      const allFiles = [...currentFiles, ...newFiles];
+      methods.setValue("imageLinks", allFiles);
+
+      setPreviewImageLinks((prevLinks) => [
+        ...prevLinks,
+        ...newFiles.map((file) => URL.createObjectURL(file)),
+      ]);
+    }
+  };
   const onSubmit = async (data: FormData) => {
+    setIsSubmitClicked(true);
+    let imageLinks = [];
+    if (data.imageLinks || data.primaryImage) {
+      imageLinks = await uploadFiles(data.imageLinks, data.primaryImage);
+    }
     const payload = {
       ...data.basicInfo,
       hotelID: data.basicInfo.hotelID,
@@ -419,8 +466,8 @@ const AdminUpdateHotelContent = () => {
           name: subFacility.name,
         })),
       })),
-      primaryImageLink: "asdfasdfasdf",
-      imageLinks: ["asdfasdfasdfasdf,asdfasdf"],
+      primaryImageLink: data.primaryImage ? imageLinks[0] : "",
+      imageLinks: imageLinks.slice(data.primaryImage ? 1 : 0),
       rooms: data.rooms.map((room) => ({
         type: room.type,
         numberOfRooms: room.numberOfRooms,
@@ -462,6 +509,8 @@ const AdminUpdateHotelContent = () => {
         toast.error(`Error: ${result.error}`);
       }
     } catch (error) {
+      setIsSubmitClicked(false);
+
       console.log(error);
       toast.error("Error: Unable to update hotel."); // Use toast to show error message
     }
@@ -580,6 +629,52 @@ const AdminUpdateHotelContent = () => {
                   </span>
                 )}
               </div>
+              <div className="flex flex-col gap-3 w-full">
+                <Label htmlFor="primaryImage" className="text-base">
+                  Primary Image
+                </Label>
+                <label
+                  htmlFor="primaryImage"
+                  className="flex items-center border shadow max-w-max px-3 py-1.5 rounded gap-2 cursor-pointer"
+                >
+                  <ImagePlus className="w-4 h-4" />
+                  Choose File
+                  <input
+                    id="primaryImage"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handlePrimaryImageChange}
+                  />
+                </label>
+                {previewPrimaryImage ? (
+                  <div className="relative max-w-max rounded-md">
+                    <DialogBox previewPrimaryImage={previewPrimaryImage}>
+                      <Image
+                        alt="Primary image"
+                        className="w-full rounded-md object-cover max-h-96"
+                        style={{ height: "auto", objectFit: "cover" }}
+                        height={200}
+                        src={previewPrimaryImage}
+                        width={400}
+                      />
+                    </DialogBox>
+                    <Trash
+                      className="absolute top-2 right-2 text-red-500"
+                      onClick={() => setPreviewPrimaryImage(null)}
+                    />
+                  </div>
+                ) : (
+                  <Image
+                    alt="Primary image"
+                    className=" w-full rounded-md object-cover max-h-96"
+                    style={{ height: "auto", objectFit: "cover" }}
+                    height={200}
+                    src={"/images/image-placeholder.png"}
+                    width={400}
+                  />
+                )}
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -592,36 +687,82 @@ const AdminUpdateHotelContent = () => {
           </CardHeader>
           <CardContent>
             <div className="grid gap-2">
-              <Image
-                alt="Product image"
-                className=" rounded-md object-cover"
-                height={200}
-                src="/images/image-placeholder.png"
-                width={400}
-              />
-              <div className="grid grid-cols-3 gap-2">
-                <button>
-                  <Image
-                    alt="Product image"
-                    className="w-full rounded-md object-cover"
-                    height={100}
-                    src="/images/image-placeholder.png"
-                    width={100}
+              <div className="flex flex-col gap-3">
+                <Label htmlFor="images">Upload Images</Label>
+                <label
+                  htmlFor="images"
+                  className="flex items-center max-w-max border px-3 py-1.5 rounded-md shadow  gap-2 cursor-pointer"
+                >
+                  <Upload className="w-4 h-4" />
+                  Choose Files
+                  <input
+                    id="images"
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleFileChange}
                   />
-                </button>
-                <button>
-                  <Image
-                    alt="Product image"
-                    className="w-full rounded-md object-cover"
-                    height={100}
-                    src="/images/image-placeholder.png"
-                    width={100}
-                  />
-                </button>
-                <button className="flex w-full items-center justify-center rounded-md border border-dashed">
-                  <Upload className="h-4 w-4 text-muted-foreground" />
-                  <span className="sr-only">Upload</span>
-                </button>
+                </label>
+                {previewImageLinks.length > 0 ? (
+                  <span>{previewImageLinks.length} files chosen</span>
+                ) : (
+                  <span>No files chosen</span>
+                )}
+                <div className="grid grid-cols-3 gap-2">
+                  {previewImageLinks.length > 0 ? (
+                    previewImageLinks.map((link, index) => (
+                      <div key={index} className="relative rounded-md w-full">
+                        <DialogBox previewPrimaryImage={link}>
+                          <Image
+                            alt={`Image ${index + 1}`}
+                            className="w-full rounded-md "
+                            style={{ height: "200px", objectFit: "cover" }}
+                            src={link}
+                            width={200}
+                            height={100}
+                          />
+                        </DialogBox>
+
+                        <Trash
+                          className="absolute top-1 right-1 text-red-500"
+                          onClick={() => {
+                            setPreviewImageLinks((prevLinks) =>
+                              prevLinks.filter((link, i) => i !== index)
+                            );
+                          }}
+                        />
+                      </div>
+                    ))
+                  ) : (
+                    <>
+                      <Image
+                        alt="Placeholder image"
+                        className="w-full rounded-md "
+                        style={{ height: "200px", objectFit: "cover" }}
+                        src={"/images/image-placeholder.png"}
+                        width={200}
+                        height={100}
+                      />
+                      <Image
+                        alt="Placeholder image"
+                        className="w-full rounded-md "
+                        style={{ height: "200px", objectFit: "cover" }}
+                        src={"/images/image-placeholder.png"}
+                        width={200}
+                        height={100}
+                      />
+                      <Image
+                        alt="Placeholder image"
+                        className="w-full rounded-md "
+                        style={{ height: "200px", objectFit: "cover" }}
+                        src={"/images/image-placeholder.png"}
+                        width={200}
+                        height={100}
+                      />
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           </CardContent>
@@ -1347,21 +1488,33 @@ const AdminUpdateHotelContent = () => {
                 </p>
                 <p className="">{formData.basicInfo.location.label}</p>
               </div>
-              <div className="  flex h-[550px] gap-2  ">
+              <div className="  flex h-[400px] gap-2  ">
                 <div className="w-1/2 relative overflow-hidden rounded-l-xl">
                   <img
-                    // src={formData.primaryImageLink}
-                    src={staticimg}
+                    src={formData.primaryImage}
+                    // src={staticimg}
                     alt="PrimaryImage"
                     className="h-full transition-transform duration-500 ease-in-out transform hover:scale-105 hover:brightness-75"
                     onClick={() => handleImageClick(0)}
                   />
                 </div>
-                <div className="grid grid-cols-2 w-1/2 gap-2">
+                <div
+                  className={`grid 
+                    ${formData.imageLinks.length <= 2 ? "flex" : "grid-cols-2 "}
+                     gap-2 w-1/2`}
+                >
                   {formData.imageLinks.slice(0, 4).map((image, index) => (
                     <div
                       className={`relative overflow-hidden ${
-                        index === 1
+                        formData.imageLinks.length === 1
+                          ? "rounded-r-xl"
+                          : formData.imageLinks.length <= 2
+                          ? index === 0
+                            ? "rounded-tr-xl"
+                            : index === 1
+                            ? "rounded-br-xl"
+                            : ""
+                          : index === 1
                           ? "rounded-tr-xl"
                           : index === 3
                           ? "rounded-br-xl"
@@ -1370,14 +1523,28 @@ const AdminUpdateHotelContent = () => {
                       onClick={() => handleImageClick(index + 1)}
                       key={index}
                     >
-                      <Image
-                        // src={image}
-                        src={staticimg}
+                      <img
+                        src={image}
+                        // src={staticimg}
                         alt={`smallImage-${index}`}
-                        className="h-full object-cover transition-transform duration-500 ease-in-out transform hover:scale-105 hover:brightness-75"
+                        className="h-full w-full object-cover transition-transform duration-500 ease-in-out transform hover:scale-105 hover:brightness-75"
                       />
                     </div>
                   ))}
+                  {/* {formData.imageLinks.length > 3 ? (
+                    <Button
+                      variant="outline"
+                      className="absolute  bottom-3 bg-[#F1F5F9] right-[20rem] "
+                      onClick={
+                        () => handleImageClick(0)
+                        // console.log("button clickedddd")
+                      }
+                    >
+                      Show all photos
+                    </Button>
+                  ) : (
+                    ""
+                  )} */}
                 </div>
 
                 <Dialog open={isCarouselOpen} onOpenChange={setIsCarouselOpen}>
@@ -1392,9 +1559,9 @@ const AdminUpdateHotelContent = () => {
                           }}
                         >
                           <div className="flex-shrink-0 w-full">
-                            <Image
-                              src={staticimg3}
-                              // src={hotel.primaryImageLink}
+                            <img
+                              // src={staticimg}
+                              src={formData.primaryImage}
                               alt="PrimaryImage"
                               className=""
                               layout="fill"
@@ -1403,8 +1570,8 @@ const AdminUpdateHotelContent = () => {
                           </div>
                           {formData.imageLinks.map((image, index) => (
                             <div className="flex-shrink-0 w-full " key={index}>
-                              <Image
-                                src={staticimg}
+                              <img
+                                src={image}
                                 alt={`carouselImage-${index}`}
                                 className="w-full"
                                 objectFit="cover"
@@ -2077,6 +2244,7 @@ const AdminUpdateHotelContent = () => {
                     <Button
                       className="bg-blue-700 hover:bg-blue-900"
                       type="submit"
+                      disabled={isSubmitClicked ? true : false}
                     >
                       Submit
                     </Button>

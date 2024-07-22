@@ -130,70 +130,6 @@ export default function Page() {
                   <p className="">{hotel.address}</p>
                 </div>
                 <div className="  flex h-[550px] gap-2  ">
-                  {/* <Dialog>
-                    <DialogTrigger asChild>
-                      <div className="w-1/2 relative overflow-hidden rounded-l-xl">
-                        <img
-                          src={hotel.primaryImageLink}
-                          // src={staticimg}
-                          alt="PrimaryImage"
-                          className="h-full transition-transform duration-500 ease-in-out transform hover:scale-105 hover:brightness-75"
-                          onClick={() => handleImageClick(0)}
-                        />
-                      </div>
-                    </DialogTrigger>
-                    <div className="grid grid-cols-2 w-1/2 gap-2">
-                      {hotel.imageLinks.slice(0, 4).map((image, index) => (
-                        <DialogTrigger asChild key={index}>
-                          <div
-                            className={`relative overflow-hidden ${
-                              index === 1
-                                ? "rounded-tr-xl"
-                                : index === 3
-                                ? "rounded-br-xl"
-                                : ""
-                            }`}
-                            onClick={() => handleImageClick(index + 1)}
-                          >
-                            <img
-                              src={image}
-                              // src={staticimg}
-                              alt={`smallImage-${index}`}
-                              className="h-full object-cover transition-transform duration-500 ease-in-out transform hover:scale-105 hover:brightness-75"
-                            />
-                          </div>
-                        </DialogTrigger>
-                      ))}
-                    </div>
-                    <DialogOverlay className="bg-black bg-opacity-50" />
-                    <DialogContent className="flex items-center justify-center p-1 min-w-[800px] ">
-                      <Carousel start={currentIndex}>
-                        <CarouselContent className="">
-                          <CarouselItem>
-                            <Image
-                              // src={hotel.primaryImageLink}
-                              src={staticimg}
-                              alt="PrimaryImage"
-                              className="w-full"
-                            />
-                          </CarouselItem>
-                          {hotel.imageLinks.map((image, index) => (
-                            <CarouselItem key={index}>
-                              <Image
-                                // src={image}
-                                src={staticimg}
-                                alt={`carouselImage-${index}`}
-                                className="w-full"
-                              />
-                            </CarouselItem>
-                          ))}
-                        </CarouselContent>
-                        <CarouselPrevious className="-left-4" />
-                        <CarouselNext className="-right-4" />
-                      </Carousel>
-                    </DialogContent>
-                  </Dialog> */}
-
                   <div className="w-1/2 relative overflow-hidden rounded-l-xl">
                     <img
                       src={hotel.primaryImageLink}
@@ -202,11 +138,23 @@ export default function Page() {
                       onClick={() => handleImageClick(0)}
                     />
                   </div>
-                  <div className="grid grid-cols-2 w-1/2 gap-2">
+                  <div
+                    className={`grid 
+                    ${hotel.imageLinks.length <= 2 ? "flex" : "grid-cols-2 "}
+                     gap-2 w-1/2`}
+                  >
                     {hotel.imageLinks.slice(0, 4).map((image, index) => (
                       <div
                         className={`relative overflow-hidden ${
-                          index === 1
+                          hotel.imageLinks.length === 1
+                            ? "rounded-r-xl"
+                            : hotel.imageLinks.length <= 2
+                            ? index === 0
+                              ? "rounded-tr-xl"
+                              : index === 1
+                              ? "rounded-br-xl"
+                              : ""
+                            : index === 1
                             ? "rounded-tr-xl"
                             : index === 3
                             ? "rounded-br-xl"
@@ -218,10 +166,21 @@ export default function Page() {
                         <img
                           src={image}
                           alt={`smallImage-${index}`}
-                          className="h-full object-cover transition-transform duration-500 ease-in-out transform hover:scale-105 hover:brightness-75"
+                          className="h-full w-full transition-transform duration-500 ease-in-out transform hover:scale-105 hover:brightness-75"
                         />
                       </div>
                     ))}
+                    {/* {hotel.imageLinks.length > 5 ? (
+                      <Button
+                        variant="outline"
+                        className="absolute bottom-3 bg-[#F1F5F9] right-48 "
+                        onClick={() => handleImageClick(0)}
+                      >
+                        Show all photos
+                      </Button>
+                    ) : (
+                      ""
+                    )} */}
                   </div>
 
                   <Dialog
@@ -239,9 +198,9 @@ export default function Page() {
                             }}
                           >
                             <div className="flex-shrink-0 w-full">
-                              <Image
-                                src={staticimg3}
-                                // src={hotel.primaryImageLink}
+                              <img
+                                // src={staticimg3}
+                                src={hotel.primaryImageLink}
                                 alt="PrimaryImage"
                                 className=""
                                 layout="fill"
@@ -253,8 +212,8 @@ export default function Page() {
                                 className="flex-shrink-0 w-full "
                                 key={index}
                               >
-                                <Image
-                                  src={staticimg}
+                                <img
+                                  src={image}
                                   alt={`carouselImage-${index}`}
                                   className="w-full"
                                   objectFit="cover"
@@ -278,107 +237,6 @@ export default function Page() {
                       </div>
                     </DialogContent>
                   </Dialog>
-                  {/* <Dialog
-                    open={isCarouselOpen}
-                    onOpenChange={setIsCarouselOpen}
-                  >
-                    <DialogTrigger asChild>
-                      <div className="w-1/2 relative overflow-hidden rounded-l-xl">
-                        <img
-                          src={hotel.primaryImageLink}
-                          alt="PrimaryImage"
-                          className="h-full transition-transform duration-500 ease-in-out transform hover:scale-105 hover:brightness-75"
-                          onClick={() => handleImageClick(0)}
-                        />
-                      </div>
-                    </DialogTrigger>
-                    <div className="grid grid-cols-2 w-1/2 gap-2">
-                      {hotel.imageLinks.slice(0, 4).map((image, index) => (
-                        <DialogTrigger asChild key={index}>
-                          <div
-                            className={`relative overflow-hidden ${
-                              index === 1
-                                ? "rounded-tr-xl"
-                                : index === 3
-                                ? "rounded-br-xl"
-                                : ""
-                            }`}
-                            onClick={() => handleImageClick(index + 1)}
-                          >
-                            <img
-                              src={image}
-                              alt={`smallImage-${index}`}
-                              className="h-full object-cover transition-transform duration-500 ease-in-out transform hover:scale-105 hover:brightness-75"
-                            />
-                          </div>
-                        </DialogTrigger>
-                      ))}
-                    </div>
-                    <DialogOverlay className="bg-black bg-opacity-50" />
-                    <DialogContent className="flex items-center justify-center p-1 min-w-[800px] ">
-                      {isCarouselOpen && (
-                         <Carousel index={currentIndex} onIndexChange={setCurrentIndex}>
-                          <CarouselContent>
-                            <CarouselItem>
-                              <Image
-                                src={staticimg}
-                                alt="PrimaryImage"
-                                className="w-full"
-                              />
-                            </CarouselItem>
-                            {hotel.imageLinks.map((image, index) => (
-                              <CarouselItem key={index}>
-                                <img
-                                  src={image}
-                                  alt={`carouselImage-${index}`}
-                                  className="w-full"
-                                />
-                              </CarouselItem>
-                            ))}
-                          </CarouselContent>
-                          <CarouselPrevious className="-left-4" />
-                          <CarouselNext className="-right-4" />
-                        </Carousel>
-                      )}
-                    </DialogContent>
-                  </Dialog> */}
-
-                  {/* <Dialog>
-                    {isCarouselOpen && (
-                      <Carousel
-                      // currentIndex={currentIndex}
-                      // onClose={handleCloseCarousel}
-                      >
-                        <DialogContent className="bg-blue-400 min-w-[700px]">
-                          <CarouselContent className="size-fit">
-                            <CarouselItem>
-                              <img
-                                // src={hotel.primaryImageLink}
-                                src={staticimg}
-                                alt="PrimaryImage"
-                              />
-                            </CarouselItem>
-
-                            {hotel.imageLinks
-                              .slice(0, 4)
-                              .map((image, index) => (
-                                <CarouselItem>
-                                  <img
-                                    // src={image}
-                                   src={staticimg}
-                                    alt={`carouselImage-${index}`}
-                                    key={index}
-                                    className=""
-                                  />
-                                </CarouselItem>
-                              ))}
-                          </CarouselContent>
-                        </DialogContent>
-                        <CarouselPrevious className="-left-4" />
-                        <CarouselNext className="-right-4" />
-                      </Carousel>
-                    )}
-                  </Dialog> */}
                 </div>
               </div>
               <div className="space-y-4">

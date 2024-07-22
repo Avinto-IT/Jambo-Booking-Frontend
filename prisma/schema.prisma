@@ -65,11 +65,12 @@ model User {
 }
 
 model Location {
-  locationID String @id @default(auto()) @map("_id") @db.ObjectId
+  locationID String  @id @default(auto()) @map("_id") @db.ObjectId
   city       String
   country    String
-
-  hotels Hotel[]
+  address    String
+  zipCode    String
+  hotels     Hotel[]
 }
 
 model Booking {
