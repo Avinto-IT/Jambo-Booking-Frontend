@@ -92,7 +92,7 @@ export default function Page() {
     setShowAmentities(!showAmenities);
   };
 
-  const handleImageClick = (index) => {
+  const handleImageClick = (index: number) => {
     setCurrentIndex(index);
     setIsCarouselOpen(true);
   };
