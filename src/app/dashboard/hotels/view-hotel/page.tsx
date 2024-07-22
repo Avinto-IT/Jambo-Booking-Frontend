@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Hotel } from "@/utils/types";
 import { Dot } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import bed from "../../../../../public/images/Bed.svg";
 import guest from "../../../../../public/images/Guest.svg";
 import Image from "next/image";
@@ -30,6 +30,13 @@ import {
 } from "@/components/ui/dialog";
 
 export default function Page() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AdminViewHotel />
+    </Suspense>
+  );
+}
+function AdminViewHotel() {
   const [showMore, setShowMore] = useState(false);
   const [showAmenities, setShowAmentities] = useState(false);
   const [visibleFacilitiesCount, setVisibleFacilitiesCount] = useState(4);
