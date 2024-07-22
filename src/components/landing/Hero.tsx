@@ -46,7 +46,7 @@ export default function Hero() {
       height: "52px",
     }),
   };
-  if (!location) return <>Loading..</>;
+  if (!locations) return <>Loading..</>;
   return (
     <section
       className="relative bg-cover 
