@@ -1159,7 +1159,9 @@ const AdminUpdateHotelContent = () => {
                     {Array.isArray(
                       errors?.facilities?.[facilityIndex]?.subFacilities
                     ) &&
-                      errors.facilities[facilityIndex].subFacilities.map(
+                      (
+                        errors.facilities[facilityIndex]?.subFacilities as any
+                      )?.map(
                         (
                           subFacilityError: { name: FieldError },
                           subFacilityIndex: Key | null | undefined
@@ -1178,7 +1180,7 @@ const AdminUpdateHotelContent = () => {
                       <span className="text-red-500">
                         {
                           errors?.facilities?.[facilityIndex]?.subFacilities
-                            ?.root.message
+                            ?.root?.message
                         }
                       </span>
                     )}
@@ -1267,9 +1269,6 @@ const AdminUpdateHotelContent = () => {
       "Four Poster Bed",
       "Hammock",
     ];
-
-    console.log(errors);
-    console.log(methods.getValues());
     return (
       <div className="p-6 space-y-6">
         {roomFields.map((room, roomIndex) => (
@@ -1314,7 +1313,7 @@ const AdminUpdateHotelContent = () => {
                 {errors?.rooms?.[roomIndex]?.numberOfRooms?.message && (
                   <span className="text-red-500">
                     {
-                      (errors.rooms[roomIndex]?.numberOfRooms as FieldError)
+                      (errors?.rooms?.[roomIndex]?.numberOfRooms as FieldError)
                         ?.message
                     }
                   </span>
@@ -1347,7 +1346,6 @@ const AdminUpdateHotelContent = () => {
                   </span>
                 )}
                 <Label>Bed Types</Label>
-
                 {room?.beds.map((bed, bedIndex) => (
                   <div key={bedIndex} className="flex gap-4 items-center">
                     <div className="flex-1">
@@ -1467,7 +1465,7 @@ const AdminUpdateHotelContent = () => {
                     </TableBody>
                   </Table>
                   {Array.isArray(errors.rooms?.[roomIndex]?.amenities) &&
-                    errors?.rooms?.[roomIndex]?.amenities?.map(
+                    (errors?.rooms?.[roomIndex]?.amenities as any)?.map(
                       (
                         amenityError: AmenityError,
                         amenityIndex: Key | null | undefined
@@ -1491,9 +1489,9 @@ const AdminUpdateHotelContent = () => {
                   </Button>
                   {errors?.rooms?.[roomIndex]?.amenities?.root?.message && (
                     <span className="text-red-500">
-                      {errors?.rooms?.[roomIndex]?.amenities?.root.message}
+                      {errors?.rooms?.[roomIndex]?.amenities?.root?.message}
                     </span>
-                  )}{" "}
+                  )}
                 </div>
               </div>
             </CardContent>
@@ -1756,7 +1754,7 @@ const AdminUpdateHotelContent = () => {
           <CardHeader>
             <CardTitle>Contact Details</CardTitle>
             <CardDescription>
-              Update the details of the hotel representative.{" "}
+              Update the details of the hotel representative.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -1768,9 +1766,9 @@ const AdminUpdateHotelContent = () => {
                 placeholder="John Doe"
                 onKeyDown={handleKeyDown}
               />
-              {errors.contactForm?.name?.message && (
+              {errors?.contactForm?.name?.message && (
                 <span className="text-red-500">
-                  {errors.contactForm.name.message}
+                  {errors?.contactForm?.name?.message}
                 </span>
               )}
               <Label htmlFor="role-position">Role / Position</Label>
@@ -1780,9 +1778,9 @@ const AdminUpdateHotelContent = () => {
                 placeholder="Manager"
                 onKeyDown={handleKeyDown}
               />
-              {errors.contactForm?.position?.message && (
+              {errors?.contactForm?.position?.message && (
                 <span className="text-red-500">
-                  {errors.contactForm.position.message}
+                  {errors?.contactForm?.position?.message}
                 </span>
               )}
               <Label htmlFor="email-address">Email Address</Label>
@@ -2126,7 +2124,7 @@ const AdminUpdateHotelContent = () => {
                   <div className="">House Rules of your hotel</div>
                   <div className="">
                     Click on edit to modify the house rules.
-                  </div>{" "}
+                  </div>
                 </div>
               </CardTitle>
             </div>

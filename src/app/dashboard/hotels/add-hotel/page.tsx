@@ -1053,7 +1053,9 @@ export default function AddHotel() {
                     {Array.isArray(
                       errors?.facilities?.[facilityIndex]?.subFacilities
                     ) &&
-                      errors.facilities[facilityIndex].subFacilities.map(
+                      (
+                        errors.facilities[facilityIndex]?.subFacilities as any
+                      )?.map(
                         (
                           subFacilityError: { name: FieldError },
                           subFacilityIndex: Key | null | undefined
@@ -1072,7 +1074,7 @@ export default function AddHotel() {
                       <span className="text-red-500">
                         {
                           errors?.facilities?.[facilityIndex]?.subFacilities
-                            ?.root.message
+                            ?.root?.message
                         }
                       </span>
                     )}
@@ -1162,8 +1164,6 @@ export default function AddHotel() {
       "Four Poster Bed",
       "Hammock",
     ];
-
-    // console.log(methods.getValues());
     return (
       <div className="p-6 space-y-6">
         {roomFields.map((room, roomIndex) => (
@@ -1208,7 +1208,7 @@ export default function AddHotel() {
                 {errors?.rooms?.[roomIndex]?.numberOfRooms?.message && (
                   <span className="text-red-500">
                     {
-                      (errors.rooms[roomIndex]?.numberOfRooms as FieldError)
+                      (errors?.rooms?.[roomIndex]?.numberOfRooms as FieldError)
                         ?.message
                     }
                   </span>
@@ -1222,7 +1222,6 @@ export default function AddHotel() {
                   required
                   onKeyDown={handleKeyDown}
                 />
-
                 {errors?.rooms?.[roomIndex]?.price?.message && (
                   <span className="text-red-500">
                     {(errors.rooms[roomIndex]?.price as FieldError)?.message}
@@ -1361,7 +1360,7 @@ export default function AddHotel() {
                     </TableBody>
                   </Table>
                   {Array.isArray(errors.rooms?.[roomIndex]?.amenities) &&
-                    errors?.rooms?.[roomIndex]?.amenities?.map(
+                    (errors?.rooms?.[roomIndex]?.amenities as any)?.map(
                       (
                         amenityError: AmenityError,
                         amenityIndex: Key | null | undefined
@@ -1375,7 +1374,6 @@ export default function AddHotel() {
                         </div>
                       )
                     )}
-
                   <Button
                     variant="ghost"
                     onClick={() => addAmenity(roomIndex)}
@@ -1386,7 +1384,7 @@ export default function AddHotel() {
                   </Button>
                   {errors?.rooms?.[roomIndex]?.amenities?.root?.message && (
                     <span className="text-red-500">
-                      {errors?.rooms?.[roomIndex]?.amenities?.root.message}
+                      {errors?.rooms?.[roomIndex]?.amenities?.root?.message}
                     </span>
                   )}
                 </div>
@@ -1415,7 +1413,7 @@ export default function AddHotel() {
           </Button>
         </div>
         {errors?.rooms?.root?.message && (
-          <span className="text-red-500">{errors?.rooms?.root.message}</span>
+          <span className="text-red-500">{errors?.rooms?.root?.message}</span>
         )}
       </div>
     );
@@ -1427,7 +1425,6 @@ export default function AddHotel() {
       setValue,
       formState: { errors },
     } = methods;
-    console.log(errors);
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [newHouseRule, setNewHouseRule] = useState({ newRule: "" });
@@ -1667,7 +1664,7 @@ export default function AddHotel() {
               />
               {errors?.contactForm?.name?.message && (
                 <span className="text-red-500">
-                  {errors?.contactForm?.name.message}
+                  {errors?.contactForm?.name?.message}
                 </span>
               )}
               <Label htmlFor="role-position">Role / Position</Label>
@@ -1679,7 +1676,7 @@ export default function AddHotel() {
               />
               {errors?.contactForm?.position?.message && (
                 <span className="text-red-500">
-                  {errors?.contactForm?.position.message}
+                  {errors?.contactForm?.position?.message}
                 </span>
               )}
               <Label htmlFor="email-address">Email Address</Label>
