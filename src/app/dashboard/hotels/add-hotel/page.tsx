@@ -1689,7 +1689,7 @@ export default function AddHotel() {
               />
               {errors?.contactForm?.email?.message && (
                 <span className="text-red-500">
-                  {errors?.contactForm?.email.message}
+                  {errors?.contactForm?.email?.message}
                 </span>
               )}
               <Label htmlFor="phone-number">Phone Number</Label>
