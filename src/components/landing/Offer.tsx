@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import MaxWidthWrapper from "../MaxWidthWrapper";
 import fivestar from "../../../public/images/static-from-landing/logos/Group_10490.svg";

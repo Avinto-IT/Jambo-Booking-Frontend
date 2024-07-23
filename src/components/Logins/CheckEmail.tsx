@@ -78,7 +78,7 @@ const CheckEmail: React.FC<CheckEmailProps> = ({ onButtonClick }) => {
             <CardFooter>
               <div className="text-xs text-[#64748B] w-full flex justify-center">
                 Haven&apos;t got the email yet?{" "}
-                <Link href="/" className="text-blue-600">
+                <Link href="/login" className="text-blue-600">
                   Resend email
                 </Link>{" "}
               </div>
