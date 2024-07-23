@@ -1050,33 +1050,32 @@ export default function AddHotel() {
                         </TableRow>
                       </TableBody>
                     </Table>
-                    {Array.isArray(errors.facilities) &&
-                      errors?.facilities?.map(
-                        (facilityError, facilityIndex) => (
-                          <div key={facilityIndex}>
-                            {facilityError.subFacilities?.root && (
+                    {Array.isArray(
+                      errors?.facilities?.[facilityIndex]?.subFacilities
+                    ) &&
+                      errors.facilities[facilityIndex].subFacilities.map(
+                        (
+                          subFacilityError: { name: FieldError },
+                          subFacilityIndex: Key | null | undefined
+                        ) => (
+                          <div key={subFacilityIndex}>
+                            {subFacilityError?.name?.message && (
                               <span className="text-red-500">
-                                {facilityError.subFacilities?.root.message}
+                                {subFacilityError?.name?.message}
                               </span>
                             )}
-                            {Array.isArray(facilityError.subFacilities) &&
-                              facilityError.subFacilities.map(
-                                (
-                                  subFacilityError: { name: FieldError },
-                                  subFacilityIndex: Key | null | undefined
-                                ) => (
-                                  <div key={subFacilityIndex}>
-                                    {subFacilityError?.name?.message && (
-                                      <span className="text-red-500">
-                                        {subFacilityError.name.message}
-                                      </span>
-                                    )}
-                                  </div>
-                                )
-                              )}
                           </div>
                         )
                       )}
+                    {errors?.facilities?.[facilityIndex]?.subFacilities?.root
+                      ?.message && (
+                      <span className="text-red-500">
+                        {
+                          errors?.facilities?.[facilityIndex]?.subFacilities
+                            ?.root.message
+                        }
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -1164,8 +1163,7 @@ export default function AddHotel() {
       "Hammock",
     ];
 
-    console.log(errors);
-    console.log(methods.getValues());
+    // console.log(methods.getValues());
     return (
       <div className="p-6 space-y-6">
         {roomFields.map((room, roomIndex) => (
@@ -1362,33 +1360,21 @@ export default function AddHotel() {
                       ))}
                     </TableBody>
                   </Table>
-                  {Array.isArray(errors.rooms) &&
-                    errors.rooms.map((roomError, roomIndex) => (
-                      <div key={roomIndex}>
-                        {roomError?.amenities?.root && (
-                          <span className="text-red-500">
-                            {roomError?.amenities?.root.message}
-                          </span>
-                        )}
-                        {Array.isArray(roomError?.amenities) &&
-                          roomError.amenities.map(
-                            (
-                              amenityError: AmenityError,
-                              amenityIndex: number
-                            ) => {
-                              return (
-                                <div key={amenityIndex}>
-                                  {amenityError?.name?.message && (
-                                    <span className="text-red-500">
-                                      {amenityError?.name.message}
-                                    </span>
-                                  )}
-                                </div>
-                              );
-                            }
+                  {Array.isArray(errors.rooms?.[roomIndex]?.amenities) &&
+                    errors?.rooms?.[roomIndex]?.amenities?.map(
+                      (
+                        amenityError: AmenityError,
+                        amenityIndex: Key | null | undefined
+                      ) => (
+                        <div key={amenityIndex}>
+                          {amenityError?.name?.message && (
+                            <span className="text-red-500">
+                              {amenityError?.name?.message}
+                            </span>
                           )}
-                      </div>
-                    ))}
+                        </div>
+                      )
+                    )}
 
                   <Button
                     variant="ghost"
@@ -1398,6 +1384,11 @@ export default function AddHotel() {
                     <PlusCircle className="h-4 w-4" />
                     Add Amenity
                   </Button>
+                  {errors?.rooms?.[roomIndex]?.amenities?.root?.message && (
+                    <span className="text-red-500">
+                      {errors?.rooms?.[roomIndex]?.amenities?.root.message}
+                    </span>
+                  )}
                 </div>
               </div>
             </CardContent>
@@ -1436,6 +1427,7 @@ export default function AddHotel() {
       setValue,
       formState: { errors },
     } = methods;
+    console.log(errors);
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [newHouseRule, setNewHouseRule] = useState({ newRule: "" });
@@ -1567,16 +1559,11 @@ export default function AddHotel() {
                     />
                   )}
                 />
-                {Array.isArray(errors.houseRules) &&
-                  errors.houseRules.map((houseRuleError, houseRuleIndex) => (
-                    <div key={houseRuleIndex}>
-                      {houseRuleError?.type?.value?.message && (
-                        <span className="text-red-500">
-                          {houseRuleError?.type?.value.message}
-                        </span>
-                      )}
-                    </div>
-                  ))}
+                {(errors?.houseRules?.[index]?.type as any)?.value?.message && (
+                  <span className="text-red-500">
+                    {(errors?.houseRules?.[index]?.type as any).value.message}
+                  </span>
+                )}
                 <Label htmlFor={`house-rule-details-${houseRule.id}`}>
                   Details
                 </Label>
