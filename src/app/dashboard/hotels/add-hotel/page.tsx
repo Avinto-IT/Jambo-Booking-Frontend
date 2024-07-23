@@ -1099,7 +1099,7 @@ export default function AddHotel() {
             Add Facility
           </Button>
         </div>
-        {errors?.facilities?.root && (
+        {errors?.facilities?.root?.message && (
           <span className="text-red-500">
             {errors?.facilities?.root.message}
           </span>
@@ -1190,9 +1190,9 @@ export default function AddHotel() {
                   placeholder="Deluxe Room"
                   onKeyDown={handleKeyDown}
                 />
-                {errors?.rooms?.[roomIndex]?.type && (
+                {(errors?.rooms?.[roomIndex]?.type as FieldError)?.message && (
                   <span className="text-red-500">
-                    {(errors.rooms[roomIndex]?.type as FieldError)?.message}
+                    {(errors?.rooms?.[roomIndex]?.type as FieldError).message}
                   </span>
                 )}
                 <Label htmlFor={`number-of-rooms-${room.id}`}>
@@ -1242,7 +1242,7 @@ export default function AddHotel() {
                   </span>
                 )}
                 <Label>Bed Types</Label>
-                {room.beds.map((bed, bedIndex) => (
+                {room?.beds.map((bed, bedIndex) => (
                   <div key={bedIndex} className="flex gap-4 items-center">
                     <div className="flex-1">
                       <Controller

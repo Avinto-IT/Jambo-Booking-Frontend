@@ -1156,33 +1156,32 @@ const AdminUpdateHotelContent = () => {
                         </TableRow>
                       </TableBody>
                     </Table>
-                    {Array.isArray(errors?.facilities) &&
-                      errors?.facilities?.map(
-                        (facilityError, facilityIndex) => (
-                          <div key={facilityIndex}>
-                            {facilityError?.subFacilities?.root?.message && (
+                    {Array.isArray(
+                      errors?.facilities?.[facilityIndex]?.subFacilities
+                    ) &&
+                      errors.facilities[facilityIndex].subFacilities.map(
+                        (
+                          subFacilityError: { name: FieldError },
+                          subFacilityIndex: Key | null | undefined
+                        ) => (
+                          <div key={subFacilityIndex}>
+                            {subFacilityError?.name?.message && (
                               <span className="text-red-500">
-                                {facilityError.subFacilities.root.message}
+                                {subFacilityError?.name?.message}
                               </span>
                             )}
-                            {Array.isArray(facilityError?.subFacilities) &&
-                              facilityError?.subFacilities?.map(
-                                (
-                                  subFacilityError: { name: FieldError },
-                                  subFacilityIndex: Key | null | undefined
-                                ) => (
-                                  <div key={subFacilityIndex}>
-                                    {subFacilityError?.name?.message && (
-                                      <span className="text-red-500">
-                                        {subFacilityError.name.message}
-                                      </span>
-                                    )}
-                                  </div>
-                                )
-                              )}
                           </div>
                         )
                       )}
+                    {errors?.facilities?.[facilityIndex]?.subFacilities?.root
+                      ?.message && (
+                      <span className="text-red-500">
+                        {
+                          errors?.facilities?.[facilityIndex]?.subFacilities
+                            ?.root.message
+                        }
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -1207,7 +1206,9 @@ const AdminUpdateHotelContent = () => {
           </Button>
         </div>
         {errors?.facilities?.root?.message && (
-          <span className="text-red-500">{errors.facilities.root.message}</span>
+          <span className="text-red-500">
+            {errors?.facilities?.root.message}
+          </span>
         )}
       </div>
     );
@@ -1312,7 +1313,10 @@ const AdminUpdateHotelContent = () => {
                 />
                 {errors?.rooms?.[roomIndex]?.numberOfRooms?.message && (
                   <span className="text-red-500">
-                    {errors?.rooms?.[roomIndex]?.numberOfRooms?.message}
+                    {
+                      (errors.rooms[roomIndex]?.numberOfRooms as FieldError)
+                        ?.message
+                    }
                   </span>
                 )}
                 <Label htmlFor={`price-${room.id}`}>Price</Label>
@@ -1326,7 +1330,7 @@ const AdminUpdateHotelContent = () => {
                 />
                 {errors?.rooms?.[roomIndex]?.price?.message && (
                   <span className="text-red-500">
-                    {errors?.rooms?.[roomIndex]?.price?.message}
+                    {(errors.rooms[roomIndex]?.price as FieldError)?.message}
                   </span>
                 )}
                 <Label htmlFor={`capacity-${room.id}`}>Max Occupants</Label>
@@ -1339,9 +1343,11 @@ const AdminUpdateHotelContent = () => {
                 />
                 {errors?.rooms?.[roomIndex]?.capacity?.message && (
                   <span className="text-red-500">
-                    {errors?.rooms?.[roomIndex]?.capacity?.message}
+                    {(errors.rooms[roomIndex]?.capacity as FieldError)?.message}
                   </span>
                 )}
+                <Label>Bed Types</Label>
+
                 {room?.beds.map((bed, bedIndex) => (
                   <div key={bedIndex} className="flex gap-4 items-center">
                     <div className="flex-1">
@@ -1460,32 +1466,21 @@ const AdminUpdateHotelContent = () => {
                       ))}
                     </TableBody>
                   </Table>
-                  {Array.isArray(errors?.rooms) &&
-                    errors?.rooms?.map((roomError, roomIndex) => (
-                      <div key={roomIndex}>
-                        {roomError?.amenities?.root && (
-                          <span className="text-red-500">
-                            {roomError?.amenities?.root?.message}
-                          </span>
-                        )}
-                        {Array.isArray(roomError?.amenities) &&
-                          roomError?.amenities?.map(
-                            (
-                              amenityError: { name: { message: string } },
-                              amenityIndex: Key
-                            ) => (
-                              <div key={amenityIndex}>
-                                {amenityError?.name?.message && (
-                                  <span className="text-red-500">
-                                    {amenityError?.name?.message}
-                                  </span>
-                                )}
-                              </div>
-                            )
+                  {Array.isArray(errors.rooms?.[roomIndex]?.amenities) &&
+                    errors?.rooms?.[roomIndex]?.amenities?.map(
+                      (
+                        amenityError: AmenityError,
+                        amenityIndex: Key | null | undefined
+                      ) => (
+                        <div key={amenityIndex}>
+                          {amenityError?.name?.message && (
+                            <span className="text-red-500">
+                              {amenityError?.name?.message}
+                            </span>
                           )}
-                      </div>
-                    ))}
-
+                        </div>
+                      )
+                    )}
                   <Button
                     variant="ghost"
                     onClick={() => addAmenity(roomIndex)}
@@ -1494,6 +1489,11 @@ const AdminUpdateHotelContent = () => {
                     <PlusCircle className="h-4 w-4" />
                     Add Amenity
                   </Button>
+                  {errors?.rooms?.[roomIndex]?.amenities?.root?.message && (
+                    <span className="text-red-500">
+                      {errors?.rooms?.[roomIndex]?.amenities?.root.message}
+                    </span>
+                  )}{" "}
                 </div>
               </div>
             </CardContent>
@@ -1664,16 +1664,11 @@ const AdminUpdateHotelContent = () => {
                     />
                   )}
                 />
-                {Array.isArray(errors.houseRules) &&
-                  errors.houseRules.map((houseRuleError, houseRuleIndex) => (
-                    <div key={houseRuleIndex}>
-                      {houseRuleError.type?.value?.messsage && (
-                        <span className="text-red-500">
-                          {houseRuleError.type.value.message}
-                        </span>
-                      )}
-                    </div>
-                  ))}
+                {(errors?.houseRules?.[index]?.type as any)?.value?.message && (
+                  <span className="text-red-500">
+                    {(errors?.houseRules?.[index]?.type as any).value.message}
+                  </span>
+                )}
                 <Label htmlFor={`house-rule-details-${houseRule.id}`}>
                   Details
                 </Label>
@@ -1917,7 +1912,7 @@ const AdminUpdateHotelContent = () => {
                   <div className="">General information of your hotel</div>
                   <div className="">
                     Click on edit to modify hotel information.
-                  </div>{" "}
+                  </div>
                 </div>
               </CardTitle>
             </div>
@@ -2179,7 +2174,7 @@ const AdminUpdateHotelContent = () => {
                   <div className="">Contact of your hotel</div>
                   <div className="">
                     Click on edit to modify your information.
-                  </div>{" "}
+                  </div>
                 </div>
               </CardTitle>
             </div>
