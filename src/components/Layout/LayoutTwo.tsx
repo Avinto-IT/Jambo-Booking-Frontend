@@ -105,10 +105,10 @@ const LayoutTwo: React.FC<LayoutTwoProps> = ({
                 <Link href="/privacy-policy" className="">
                   Privacy Policy
                 </Link>
-                <Link href="/" className="">
+                <Link href="/terms" className="">
                   Terms and Conditions
                 </Link>
-                <Link href="/" className="">
+                <Link href="/cookies" className="">
                   Cookie Policy
                 </Link>
               </div>
