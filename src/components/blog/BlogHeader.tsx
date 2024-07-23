@@ -20,14 +20,10 @@ function BlogHeader() {
   useEffect(() => {
     setIsClient(true);
     if (typeof window !== "undefined") {
-      setIsBlogDetailsPage(
-        window.location.href === "http://localhost:3000/blog-details"
-      );
-      if (window.location.href === "http://localhost:3000/add-blogs") {
+      setIsBlogDetailsPage(window.location.href === "/blog-details");
+      if (window.location.href === "/add-blogs") {
         setPageName("Add Blogs");
-      } else if (
-        window.location.href.includes("http://localhost:3000/text-editor")
-      ) {
+      } else if (window.location.href.includes("/text-editor")) {
         setPageName("Edit Blogs");
       }
     }
