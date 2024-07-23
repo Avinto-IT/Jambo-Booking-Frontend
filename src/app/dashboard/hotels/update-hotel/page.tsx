@@ -72,6 +72,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { InputNumber } from "@/components/ui/numberInput";
 interface HouseRule {
   id: number;
   type: {
@@ -1303,7 +1304,7 @@ const AdminUpdateHotelContent = () => {
                 <Label htmlFor={`number-of-rooms-${room.id}`}>
                   Number of Rooms
                 </Label>
-                <Input
+                <InputNumber
                   id={`number-of-rooms-${room.id}`}
                   type="number"
                   {...register(`rooms.${roomIndex}.numberOfRooms`)}
@@ -1319,7 +1320,7 @@ const AdminUpdateHotelContent = () => {
                   </span>
                 )}
                 <Label htmlFor={`price-${room.id}`}>Price</Label>
-                <Input
+                <InputNumber
                   id={`price-${room.id}`}
                   type="number"
                   {...register(`rooms.${roomIndex}.price`)}
@@ -1333,7 +1334,7 @@ const AdminUpdateHotelContent = () => {
                   </span>
                 )}
                 <Label htmlFor={`capacity-${room.id}`}>Max Occupants</Label>
-                <Input
+                <InputNumber
                   id={`capacity-${room.id}`}
                   type="number"
                   {...register(`rooms.${roomIndex}.capacity`)}
@@ -1376,7 +1377,7 @@ const AdminUpdateHotelContent = () => {
                       )}
                     </div>
                     <div className="flex-1">
-                      <Input
+                      <InputNumber
                         id={`rooms.${roomIndex}.beds.${bedIndex}.numberOfBeds`}
                         {...register(
                           `rooms.${roomIndex}.beds.${bedIndex}.numberOfBeds`
@@ -1796,16 +1797,16 @@ const AdminUpdateHotelContent = () => {
                 </span>
               )}
               <Label htmlFor="phone-number">Phone Number</Label>
-              <Input
+              <InputNumber
                 id="phone-number"
                 type="number"
                 {...register("contactForm.number")}
                 placeholder="9812345678"
                 onKeyDown={handleKeyDown}
               />
-              {errors.contactForm?.number?.message && (
+              {errors?.contactForm?.number?.message && (
                 <span className="text-red-500">
-                  {errors.contactForm.number.message}
+                  {errors?.contactForm?.number?.message}
                 </span>
               )}
             </div>
@@ -1983,7 +1984,7 @@ const AdminUpdateHotelContent = () => {
                   <div className="">Facilities provided by your hotel</div>
                   <div className="">
                     Click on edit to modify the facilities.
-                  </div>{" "}
+                  </div>
                 </div>
               </CardTitle>
             </div>
@@ -2068,7 +2069,7 @@ const AdminUpdateHotelContent = () => {
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <Title>Price</Title>
+                    <Title>Price(USD)</Title>
                     <Value> {room.price}</Value>
                   </div>
                   <div className="flex items-center justify-between">

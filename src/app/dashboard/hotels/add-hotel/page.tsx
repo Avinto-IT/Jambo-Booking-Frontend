@@ -60,6 +60,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { InputNumber } from "@/components/ui/numberInput";
 
 interface HouseRule {
   id: number;
@@ -1198,7 +1199,7 @@ export default function AddHotel() {
                 <Label htmlFor={`number-of-rooms-${room.id}`}>
                   Number of Rooms
                 </Label>
-                <Input
+                <InputNumber
                   id={`number-of-rooms-${room.id}`}
                   type="number"
                   {...register(`rooms.${roomIndex}.numberOfRooms`)}
@@ -1214,7 +1215,7 @@ export default function AddHotel() {
                   </span>
                 )}
                 <Label htmlFor={`price-${room.id}`}>Price</Label>
-                <Input
+                <InputNumber
                   id={`price-${room.id}`}
                   type="number"
                   {...register(`rooms.${roomIndex}.price`)}
@@ -1228,7 +1229,7 @@ export default function AddHotel() {
                   </span>
                 )}
                 <Label htmlFor={`capacity-${room.id}`}>Max Occupants</Label>
-                <Input
+                <InputNumber
                   id={`capacity-${room.id}`}
                   type="number"
                   {...register(`rooms.${roomIndex}.capacity`)}
@@ -1271,7 +1272,7 @@ export default function AddHotel() {
                       )}
                     </div>
                     <div className="flex-1">
-                      <Input
+                      <InputNumber
                         id={`rooms.${roomIndex}.beds.${bedIndex}.numberOfBeds`}
                         {...register(
                           `rooms.${roomIndex}.beds.${bedIndex}.numberOfBeds`
@@ -1692,7 +1693,7 @@ export default function AddHotel() {
                 </span>
               )}
               <Label htmlFor="phone-number">Phone Number</Label>
-              <Input
+              <InputNumber
                 id="phone-number"
                 type="number"
                 {...register("contactForm.number")}
@@ -1701,7 +1702,7 @@ export default function AddHotel() {
               />
               {errors?.contactForm?.number?.message && (
                 <span className="text-red-500">
-                  {errors?.contactForm?.number.message}
+                  {errors?.contactForm?.number?.message}
                 </span>
               )}
             </div>
@@ -1958,7 +1959,7 @@ export default function AddHotel() {
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <Title>Price</Title>
+                    <Title>Price(USD)</Title>
                     <Value> {room.price}</Value>
                   </div>
 

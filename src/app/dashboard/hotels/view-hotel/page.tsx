@@ -360,7 +360,7 @@ function AdminViewHotel() {
                                 Includes taxes and fees{" "}
                               </p>
                               <p className="flex justify-end text-xl font-semibold">
-                                Rs.{value.price}
+                                USD {value.price}
                               </p>
                             </div>
                           </div>
