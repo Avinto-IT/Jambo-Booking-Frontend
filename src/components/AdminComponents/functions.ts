@@ -1,4 +1,7 @@
-export const uploadFiles = async (files: File[], primaryImage: File | null) => {
+export const uploadFiles = async (
+  files: File[],
+  primaryImage: File | null = null
+) => {
   const urls = [];
   const timestamp = Date.now();
 
