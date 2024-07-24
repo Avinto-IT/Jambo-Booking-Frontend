@@ -12,16 +12,7 @@ import { Button } from "@/components/ui/button";
 import facilitiesIcon from "../../../../../data/facilities.json";
 import * as Icons from "lucide-react";
 import AdminLayout from "@/components/Layout/AdminLayout";
-import staticimg from "../../../../../public/images/static-from-landing/image.svg";
-import staticimg2 from "../../../../../public/images/an_image_for_hotel_booking.svg";
-import staticimg3 from "../../../../../public/images/explore-east-africa/Photo1.svg";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
+
 import {
   Dialog,
   DialogContent,
@@ -137,7 +128,6 @@ function AdminViewHotel() {
 
   return (
     <AdminLayout>
-      {" "}
       <Card className="w-full">
         <div className="flex justify-center ">
           <MaxWidthWrapper>
@@ -388,9 +378,9 @@ function AdminViewHotel() {
                               <div className="text-[#64748B] text-sm">
                                 Includes taxes and fees{" "}
                               </div>
-                              <div className="flex justify-end text-xl font-semibold">
+                              <p className="flex justify-end text-xl font-semibold">
                                 USD {value.price}
-                              </div>
+                              </p>
                             </div>
                           </div>
                         </Card>
