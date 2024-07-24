@@ -93,6 +93,7 @@ interface Room {
   }[];
 
   amenities: { id: number; name: string }[];
+  roomImageLinks: File[];
 }
 
 interface ContactDetails {
@@ -266,8 +267,8 @@ export default function AddHotel() {
               numberOfBeds: "",
             },
           ],
-
           amenities: [{ id: 1, name: "" }],
+          roomImageLinks: [],
         },
       ],
       contactForm: {
@@ -332,6 +333,8 @@ export default function AddHotel() {
     null
   );
   const [previewImageLinks, setPreviewImageLinks] = useState<string[]>([]);
+  const [roomImageLinks, setRoomImageLinks] = useState<string[]>([]);
+
   const handlePrimaryImageChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -616,6 +619,16 @@ export default function AddHotel() {
         toast.error("Error adding location");
       }
     };
+    const handleDeleteImage = (index: number) => {
+      setPreviewImageLinks((prevLinks) =>
+        prevLinks.filter((_, i) => i !== index)
+      );
+      const currentFiles = methods.getValues("imageLinks");
+      const updatedFiles = currentFiles.filter(
+        (_: any, i: number) => i !== index
+      );
+      methods.setValue("imageLinks", updatedFiles);
+    };
 
     return (
       <div className="grid gap-8">
@@ -785,11 +798,7 @@ export default function AddHotel() {
 
                         <Trash
                           className="absolute top-1 right-1 text-red-500"
-                          onClick={() => {
-                            setPreviewImageLinks((prevLinks) =>
-                              prevLinks.filter((link, i) => i !== index)
-                            );
-                          }}
+                          onClick={() => handleDeleteImage(index)}
                         />
                       </div>
                     ))
@@ -1115,19 +1124,21 @@ export default function AddHotel() {
     const {
       register,
       formState: { errors },
+      setValue,
+      getValues,
     } = methods;
 
     const addAmenity = (roomIndex: number) => {
       const newAmenity = { id: Date.now(), name: "" };
-      const rooms = methods.getValues("rooms");
+      const rooms = getValues("rooms");
       rooms[roomIndex].amenities.push(newAmenity);
-      methods.setValue("rooms", rooms);
+      setValue("rooms", rooms);
     };
 
     const removeAmenity = (roomIndex: number, amenityIndex: number) => {
-      const rooms = methods.getValues("rooms");
+      const rooms = getValues("rooms");
       rooms[roomIndex].amenities.splice(amenityIndex, 1);
-      methods.setValue("rooms", rooms);
+      setValue("rooms", rooms);
     };
 
     const addBed = (roomIndex: number) => {
@@ -1135,15 +1146,44 @@ export default function AddHotel() {
         bedType: { label: "", value: "" },
         numberOfBeds: "",
       };
-      const rooms = methods.getValues("rooms");
+      const rooms = getValues("rooms");
       rooms[roomIndex].beds.push(newBed);
-      methods.setValue("rooms", rooms);
+      setValue("rooms", rooms);
     };
 
     const removeBed = (roomIndex: number, bedIndex: number) => {
-      const rooms = methods.getValues("rooms");
+      const rooms = getValues("rooms");
       rooms[roomIndex].beds.splice(bedIndex, 1);
-      methods.setValue("rooms", rooms);
+      setValue("rooms", rooms);
+    };
+
+    const handleRoomImageChange = (
+      event: React.ChangeEvent<HTMLInputElement>,
+      roomIndex: number
+    ) => {
+      const files = event.target.files;
+      if (files) {
+        const newFiles = Array.from(files);
+        const currentFiles = methods.getValues(
+          `rooms.${roomIndex}.roomImageLinks`
+        );
+        const allFiles = [...currentFiles, ...newFiles];
+        methods.setValue(`rooms.${roomIndex}.roomImageLinks`, allFiles);
+        setRoomImageLinks((prevLinks) => [
+          ...prevLinks,
+          ...newFiles.map((file) => URL.createObjectURL(file)),
+        ]);
+      }
+    };
+    const handleDeleteImage = (index: number, roomIndex: number) => {
+      setRoomImageLinks((prevLinks) => prevLinks.filter((_, i) => i !== index));
+      const currentFiles = methods.getValues(
+        `rooms.${roomIndex}.roomImageLinks`
+      );
+      const updatedFiles = currentFiles.filter(
+        (_: any, i: number) => i !== index
+      );
+      methods.setValue(`rooms.${roomIndex}.roomImageLinks`, updatedFiles);
     };
     const bedTypeOptions = [
       "Single",
@@ -1165,11 +1205,12 @@ export default function AddHotel() {
       "Four Poster Bed",
       "Hammock",
     ];
+
     return (
       <div className="p-6 space-y-6">
         {roomFields.map((room, roomIndex) => (
           <Card key={room.id} className="overflow-hidden flex flex-col">
-            <CardHeader className="flex flex-row justify-between ">
+            <CardHeader className="flex flex-row justify-between">
               <div className="flex flex-col gap-1">
                 <CardTitle>Room Type {roomIndex + 1}</CardTitle>
                 <CardDescription>
@@ -1208,10 +1249,7 @@ export default function AddHotel() {
                 />
                 {errors?.rooms?.[roomIndex]?.numberOfRooms?.message && (
                   <span className="text-red-500">
-                    {
-                      (errors?.rooms?.[roomIndex]?.numberOfRooms as FieldError)
-                        ?.message
-                    }
+                    {errors?.rooms?.[roomIndex]?.numberOfRooms?.message}
                   </span>
                 )}
                 <Label htmlFor={`price-${room.id}`}>Price</Label>
@@ -1225,7 +1263,7 @@ export default function AddHotel() {
                 />
                 {errors?.rooms?.[roomIndex]?.price?.message && (
                   <span className="text-red-500">
-                    {(errors.rooms[roomIndex]?.price as FieldError)?.message}
+                    {errors?.rooms?.[roomIndex]?.price?.message}
                   </span>
                 )}
                 <Label htmlFor={`capacity-${room.id}`}>Max Occupants</Label>
@@ -1238,7 +1276,7 @@ export default function AddHotel() {
                 />
                 {errors?.rooms?.[roomIndex]?.capacity?.message && (
                   <span className="text-red-500">
-                    {(errors.rooms[roomIndex]?.capacity as FieldError)?.message}
+                    {errors?.rooms?.[roomIndex]?.capacity?.message}
                   </span>
                 )}
                 <Label>Bed Types</Label>
@@ -1263,10 +1301,8 @@ export default function AddHotel() {
                         ?.value?.message && (
                         <span className="text-red-500">
                           {
-                            (
-                              errors?.rooms?.[roomIndex]?.beds?.[bedIndex]
-                                ?.bedType?.value as FieldError
-                            )?.message
+                            errors?.rooms?.[roomIndex]?.beds?.[bedIndex]
+                              ?.bedType?.value?.message
                           }
                         </span>
                       )}
@@ -1285,10 +1321,8 @@ export default function AddHotel() {
                         ?.numberOfBeds && (
                         <span className="text-red-500">
                           {
-                            (
-                              errors?.rooms?.[roomIndex]?.beds?.[bedIndex]
-                                ?.numberOfBeds as FieldError
-                            )?.message
+                            errors?.rooms?.[roomIndex]?.beds?.[bedIndex]
+                              ?.numberOfBeds?.message
                           }
                         </span>
                       )}
@@ -1389,6 +1423,48 @@ export default function AddHotel() {
                     </span>
                   )}
                 </div>
+                <Label htmlFor={`room-images-${room.id}`}>
+                  Upload Room Images
+                </Label>
+                <label
+                  htmlFor={`room-images-${room.id}`}
+                  className="flex items-center max-w-max border px-3 py-1.5 rounded-md shadow gap-2 cursor-pointer"
+                >
+                  <Upload className="w-4 h-4" />
+                  Choose Files
+                  <input
+                    id={`room-images-${room.id}`}
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => handleRoomImageChange(e, roomIndex)}
+                  />
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  {roomImageLinks.length > 0 &&
+                    roomImageLinks.map((link, index) => (
+                      <div key={index} className="relative rounded-md w-full">
+                        <DialogBox previewPrimaryImage={link}>
+                          <Image
+                            alt={`Image ${index + 1}`}
+                            className="w-full rounded-md "
+                            style={{ height: "200px", objectFit: "cover" }}
+                            src={link}
+                            width={200}
+                            height={100}
+                          />
+                        </DialogBox>
+
+                        <Trash
+                          className="absolute top-1 right-1 text-red-500"
+                          onClick={() => {
+                            handleDeleteImage(index, roomIndex);
+                          }}
+                        />
+                      </div>
+                    ))}
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -1405,6 +1481,7 @@ export default function AddHotel() {
                 capacity: "",
                 beds: [{ bedType: { label: "", value: "" }, numberOfBeds: "" }],
                 amenities: [{ id: Date.now(), name: "" }],
+                roomImageLinks: [],
               })
             }
             className="flex items-center gap-1"
@@ -1994,6 +2071,21 @@ export default function AddHotel() {
                         <li key={amenityIndex}>{amenity.name}</li>
                       ))}
                     </ul>
+                  </div>
+                  <div className="flex flex-col gap-y-3">
+                    <Title>Room Images</Title>
+                    <div className="grid grid-cols-5 gap-2 overflow-x-scroll">
+                      {room.roomImageLinks?.map((file, index) => (
+                        <Image
+                          key={index}
+                          alt={`Image ${index + 1}`}
+                          className="w-full rounded-md object-cover"
+                          height={100}
+                          src={URL.createObjectURL(file)}
+                          width={100}
+                        />
+                      ))}
+                    </div>
                   </div>
                 </div>
               ))}
