@@ -32,6 +32,7 @@ interface Room {
   }[];
 
   amenities: { name: string }[];
+  roomImageLinks: string[];
 }
 
 interface Hotel {
@@ -72,7 +73,12 @@ function AdminViewHotel() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-
+  const [roomImage, setRoomImage] = useState<string | null>(null);
+  useEffect(() => {
+    if (selectedRoom?.roomImageLinks?.length > 0) {
+      setRoomImage(selectedRoom.roomImageLinks[0]);
+    }
+  }, [selectedRoom]);
   useEffect(() => {
     const fetchHotels = async () => {
       try {
@@ -106,23 +112,57 @@ function AdminViewHotel() {
     setIsCarouselOpen(true);
   };
 
+  const handleRoomSmallImageClick = (image: string, index: number) => {
+    setRoomImage(image);
+    setCurrentIndex(index);
+  };
+
   const handleCloseCarousel = () => {
     setIsCarouselOpen(false);
   };
-  let imageLength = 0;
-  const handlePrevClick = (imageLength: number) => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? hotel.imageLinks.length - imageLength : prevIndex - 1
-    );
-  };
-  const handleNextClick = (imageLength: number) => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === hotel.imageLinks.length - imageLength ? 0 : prevIndex + 1
-    );
-  };
 
-  const handleRoomsClick = (value: Room) => {
-    setSelectedRoom(value);
+  const handlePrevClick = () => {
+    setCurrentIndex((prevIndex) =>
+      prevIndex === 0 ? hotel.imageLinks.length : prevIndex - 1
+    );
+  };
+  const handleNextClick = () => {
+    setCurrentIndex((prevIndex) =>
+      prevIndex === hotel.imageLinks.length ? 0 : prevIndex + 1
+    );
+  };
+  let roomImageLength = 0;
+
+  const handleRoomPrevClick = () => {
+    setCurrentIndex((prevIndex) => {
+      if (!selectedRoom || selectedRoom.roomImageLinks.length === 0)
+        return prevIndex; // Safeguard against undefined or empty array
+      // if (roomImage > 0) {
+      //   const maxIndex = roomImage - 1;
+      //   return prevIndex === 0 ? maxIndex : prevIndex - 1;
+      // }
+      const maxIndex = selectedRoom.roomImageLinks.length - 1;
+      const newIndex = prevIndex === 0 ? maxIndex : prevIndex - 1;
+      setRoomImage(selectedRoom.roomImageLinks[newIndex]);
+      return newIndex;
+      // return prevIndex === 0 ? maxIndex : prevIndex - 1;
+    });
+  };
+  const handleRoomNextClick = () => {
+    setCurrentIndex((nextIndex) => {
+      if (!selectedRoom || selectedRoom.roomImageLinks.length === 0)
+        return nextIndex; // Safeguard against undefined or empty array
+
+      const newIndex =
+        nextIndex === selectedRoom.roomImageLinks.length - 1
+          ? 0
+          : nextIndex + 1;
+      setRoomImage(selectedRoom.roomImageLinks[newIndex]);
+      return newIndex;
+    });
+  };
+  const handleRoomsClick = (room: Room) => {
+    setSelectedRoom(room);
     setIsDialogOpen(true);
   };
 
@@ -142,12 +182,12 @@ function AdminViewHotel() {
                   </div>
                   <div className="">{hotel.address}</div>
                 </div>
-                <div className="  flex h-[550px] gap-2  ">
+                <div className="  flex  h-[550px] gap-2  ">
                   <div className="w-1/2 relative overflow-hidden rounded-l-xl">
                     <img
                       src={hotel.primaryImageLink}
                       alt="PrimaryImage"
-                      className="h-full transition-transform duration-500 ease-in-out transform hover:scale-105 hover:brightness-75"
+                      className="h-full min-h-[30rem] object-cover transition-transform duration-500 ease-in-out transform hover:scale-105 hover:brightness-75"
                       onClick={() => handleImageClick(0)}
                     />
                   </div>
@@ -205,7 +245,8 @@ function AdminViewHotel() {
                       <div className=" w-full">
                         <div className="flex overflow-hidden">
                           <div
-                            className="flex transition-transform duration-500 ease-in-out"
+                            className="flex transition-transform duration-500 ease-in-out items-center
+                            "
                             style={{
                               transform: `translateX(-${currentIndex * 100}%)`,
                             }}
@@ -222,27 +263,27 @@ function AdminViewHotel() {
                             </div>
                             {hotel.imageLinks.map((image, imageIndex) => (
                               <div
-                                className="flex-shrink-0 w-full "
+                                className="flex-shrink-0 w-full"
                                 key={imageIndex}
                               >
                                 <img
                                   src={image}
                                   alt={`carouselImage-${imageIndex}`}
-                                  className="w-full"
+                                  className="w-full "
                                 />
                               </div>
                             ))}
                           </div>
                         </div>
                         <Button
-                          className="absolute top-1/2 -right-4 text-white bg-black bg-opacity-75 rounded-full"
-                          onClick={() => handleNextClick(imageLength)}
+                          className="absolute top-1/2 right-1 text-white bg-gray-50 bg-opacity-40 rounded-full"
+                          onClick={() => handleNextClick()}
                         >
                           &gt;
                         </Button>
                         <Button
-                          className="absolute top-1/2 -left-4 text-white bg-black bg-opacity-75 rounded-full"
-                          onClick={() => handlePrevClick(imageLength)}
+                          className="absolute top-1/2 left-1 text-white bg-gray-50 bg-opacity-40 rounded-full"
+                          onClick={() => handlePrevClick()}
                         >
                           &lt;
                         </Button>
@@ -395,60 +436,72 @@ function AdminViewHotel() {
                         {/* <DialogOverlay className="bg-black bg-opacity-10" /> */}
                         <div className="">
                           <DialogContent className="flex items-center justify-center p-5  min-w-fit  max-h-fit  border-none">
-                            <div className=" w-[1200px] flex gap-10">
+                            <div className="w-[1200px] flex gap-10">
                               <div className="flex flex-col gap-3 w-7/12 relative">
-                                <div className="flex overflow-hidden">
+                                <div className="overflow-hidden w-full h-[30rem]">
                                   <div
                                     className="flex transition-transform duration-500 ease-in-out"
                                     style={{
                                       transform: `translateX(-${
                                         currentIndex * 100
                                       }%)`,
+                                      // width: `${
+                                      //   selectedRoom.roomImageLinks.length * 100
+                                      // }%`,
                                     }}
                                   >
-                                    {hotel.imageLinks.map((image, imgIndex) => (
-                                      <div
-                                        className="flex-shrink-0 w-full h-[30rem] "
-                                        key={imgIndex - 1}
-                                      >
-                                        <img
-                                          src={image}
-                                          alt={`carouselImage-${imgIndex}`}
-                                          className="w-full h-full object-cover"
-                                        />
-                                      </div>
-                                    ))}
+                                    {selectedRoom.roomImageLinks &&
+                                      selectedRoom.roomImageLinks.map(
+                                        (image, imgIndex) => (
+                                          <div
+                                            className="flex-shrink-0 w-full h-[30rem]"
+                                            key={imgIndex}
+                                            style={{ width: "100%" }}
+                                          >
+                                            <img
+                                              src={image}
+                                              alt={`carouselImage-${imgIndex}`}
+                                              className="w-full h-full object-cover"
+                                            />
+                                          </div>
+                                        )
+                                      )}
                                   </div>
                                 </div>
                                 <Button
-                                  className="absolute top-56 right-0 text-black bg-white bg-opacity-75 rounded-full hover:text-white"
-                                  onClick={() =>
-                                    handleNextClick((imageLength = 1))
-                                  }
+                                  className="absolute top-56 right-0 text-white bg-gray-100 bg-opacity-40 rounded-full hover:text-white"
+                                  onClick={() => handleRoomNextClick()}
                                 >
                                   &gt;
                                 </Button>
                                 <Button
-                                  className="absolute top-56 left-0 text-black bg-white bg-opacity-75 rounded-full hover:text-white"
-                                  onClick={() =>
-                                    handlePrevClick((imageLength = 1))
-                                  }
+                                  className="absolute top-56 left-0 text-white bg-gray-100 bg-opacity-40 rounded-full hover:text-white"
+                                  onClick={() => handleRoomPrevClick()}
                                 >
                                   &lt;
                                 </Button>
                                 <div className="flex gap-2 overflow-x-scroll">
-                                  {hotel.imageLinks?.map((image, imgInd) => (
-                                    <div
-                                      key={imgInd}
-                                      className="flex-none w-40 h-40"
-                                    >
-                                      <img
-                                        alt={`Image ${imgInd + 1}`}
-                                        className="w-full h-full rounded-md object-cover"
-                                        src={image}
-                                      />
-                                    </div>
-                                  ))}
+                                  {selectedRoom.roomImageLinks &&
+                                    selectedRoom.roomImageLinks.map(
+                                      (image, imgInd) => (
+                                        <div
+                                          key={imgInd}
+                                          className="flex-none w-40 h-40"
+                                        >
+                                          <img
+                                            alt={`Image ${imgInd + 1}`}
+                                            className="w-full h-full rounded-md object-cover"
+                                            src={image}
+                                            onClick={() =>
+                                              handleRoomSmallImageClick(
+                                                image,
+                                                imgInd
+                                              )
+                                            }
+                                          />
+                                        </div>
+                                      )
+                                    )}
                                 </div>
                               </div>
                               <div className="w-5/12 space-y-5 text-sm">

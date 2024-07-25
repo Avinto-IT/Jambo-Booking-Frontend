@@ -145,6 +145,12 @@ export default function HotelsDashboard() {
                   <DropdownMenuLabel>Filter by</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuCheckboxItem
+                    defaultChecked
+                    onClick={() => setActiveTab("All")}
+                  >
+                    All
+                  </DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem
                     onClick={() => setActiveTab("Active")}
                   >
                     Active
@@ -154,8 +160,6 @@ export default function HotelsDashboard() {
                   >
                     Inactive
                   </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem>Draft</DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem>Archived</DropdownMenuCheckboxItem>
                 </DropdownMenuContent>
               </DropdownMenu>
 

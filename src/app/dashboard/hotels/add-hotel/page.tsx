@@ -427,6 +427,7 @@ export default function AddHotel() {
           bedType: bed.bedType.value,
           numberOfBeds: bed.numberOfBeds,
         })),
+        roomImageLinks: room.roomImageLinks,
         amenities: room.amenities.map((amenity) => ({
           name: amenity.name,
         })),
