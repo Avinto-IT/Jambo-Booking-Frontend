@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { Dot } from "lucide-react";
 
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { Hotel, Room } from "@/utils/types";
 import { useEffect, useState } from "react";
@@ -15,6 +15,12 @@ import randomImg from "../../../public/images/an_image_for_hotel_booking.svg";
 export default function HotelsDashboard() {
   const [hotels, setHotels] = useState<Hotel[]>([]);
   const router = useRouter();
+  // const pathname = usePathname();
+  // const locationName = pathname?.split("/").pop() || "";
+
+  const searchParams = useSearchParams();
+
+  const locationId = searchParams?.get("id");
 
   useEffect(() => {
     const fetchHotels = async () => {
@@ -42,6 +48,12 @@ export default function HotelsDashboard() {
     router.push(`/all-hotels/view-hotel-details?id=${hotelId}`);
   };
 
+  const filteredHotels = locationId
+    ? hotels.filter((hotel) => {
+        return hotel.locationID.includes(locationId);
+      })
+    : hotels;
+
   return (
     <Layout>
       <Hero />
@@ -57,8 +69,9 @@ export default function HotelsDashboard() {
               </p>
             </div>
             <div className="grid grid-cols-3 gap-x-5 gap-y-4">
-              {hotels.map((hotel, index) => {
+              {filteredHotels.map((hotel, index) => {
                 const lowestPricedRoom = getLowestPricedRoom(hotel.rooms);
+
                 return (
                   <div
                     key={index}

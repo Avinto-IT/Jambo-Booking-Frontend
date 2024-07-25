@@ -5,10 +5,17 @@ interface Location {
   locationID: string;
   city: string;
   country: string;
+  address: string;
+  zipCode: string;
 }
 
 export default function Hero() {
+  const [inputValue, setInputValue] = useState("");
   const [locations, setLocations] = useState<Location[]>([]);
+  const [locationChange, setLocationChange] = useState<string | undefined>(
+    undefined
+  );
+
   useEffect(() => {
     const fetchLocations = async () => {
       try {
@@ -26,7 +33,13 @@ export default function Hero() {
     const selectedLocation = locations.find(
       (location) => location.locationID === selectedOption.value
     );
+    setLocationChange(selectedLocation?.locationID);
   };
+  const handleInputChange = (newValue: any) => {
+    setInputValue(newValue);
+    if (inputValue) setLocationChange(inputValue);
+  };
+
   const customStyles = {
     control: (provided: any) => ({
       ...provided,
@@ -47,6 +60,11 @@ export default function Hero() {
     }),
   };
   if (!locations) return <>Loading..</>;
+  const handleSearchClick = () => {
+    locationChange
+      ? (window.location.href = `/all-hotels/?id=${locationChange}`)
+      : (window.location.href = "/all-hotels");
+  };
   return (
     <section
       className="relative bg-cover 
@@ -75,9 +93,11 @@ export default function Hero() {
                 label: `${location.city}, ${location.country}`,
               }))}
               onChange={handleLocationChange}
+              onInputChange={handleInputChange}
+              inputValue={inputValue}
               placeholder="Where are you planning to go..."
               styles={customStyles}
-              className="flex-1 rounded-lg bg-white text-black placeholder-gray-500"
+              className="flex-1 rounded-lg bg-white text-black placeholder-gray-500 z-50"
             />
             <input
               type="text"
@@ -89,7 +109,17 @@ export default function Hero() {
               placeholder="Checkout Date"
               className="p-4 rounded-lg bg-white text-black placeholder-gray-500"
             />
-            <button className="p-4 bg-blue-600 text-white rounded-lg">
+            <button
+              className="p-4 bg-blue-600 text-white rounded-lg"
+              onClick={() => {
+                handleSearchClick();
+              }}
+              // onClick={() => {
+              //   locationChange
+              //     ? (window.location.href = `/all-hotels/?id=${locationChange}`)
+              //     : (window.location.href = "/all-hotels");
+              // }}
+            >
               Search
             </button>
           </div>
