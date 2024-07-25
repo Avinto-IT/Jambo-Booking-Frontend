@@ -51,7 +51,10 @@ import {
   Title,
   Value,
 } from "@/components/AdminComponents/Sub-Components/ReviewComponents";
-import { uploadFiles } from "@/components/AdminComponents/functions";
+import {
+  uploadMultipleFiles,
+  uploadSingleFile,
+} from "@/components/AdminComponents/functions";
 import {
   Dialog,
   DialogContent,
@@ -401,11 +404,26 @@ export default function AddHotel() {
 
   const onSubmit = async (data: FormData) => {
     setIsSubmitClicked(true);
+    let primaryImageLink = "";
+
     let imageLinks = [];
-    if (data.imageLinks || data.primaryImage) {
-      imageLinks = await uploadFiles(data.imageLinks, data.primaryImage);
+    let roomImageLinksArray: string[][] = [];
+
+    if (data.primaryImage) {
+      primaryImageLink = await uploadSingleFile(data.primaryImage);
     }
 
+    if (data.imageLinks && data.imageLinks.length > 0) {
+      imageLinks = await uploadMultipleFiles(data.imageLinks);
+    }
+
+    for (const room of data.rooms) {
+      let roomImageLinks = [];
+      if (room.roomImageLinks.length > 0) {
+        roomImageLinks = await uploadMultipleFiles(room.roomImageLinks);
+      }
+      roomImageLinksArray.push(roomImageLinks);
+    }
     const payload = {
       ...data.basicInfo,
       address: data.basicInfo.location.label,
@@ -419,7 +437,7 @@ export default function AddHotel() {
       })),
       primaryImageLink: data.primaryImage ? imageLinks[0] : "", // Use the primary image link if available
       imageLinks: imageLinks.slice(data.primaryImage ? 1 : 0), // Exclude the primary image link from imageLinks if primary image exists
-      rooms: data.rooms.map((room) => ({
+      rooms: data.rooms.map((room, index) => ({
         type: room.type,
         numberOfRooms: room.numberOfRooms,
         price: room.price,
@@ -427,7 +445,7 @@ export default function AddHotel() {
           bedType: bed.bedType.value,
           numberOfBeds: bed.numberOfBeds,
         })),
-        roomImageLinks: room.roomImageLinks,
+        roomImageLinks: roomImageLinksArray[index], // Set the uploaded room image links
         amenities: room.amenities.map((amenity) => ({
           name: amenity.name,
         })),
@@ -439,7 +457,6 @@ export default function AddHotel() {
       })),
       isRunning: data.isRunning,
     };
-
     try {
       const response = await fetch("/api/setHotels", {
         method: "POST",
@@ -630,7 +647,6 @@ export default function AddHotel() {
       );
       methods.setValue("imageLinks", updatedFiles);
     };
-
     return (
       <div className="grid gap-8">
         <Card x-chunk="dashboard-04-chunk-1 p-6">
@@ -1444,27 +1460,31 @@ export default function AddHotel() {
                 </label>
                 <div className="grid grid-cols-3 gap-2">
                   {roomImageLinks.length > 0 &&
-                    roomImageLinks.map((link, index) => (
-                      <div key={index} className="relative rounded-md w-full">
-                        <DialogBox previewPrimaryImage={link}>
-                          <Image
-                            alt={`Image ${index + 1}`}
-                            className="w-full rounded-md "
-                            style={{ height: "200px", objectFit: "cover" }}
-                            src={link}
-                            width={200}
-                            height={100}
-                          />
-                        </DialogBox>
+                    getValues(`rooms.${roomIndex}.roomImageLinks`).map(
+                      (link, index) => (
+                        <div key={index} className="relative rounded-md w-full">
+                          <DialogBox
+                            previewPrimaryImage={URL.createObjectURL(link)}
+                          >
+                            <Image
+                              alt={`Image ${index + 1}`}
+                              className="w-full rounded-md "
+                              style={{ height: "200px", objectFit: "cover" }}
+                              src={URL.createObjectURL(link)}
+                              width={200}
+                              height={100}
+                            />
+                          </DialogBox>
 
-                        <Trash
-                          className="absolute top-1 right-1 text-red-500"
-                          onClick={() => {
-                            handleDeleteImage(index, roomIndex);
-                          }}
-                        />
-                      </div>
-                    ))}
+                          <Trash
+                            className="absolute top-1 right-1 text-red-500"
+                            onClick={() => {
+                              handleDeleteImage(index, roomIndex);
+                            }}
+                          />
+                        </div>
+                      )
+                    )}
                 </div>
               </div>
             </CardContent>

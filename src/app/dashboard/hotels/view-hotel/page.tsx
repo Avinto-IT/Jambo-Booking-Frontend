@@ -323,10 +323,8 @@ function AdminViewHotel() {
                   </div>
                   <div className="grid gap-5 grid-cols-3">
                     {hotel.facilities.map((facility, facilityIndex) => {
-                      console.log(facility);
                       const facilityIcon = facilitiesIcon.facilitiesIcon.find(
                         (icon) => {
-                          console.log(icon);
                           return icon.name === facility.name;
                         }
                       );
@@ -592,7 +590,6 @@ function AdminViewHotel() {
                       .map((value, facilityIndex) => {
                         const facilityIcon = facilitiesIcon.facilitiesIcon.find(
                           (icon) => {
-                            console.log(icon);
                             return icon.name === value.name;
                           }
                         );
