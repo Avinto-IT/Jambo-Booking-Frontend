@@ -51,7 +51,10 @@ import {
   Title,
   Value,
 } from "@/components/AdminComponents/Sub-Components/ReviewComponents";
-import { uploadFiles } from "@/components/AdminComponents/functions";
+import {
+  uploadMultipleFiles,
+  uploadSingleFile,
+} from "@/components/AdminComponents/functions";
 import {
   Dialog,
   DialogContent,
@@ -401,16 +404,23 @@ export default function AddHotel() {
 
   const onSubmit = async (data: FormData) => {
     setIsSubmitClicked(true);
+    let primaryImageLink = "";
+
     let imageLinks = [];
     let roomImageLinksArray: string[][] = [];
 
-    if (data.imageLinks || data.primaryImage) {
-      imageLinks = await uploadFiles(data.imageLinks, data.primaryImage);
+    if (data.primaryImage) {
+      primaryImageLink = await uploadSingleFile(data.primaryImage);
     }
+
+    if (data.imageLinks && data.imageLinks.length > 0) {
+      imageLinks = await uploadMultipleFiles(data.imageLinks);
+    }
+
     for (const room of data.rooms) {
       let roomImageLinks = [];
       if (room.roomImageLinks.length > 0) {
-        roomImageLinks = await uploadFiles(room.roomImageLinks);
+        roomImageLinks = await uploadMultipleFiles(room.roomImageLinks);
       }
       roomImageLinksArray.push(roomImageLinks);
     }
@@ -637,7 +647,6 @@ export default function AddHotel() {
       );
       methods.setValue("imageLinks", updatedFiles);
     };
-
     return (
       <div className="grid gap-8">
         <Card x-chunk="dashboard-04-chunk-1 p-6">

@@ -63,7 +63,10 @@ import {
   Value,
 } from "@/components/AdminComponents/Sub-Components/ReviewComponents";
 import DialogBox from "@/components/AdminComponents/ImagePopup";
-import { uploadFiles } from "@/components/AdminComponents/functions";
+import {
+  uploadMultipleFiles,
+  uploadSingleFile,
+} from "@/components/AdminComponents/functions";
 import {
   Dialog,
   DialogContent,
@@ -104,6 +107,7 @@ interface Room {
   }[];
 
   amenities: { id: number; name: string }[];
+  roomImageLinks: File[];
 }
 
 interface ContactDetails {
@@ -299,6 +303,7 @@ const AdminUpdateHotelContent = () => {
             },
           ],
           amenities: [{ id: 1, name: "" }],
+          roomImageLinks: [],
         },
       ],
       contactForm: {
@@ -335,7 +340,14 @@ const AdminUpdateHotelContent = () => {
           setHotel(data.hotel);
           setPreviewPrimaryImage(data.hotel.primaryImageLink);
           setPreviewImageLinks(data.hotel.imageLinks);
+
           if (data.hotel) {
+            // Create a temporary array to hold all room images
+            const tempRoomImageLinks: File[] = [];
+            data.hotel.rooms.forEach((room: Room) => {
+              tempRoomImageLinks.push(...room.roomImageLinks);
+            });
+            setRoomImageLinks(tempRoomImageLinks);
             reset({
               basicInfo: {
                 hotelID: id,
@@ -375,6 +387,7 @@ const AdminUpdateHotelContent = () => {
                   },
                   numberOfBeds: bed.numberOfBeds,
                 })),
+                roomImageLinks: room.roomImageLinks,
                 amenities: room.amenities.map((amenity, amenityIndex) => ({
                   id: amenityIndex,
                   name: amenity.name,
@@ -478,6 +491,7 @@ const AdminUpdateHotelContent = () => {
     control: methods.control,
     name: "houseRules",
   });
+  const [roomImageLinks, setRoomImageLinks] = useState<string[]>([]);
 
   const handlePrimaryImageChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -504,11 +518,33 @@ const AdminUpdateHotelContent = () => {
       ]);
     }
   };
+  const isFile = (file: any): file is File => {
+    return file instanceof File;
+  };
+  const getImageSrc = (file: any) => {
+    return isFile(file) ? URL.createObjectURL(file) : file;
+  };
   const onSubmit = async (data: FormData) => {
     setIsSubmitClicked(true);
+    let primaryImageLink = "";
+
     let imageLinks = [];
-    if (data.imageLinks || data.primaryImage) {
-      imageLinks = await uploadFiles(data.imageLinks, data.primaryImage);
+    let roomImageLinksArray: string[][] = [];
+
+    if (data.primaryImage) {
+      primaryImageLink = await uploadSingleFile(data.primaryImage);
+    }
+
+    if (data.imageLinks && data.imageLinks.length > 0) {
+      imageLinks = await uploadMultipleFiles(data.imageLinks);
+    }
+
+    for (const room of data.rooms) {
+      let roomImageLinks = [];
+      if (room.roomImageLinks.length > 0) {
+        roomImageLinks = await uploadMultipleFiles(room.roomImageLinks);
+      }
+      roomImageLinksArray.push(roomImageLinks);
     }
     const payload = {
       ...data.basicInfo,
@@ -524,7 +560,7 @@ const AdminUpdateHotelContent = () => {
       })),
       primaryImageLink: data.primaryImage ? imageLinks[0] : "",
       imageLinks: imageLinks.slice(data.primaryImage ? 1 : 0),
-      rooms: data.rooms.map((room) => ({
+      rooms: data.rooms.map((room, index) => ({
         type: room.type,
         numberOfRooms: room.numberOfRooms,
         price: room.price,
@@ -533,6 +569,7 @@ const AdminUpdateHotelContent = () => {
           bedType: bed.bedType.value,
           numberOfBeds: bed.numberOfBeds,
         })),
+        roomImageLinks: roomImageLinksArray[index], // Set the uploaded room image links
         amenities: room.amenities.map((amenity) => ({
           name: amenity.name,
         })),
@@ -564,6 +601,7 @@ const AdminUpdateHotelContent = () => {
         }, 1500);
       } else {
         toast.error(`Error: ${result.error}`);
+        setIsSubmitClicked(false);
       }
     } catch (error) {
       setIsSubmitClicked(false);
@@ -591,7 +629,7 @@ const AdminUpdateHotelContent = () => {
       event.preventDefault();
     }
   };
-
+  console.log(hotel);
   function BasicInformation() {
     const {
       register,
@@ -724,6 +762,16 @@ const AdminUpdateHotelContent = () => {
         console.error("Error adding location:", error);
         toast.error("Error adding location");
       }
+    };
+    const handleDeleteImage = (index: number) => {
+      setPreviewImageLinks((prevLinks) =>
+        prevLinks.filter((_, i) => i !== index)
+      );
+      const currentFiles = methods.getValues("imageLinks");
+      const updatedFiles = currentFiles.filter(
+        (_: any, i: number) => i !== index
+      );
+      methods.setValue("imageLinks", updatedFiles);
     };
     return (
       <div className="grid gap-8">
@@ -891,11 +939,7 @@ const AdminUpdateHotelContent = () => {
 
                         <Trash
                           className="absolute top-1 right-1 text-red-500"
-                          onClick={() => {
-                            setPreviewImageLinks((prevLinks) =>
-                              prevLinks.filter((link, i) => i !== index)
-                            );
-                          }}
+                          onClick={() => handleDeleteImage(index)}
                         />
                       </div>
                     ))
@@ -1221,6 +1265,8 @@ const AdminUpdateHotelContent = () => {
     const {
       register,
       formState: { errors },
+      setValue,
+      getValues,
     } = methods;
 
     const addAmenity = (roomIndex: number) => {
@@ -1249,6 +1295,34 @@ const AdminUpdateHotelContent = () => {
       const rooms = methods.getValues("rooms");
       rooms[roomIndex].beds.splice(bedIndex, 1);
       methods.setValue("rooms", rooms);
+    };
+    const handleRoomImageChange = (
+      event: React.ChangeEvent<HTMLInputElement>,
+      roomIndex: number
+    ) => {
+      const files = event.target.files;
+      if (files) {
+        const newFiles = Array.from(files);
+        const currentFiles = methods.getValues(
+          `rooms.${roomIndex}.roomImageLinks`
+        );
+        const allFiles = [...currentFiles, ...newFiles];
+        methods.setValue(`rooms.${roomIndex}.roomImageLinks`, allFiles);
+        setRoomImageLinks((prevLinks) => [
+          ...prevLinks,
+          ...newFiles.map((file) => URL.createObjectURL(file)),
+        ]);
+      }
+    };
+    const handleDeleteImage = (index: number, roomIndex: number) => {
+      setRoomImageLinks((prevLinks) => prevLinks.filter((_, i) => i !== index));
+      const currentFiles = methods.getValues(
+        `rooms.${roomIndex}.roomImageLinks`
+      );
+      const updatedFiles = currentFiles.filter(
+        (_: any, i: number) => i !== index
+      );
+      methods.setValue(`rooms.${roomIndex}.roomImageLinks`, updatedFiles);
     };
     const bedTypeOptions = [
       "Single",
@@ -1494,6 +1568,50 @@ const AdminUpdateHotelContent = () => {
                     </span>
                   )}
                 </div>
+                <Label htmlFor={`room-images-${room.id}`}>
+                  Upload Room Images
+                </Label>
+                <label
+                  htmlFor={`room-images-${room.id}`}
+                  className="flex items-center max-w-max border px-3 py-1.5 rounded-md shadow gap-2 cursor-pointer"
+                >
+                  <Upload className="w-4 h-4" />
+                  Choose Files
+                  <input
+                    id={`room-images-${room.id}`}
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => handleRoomImageChange(e, roomIndex)}
+                  />
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  {roomImageLinks.length > 0 &&
+                    getValues(`rooms.${roomIndex}.roomImageLinks`).map(
+                      (link, index) => (
+                        <div key={index} className="relative rounded-md w-full">
+                          <DialogBox previewPrimaryImage={getImageSrc(link)}>
+                            <Image
+                              alt={`Image ${index + 1}`}
+                              className="w-full rounded-md "
+                              style={{ height: "200px", objectFit: "cover" }}
+                              src={getImageSrc(link)}
+                              width={200}
+                              height={100}
+                            />
+                          </DialogBox>
+
+                          <Trash
+                            className="absolute top-1 right-1 text-red-500"
+                            onClick={() => {
+                              handleDeleteImage(index, roomIndex);
+                            }}
+                          />
+                        </div>
+                      )
+                    )}
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -1509,8 +1627,8 @@ const AdminUpdateHotelContent = () => {
                 price: "",
                 capacity: "",
                 beds: [{ bedType: { label: "", value: "" }, numberOfBeds: "" }],
-
                 amenities: [{ id: Date.now(), name: "" }],
+                roomImageLinks: [],
               })
             }
             className="flex items-center gap-1"
@@ -1886,12 +2004,6 @@ const AdminUpdateHotelContent = () => {
         [section]: !prevState[section],
       }));
     };
-    const isFile = (file: any): file is File => {
-      return file instanceof File;
-    };
-    const getImageSrc = (file: any) => {
-      return isFile(file) ? URL.createObjectURL(file) : file;
-    };
 
     return (
       <div className="flex flex-col gap-8">
@@ -2102,6 +2214,21 @@ const AdminUpdateHotelContent = () => {
                         <li key={amenityIndex}>{amenity.name}</li>
                       ))}
                     </ul>
+                  </div>
+                  <div className="flex flex-col gap-y-3">
+                    <Title>Room Images</Title>
+                    <div className="grid grid-cols-5 gap-2 overflow-x-scroll">
+                      {room.roomImageLinks?.map((file, index) => (
+                        <Image
+                          key={index}
+                          alt={`Image ${index + 1}`}
+                          className="w-full rounded-md object-cover"
+                          height={100}
+                          src={getImageSrc(file)}
+                          width={100}
+                        />
+                      ))}
+                    </div>
                   </div>
                 </div>
               ))}
