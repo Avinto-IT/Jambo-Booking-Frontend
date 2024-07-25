@@ -72,7 +72,7 @@ function AdminViewHotel() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-
+  console.log(hotel);
   useEffect(() => {
     const fetchHotels = async () => {
       try {
@@ -282,10 +282,8 @@ function AdminViewHotel() {
                   </div>
                   <div className="grid gap-5 grid-cols-3">
                     {hotel.facilities.map((facility, facilityIndex) => {
-                      console.log(facility);
                       const facilityIcon = facilitiesIcon.facilitiesIcon.find(
                         (icon) => {
-                          console.log(icon);
                           return icon.name === facility.name;
                         }
                       );
@@ -406,22 +404,32 @@ function AdminViewHotel() {
                                       }%)`,
                                     }}
                                   >
+                                    {/* <div className="flex-shrink-0 w-full">
+                                      <img
+                                        // src={staticimg3}
+                                        src={hotel.primaryImageLink}
+                                        alt="PrimaryImage"
+                                        className=""
+
+                                        // objectFit="cover"
+                                      />
+                                    </div> */}
                                     {hotel.imageLinks.map((image, imgIndex) => (
                                       <div
-                                        className="flex-shrink-0 w-full h-[30rem] "
+                                        className="flex-shrink-0 w-full "
                                         key={imgIndex - 1}
                                       >
                                         <img
                                           src={image}
                                           alt={`carouselImage-${imgIndex}`}
-                                          className="w-full h-full object-cover"
+                                          className="w-full"
                                         />
                                       </div>
                                     ))}
                                   </div>
                                 </div>
                                 <Button
-                                  className="absolute top-56 right-0 text-black bg-white bg-opacity-75 rounded-full hover:text-white"
+                                  className="absolute top-52 right-0 text-black bg-white bg-opacity-75 rounded-full hover:text-white"
                                   onClick={() =>
                                     handleNextClick((imageLength = 1))
                                   }
@@ -429,25 +437,22 @@ function AdminViewHotel() {
                                   &gt;
                                 </Button>
                                 <Button
-                                  className="absolute top-56 left-0 text-black bg-white bg-opacity-75 rounded-full hover:text-white"
+                                  className="absolute top-52 left-0 text-black bg-white bg-opacity-75 rounded-full hover:text-white"
                                   onClick={() =>
                                     handlePrevClick((imageLength = 1))
                                   }
                                 >
                                   &lt;
                                 </Button>
-                                <div className="flex gap-2 overflow-x-scroll">
+
+                                <div className="grid grid-cols-5 gap-2 overflow-x-scroll">
                                   {hotel.imageLinks?.map((image, imgInd) => (
-                                    <div
+                                    <img
                                       key={imgInd}
-                                      className="flex-none w-40 h-40"
-                                    >
-                                      <img
-                                        alt={`Image ${imgInd + 1}`}
-                                        className="w-full h-full rounded-md object-cover"
-                                        src={image}
-                                      />
-                                    </div>
+                                      alt={`Image ${imgInd + 1}`}
+                                      className="w-full rounded-md object-cover"
+                                      src={image}
+                                    />
                                   ))}
                                 </div>
                               </div>
@@ -539,7 +544,6 @@ function AdminViewHotel() {
                       .map((value, facilityIndex) => {
                         const facilityIcon = facilitiesIcon.facilitiesIcon.find(
                           (icon) => {
-                            console.log(icon);
                             return icon.name === value.name;
                           }
                         );
