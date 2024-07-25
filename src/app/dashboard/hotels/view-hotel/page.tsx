@@ -1,6 +1,6 @@
 "use client";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardTitle } from "@/components/ui/card";
 // import { Hotel } from "@/utils/types";
 import { Dot } from "lucide-react";
 import { useSearchParams } from "next/navigation";
@@ -68,17 +68,21 @@ function AdminViewHotel() {
   }, []);
 
   const [token, setToken] = useState<string | null>(null);
-  const [locations, setLocations] = useState<Location[]>([]);
+
   const [isCarouselOpen, setIsCarouselOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [roomImage, setRoomImage] = useState<string | null>(null);
-  useEffect(() => {
-    if (selectedRoom?.roomImageLinks?.length > 0) {
-      setRoomImage(selectedRoom.roomImageLinks[0]);
-    }
-  }, [selectedRoom]);
+  // const [roomImage, setRoomImage] = useState<string | null>(null);
+  // useEffect(() => {
+  //   if (
+  //     selectedRoom &&
+  //     selectedRoom.roomImageLinks &&
+  //     selectedRoom.roomImageLinks.length > 0
+  //   ) {
+  //     // setRoomImage(selectedRoom.roomImageLinks[0]);
+  //   }
+  // }, [selectedRoom]);
   useEffect(() => {
     const fetchHotels = async () => {
       try {
@@ -92,7 +96,6 @@ function AdminViewHotel() {
     fetchHotels();
   }, []);
   if (!hotel) return <>Loading...</>;
-  //   console.log(hotel);
 
   const toggleShowMore = () => {
     setShowMore(!showMore);
@@ -113,12 +116,8 @@ function AdminViewHotel() {
   };
 
   const handleRoomSmallImageClick = (image: string, index: number) => {
-    setRoomImage(image);
+    // setRoomImage(image);
     setCurrentIndex(index);
-  };
-
-  const handleCloseCarousel = () => {
-    setIsCarouselOpen(false);
   };
 
   const handlePrevClick = () => {
@@ -143,7 +142,7 @@ function AdminViewHotel() {
       // }
       const maxIndex = selectedRoom.roomImageLinks.length - 1;
       const newIndex = prevIndex === 0 ? maxIndex : prevIndex - 1;
-      setRoomImage(selectedRoom.roomImageLinks[newIndex]);
+      // setRoomImage(selectedRoom.roomImageLinks[newIndex]);
       return newIndex;
       // return prevIndex === 0 ? maxIndex : prevIndex - 1;
     });
@@ -157,7 +156,7 @@ function AdminViewHotel() {
         nextIndex === selectedRoom.roomImageLinks.length - 1
           ? 0
           : nextIndex + 1;
-      setRoomImage(selectedRoom.roomImageLinks[newIndex]);
+      // setRoomImage(selectedRoom.roomImageLinks[newIndex]);
       return newIndex;
     });
   };
@@ -443,9 +442,6 @@ function AdminViewHotel() {
                                       transform: `translateX(-${
                                         currentIndex * 100
                                       }%)`,
-                                      // width: `${
-                                      //   selectedRoom.roomImageLinks.length * 100
-                                      // }%`,
                                     }}
                                   >
                                     {selectedRoom.roomImageLinks &&
@@ -488,7 +484,7 @@ function AdminViewHotel() {
                                         >
                                           <img
                                             alt={`Image ${imgInd + 1}`}
-                                            className="w-full h-full rounded-md object-cover"
+                                            className="w-full h-full rounded-md object-cover hover:border-2 hover:border-blue-600"
                                             src={image}
                                             onClick={() =>
                                               handleRoomSmallImageClick(
