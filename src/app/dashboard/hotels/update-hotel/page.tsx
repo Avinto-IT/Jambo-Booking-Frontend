@@ -343,9 +343,15 @@ const AdminUpdateHotelContent = () => {
 
           if (data.hotel) {
             // Create a temporary array to hold all room images
-            const tempRoomImageLinks: File[] = [];
+            const tempRoomImageLinks: string[] = [];
             data.hotel.rooms.forEach((room: Room) => {
-              tempRoomImageLinks.push(...room.roomImageLinks);
+              room.roomImageLinks.forEach((link) => {
+                if (typeof link === "string") {
+                  tempRoomImageLinks.push(link);
+                } else {
+                  tempRoomImageLinks.push(URL.createObjectURL(link));
+                }
+              });
             });
             setRoomImageLinks(tempRoomImageLinks);
             reset({
