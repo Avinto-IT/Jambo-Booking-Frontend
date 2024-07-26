@@ -44,6 +44,7 @@ export default function Login() {
         password: fields.password,
       }),
     });
+
     try {
       const data = await response.json();
       if (response.status === 200) {
@@ -55,8 +56,11 @@ export default function Login() {
           sameSite: "strict",
         });
         localStorage.setItem("token", data.token);
-
-        window.location.href = "/dashboard";
+        if (data.user.role === "admin") window.location.href = "/dashboard";
+        else if (data.user.role === "hotel")
+          window.location.href = "/hotel-dashboard";
+        else if (data.user.role === "agent")
+          window.location.href = "/agent-dashboard";
       } else {
         setMessage(data.error || "Login Failed");
       }
