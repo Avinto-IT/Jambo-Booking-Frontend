@@ -1,7 +1,7 @@
 "use client";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Hotel } from "@/utils/types";
+import { Card, CardTitle } from "@/components/ui/card";
+// import { Hotel } from "@/utils/types";
 import { Dot } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import React, { Suspense, useEffect, useState } from "react";
@@ -12,23 +12,42 @@ import { Button } from "@/components/ui/button";
 import facilitiesIcon from "../../../../data/facilities.json";
 import * as Icons from "lucide-react";
 import AdminLayout from "@/components/Layout/AdminLayout";
-import { Calendar } from "@/components/ui/calendar";
-import { Input } from "@/components/ui/input";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import DatePicker from "react-datepicker";
-import { Dialog, DialogContent, DialogOverlay } from "@/components/ui/dialog";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogOverlay,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import Layout from "@/components/Layout/Layout";
-import Link from "next/link";
+import Hero from "@/components/landing/Hero";
 
 interface Room {
   type: string;
-  numberOfBeds: number;
-  bedType: string;
-  capacity: number;
+  numberOfRooms: string;
+  price: string;
+
+  beds: {
+    bedType: string;
+    numberOfBeds: string;
+  }[];
+
   amenities: { name: string }[];
-  price: number;
+  roomImageLinks: string[];
 }
+
+interface Hotel {
+  name: string;
+  primaryImageLink: string;
+  imageLinks: string[];
+  address: string;
+  description: string;
+  facilities: { name: string; subFacilities: { name: string }[] }[];
+  rooms: Room[];
+  houseRules: { type: string; details: string }[];
+}
+
 export default function Page() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
@@ -38,43 +57,32 @@ export default function Page() {
 }
 function ClientViewHotel() {
   const [showMore, setShowMore] = useState(false);
-  const [count, setCount] = useState(0);
   const [showAmenities, setShowAmentities] = useState(false);
   const [visibleFacilitiesCount, setVisibleFacilitiesCount] = useState(4);
-  const [selectedDate, setSelectedDate] = useState<string | undefined>(
-    undefined
-  );
-  const [currentDate, setCurrentDate] = useState("");
+
   const searchParams = useSearchParams();
-  const [isCarouselOpen, setIsCarouselOpen] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState(0);
 
   const id = searchParams?.get("id");
   //   const [hotel, setHotel] = useState<Hotel>();
-  const [hotel, setHotel] = useState<{
-    name: string;
-    address: string;
-    primaryImageLink: string;
-    imageLinks: string[];
-    description: string;
-    facilities: { name: string; subFacilities: { name: string }[] }[];
-    rooms: {
-      type: string;
-      numberOfBeds: number;
-      bedType: string;
-      capacity: number;
-      amenities: { name: string }[];
-      price: number;
-    }[];
-    houseRules: { type: string; details: string }[];
-  }>();
+  const [hotel, setHotel] = useState<Hotel>();
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     setToken(storedToken);
   }, []);
 
   const [token, setToken] = useState<string | null>(null);
-  const [locations, setLocations] = useState<Location[]>([]);
+
+  const [isCarouselOpen, setIsCarouselOpen] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [count, setCount] = useState<number[]>([]);
+
+  useEffect(() => {
+    if (hotel?.rooms) {
+      setCount(Array(hotel.rooms.length).fill(1));
+    }
+  }, [hotel]);
 
   useEffect(() => {
     const fetchHotels = async () => {
@@ -87,12 +95,8 @@ function ClientViewHotel() {
       }
     };
     fetchHotels();
-    const today = new Date().toISOString().split("T")[0];
-    setCurrentDate(today);
   }, []);
-
   if (!hotel) return <>Loading...</>;
-  //   console.log(hotel);
 
   const toggleShowMore = () => {
     setShowMore(!showMore);
@@ -112,59 +116,101 @@ function ClientViewHotel() {
     setIsCarouselOpen(true);
   };
 
-  const handleCloseCarousel = () => {
-    setIsCarouselOpen(false);
+  const handleRoomSmallImageClick = (image: string, index: number) => {
+    // setRoomImage(image);
+    setCurrentIndex(index);
   };
+
   const handlePrevClick = () => {
     setCurrentIndex((prevIndex) =>
       prevIndex === 0 ? hotel.imageLinks.length : prevIndex - 1
     );
   };
-
   const handleNextClick = () => {
     setCurrentIndex((prevIndex) =>
       prevIndex === hotel.imageLinks.length ? 0 : prevIndex + 1
     );
   };
-  const handleCardClick = (value: Room) => {
-    console.log(value);
+  let roomImageLength = 0;
+
+  const handleRoomPrevClick = () => {
+    setCurrentIndex((prevIndex) => {
+      if (!selectedRoom || selectedRoom.roomImageLinks.length === 0)
+        return prevIndex; // Safeguard against undefined or empty array
+      // if (roomImage > 0) {
+      //   const maxIndex = roomImage - 1;
+      //   return prevIndex === 0 ? maxIndex : prevIndex - 1;
+      // }
+      const maxIndex = selectedRoom.roomImageLinks.length - 1;
+      const newIndex = prevIndex === 0 ? maxIndex : prevIndex - 1;
+      // setRoomImage(selectedRoom.roomImageLinks[newIndex]);
+      return newIndex;
+      // return prevIndex === 0 ? maxIndex : prevIndex - 1;
+    });
   };
-  const incrementCount = () => {
-    setCount(count + 1);
+  const handleRoomNextClick = () => {
+    setCurrentIndex((nextIndex) => {
+      if (!selectedRoom || selectedRoom.roomImageLinks.length === 0)
+        return nextIndex; // Safeguard against undefined or empty array
+
+      const newIndex =
+        nextIndex === selectedRoom.roomImageLinks.length - 1
+          ? 0
+          : nextIndex + 1;
+      // setRoomImage(selectedRoom.roomImageLinks[newIndex]);
+      return newIndex;
+    });
+  };
+  const handleRoomsClick = (room: Room) => {
+    setSelectedRoom(room);
+    setIsDialogOpen(true);
+  };
+  const incrementCount = (index: number) => {
+    setCount((prevCounts) => {
+      const newCounts = [...prevCounts];
+      newCounts[index] += 1;
+      return newCounts;
+    });
   };
 
-  const decrementCount = () => {
-    if (count > 0) setCount(count - 1);
-    else alert("must be more than 0");
+  const decrementCount = (index: number) => {
+    setCount((prevCounts) => {
+      const newCounts = [...prevCounts];
+      if (newCounts[index] > 0) {
+        newCounts[index] -= 1;
+      }
+      return newCounts;
+    });
   };
+
   return (
-    // <AdminLayout>
     <Layout>
+      <Hero />
       <Card className="w-full">
         <div className="flex justify-center ">
           <MaxWidthWrapper>
             <div className="text-[#020617] my-7 space-y-10 tracking-tight">
               <div className="space-y-5">
                 <div className="space-y-3">
-                  <p
+                  <div
                     className="text-3xl  font-semibold
             "
                   >
                     {hotel.name}
-                  </p>
-                  <p className="">{hotel.address}</p>
+                  </div>
+                  <div className="">{hotel.address}</div>
                 </div>
-                <div className="  flex h-[550px] gap-2  ">
+                <div className="  flex  h-[550px] gap-2  ">
                   <div className="w-1/2 relative overflow-hidden rounded-l-xl">
                     <img
                       src={hotel.primaryImageLink}
                       alt="PrimaryImage"
-                      className="h-full transition-transform duration-500 ease-in-out transform hover:scale-105 hover:brightness-75"
+                      className="h-full min-h-[30rem] object-cover transition-transform duration-500 ease-in-out transform hover:scale-105 hover:brightness-75"
                       onClick={() => handleImageClick(0)}
                     />
                   </div>
                   <div
-                    className={`grid 
+                    className={`grid
                     ${hotel.imageLinks.length <= 2 ? "flex" : "grid-cols-2 "}
                      gap-2 w-1/2`}
                   >
@@ -191,10 +237,21 @@ function ClientViewHotel() {
                         <img
                           src={image}
                           alt={`smallImage-${index}`}
-                          className="h-full w-full object-cover transition-transform duration-500 ease-in-out transform hover:scale-105 hover:brightness-75"
+                          className="h-full w-full transition-transform duration-500 ease-in-out transform hover:scale-105 hover:brightness-75"
                         />
                       </div>
                     ))}
+                    {/* {hotel.imageLinks.length > 5 ? (
+                      <Button
+                        variant="outline"
+                        className="absolute bottom-3 bg-[#F1F5F9] right-48 "
+                        onClick={() => handleImageClick(0)}
+                      >
+                        Show all photos
+                      </Button>
+                    ) : (
+                      ""
+                    )} */}
                   </div>
 
                   <Dialog
@@ -206,41 +263,45 @@ function ClientViewHotel() {
                       <div className=" w-full">
                         <div className="flex overflow-hidden">
                           <div
-                            className="flex transition-transform duration-500 ease-in-out"
+                            className="flex transition-transform duration-500 ease-in-out items-center
+                            "
                             style={{
                               transform: `translateX(-${currentIndex * 100}%)`,
                             }}
                           >
                             <div className="flex-shrink-0 w-full">
                               <img
+                                // src={staticimg3}
                                 src={hotel.primaryImageLink}
                                 alt="PrimaryImage"
                                 className=""
+
+                                // objectFit="cover"
                               />
                             </div>
-                            {hotel.imageLinks.map((image, index) => (
+                            {hotel.imageLinks.map((image, imageIndex) => (
                               <div
-                                className="flex-shrink-0 w-full "
-                                key={index}
+                                className="flex-shrink-0 w-full"
+                                key={imageIndex}
                               >
                                 <img
                                   src={image}
-                                  alt={`carouselImage-${index}`}
-                                  className="w-full object-cover"
+                                  alt={`carouselImage-${imageIndex}`}
+                                  className="w-full "
                                 />
                               </div>
                             ))}
                           </div>
                         </div>
                         <Button
-                          className="absolute top-1/2 -right-4 text-white bg-black bg-opacity-75 rounded-full"
-                          onClick={handleNextClick}
+                          className="absolute top-1/2 right-1 text-white bg-gray-50 bg-opacity-40 rounded-full"
+                          onClick={() => handleNextClick()}
                         >
                           &gt;
                         </Button>
                         <Button
-                          className="absolute top-1/2 -left-4 text-white bg-black bg-opacity-75 rounded-full"
-                          onClick={handlePrevClick}
+                          className="absolute top-1/2 left-1 text-white bg-gray-50 bg-opacity-40 rounded-full"
+                          onClick={() => handlePrevClick()}
                         >
                           &lt;
                         </Button>
@@ -250,109 +311,38 @@ function ClientViewHotel() {
                 </div>
               </div>
               <div className="space-y-4">
-                <div className="flex justify-between ">
-                  <div className="space-y-3 w-2/3">
-                    <p className="text-2xl font-semibold">Basic Overview</p>
-                    <p className="pb-5">{hotel.address}</p>
-                    <p className="leading-7 border-t-2 pt-7">
-                      {hotel.description.length > 350 ? (
-                        <div className="space-y-5">
-                          <p className="">
-                            {showMore
-                              ? hotel.description
-                              : hotel.description.substring(0, 350) + "..."}
-                          </p>
-                          <div
-                            className="text-blue-600 text-sm font-medium cursor-pointer"
-                            onClick={toggleShowMore}
-                          >
-                            <u>{!showMore ? "Show More" : "Show Less"}</u>
-                          </div>
+                <div className="space-y-3">
+                  <div className="text-2xl font-semibold">Basic Overview</div>
+                  <div className="pb-5">{hotel.address}</div>
+                  <div className="leading-7 border-t-2 pt-7">
+                    {hotel.description.length > 350 ? (
+                      <div className="space-y-5">
+                        <div className="">
+                          {showMore
+                            ? hotel.description
+                            : hotel.description.substring(0, 350) + "..."}
                         </div>
-                      ) : (
-                        hotel.description
-                      )}
-                    </p>
-                    <div className=" border-b-2 pt-1 "></div>
+                        <div
+                          className="text-blue-600 text-sm font-medium cursor-pointer"
+                          onClick={toggleShowMore}
+                        >
+                          <u>{!showMore ? "Show More" : "Show Less"}</u>
+                        </div>
+                      </div>
+                    ) : (
+                      hotel.description
+                    )}
                   </div>
-                  <Card className="w-1/3  p-5 ml-20 shadow-lg space-y-5">
-                    <div className="flex">${hotel.rooms[0].price} / night</div>
-                    <div className="flex  justify-between items-center">
-                      <div className="">
-                        <Label>Check In</Label>
-                        <Input
-                          type="date"
-                          value={currentDate}
-                          onChange={(e) => setSelectedDate(e.target.value)}
-                          className="w-fit"
-                        />
-                      </div>
-                      <div className="">
-                        <Label>Check In</Label>
-                        <Input
-                          type="date"
-                          value={currentDate}
-                          onChange={(e) => setSelectedDate(e.target.value)}
-                          className="w-fit"
-                        />
-                      </div>
-                    </div>
-                    <div className="">
-                      <p className="">Guests</p>
-                      <Input type="Number" />
-                    </div>
-                    <div className="flex items-center">
-                      <RadioGroup defaultValue="lunch" className="flex ">
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="breakfast" id="breakfast" />
-                          <Label htmlFor="breakfast">Breakfast</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="lunch" id="lunch" />
-                          <Label htmlFor="lunch">Lunch</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="dinner" id="dinner" />
-                          <Label htmlFor="dinner">Dinner</Label>
-                        </div>
-                      </RadioGroup>
-                    </div>
-                    <div className="space-y-3">
-                      <div className="bg-blue-700 h-10 rounded-md w-full flex items-center justify-center ">
-                        <p className="text-white"> Reserve</p>
-                      </div>
-                      <div className="space-y-2">
-                        <div className="flex justify-between">
-                          <p className="">Breakfast</p>
-                          <p className="">USD 62</p>
-                        </div>
-
-                        <div className="flex justify-between">
-                          <p className="">Breakfast</p>
-                          <p className="">USD 62</p>
-                        </div>
-
-                        <div className="flex justify-between">
-                          <p className="">Breakfast</p>
-                          <p className="">USD 62</p>
-                        </div>
-                        <div className="flex justify-between">
-                          <p className="">Total</p>
-                          <p className="">USD 20</p>
-                        </div>
-                      </div>
-                    </div>
-                  </Card>
                 </div>
-
+                <div className=" border-b-2 pt-1 "></div>
                 <div className="space-y-7">
-                  <p className="text-2xl font-semibold pt-1">Top Facilities</p>
+                  <div className="text-2xl font-semibold pt-1">
+                    Top Facilities
+                  </div>
                   <div className="grid gap-5 grid-cols-3">
-                    {hotel.facilities.map((facility, index) => {
-                      console.log(facility);
+                    {hotel.facilities.map((facility, facilityIndex) => {
                       const facilityIcon = facilitiesIcon.facilitiesIcon.find(
                         (icon) => {
-                          console.log(icon);
                           return icon.name === facility.name;
                         }
                       );
@@ -363,14 +353,14 @@ function ClientViewHotel() {
 
                       return (
                         <div
-                          key={index}
+                          key={facilityIndex}
                           className="flex items-center space-x-4"
                         >
                           <div className="">
                             {IconComponent && <IconComponent className="" />}
                           </div>
 
-                          <p className="">{facility.name}</p>
+                          <div className="">{facility.name}</div>
                         </div>
                       );
                     })}
@@ -380,14 +370,14 @@ function ClientViewHotel() {
                 <div className="w-2/3">
                   <div className=" border-b-2  pt-2"></div>
                   <div className="space-y-7">
-                    <p className="text-2xl font-semibold mt-7">Rooms</p>
-                    {hotel.rooms.map((value, index) => {
+                    <div className="text-2xl font-semibold mt-7">Rooms</div>
+                    {hotel.rooms.map((value, roomIndex: number) => {
                       //   console.log(value, "asasas");
                       return (
                         <Card
-                          key={index}
+                          key={roomIndex}
                           className="p-5 space-y-2 hover:bg-[#EFF6FF] hover:border-[#2563EB] "
-                          onClick={() => handleCardClick(value)}
+                          onClick={() => handleRoomsClick(value)}
                         >
                           <CardTitle className="text-xl">
                             {value.type}
@@ -397,14 +387,24 @@ function ClientViewHotel() {
                               <div className="flex  justify-between w-3/5 font-medium">
                                 <div className="flex ">
                                   <Image src={bed} alt="bed" />
-                                  <p className="pl-4 pr-1">
-                                    {value.numberOfBeds}
-                                  </p>
-                                  <p className="">{value.bedType}</p>
+                                  {value.beds.map((bed, bedIndex) => {
+                                    return (
+                                      <>
+                                        <div className="flex">
+                                          <div className="pl-4 pr-1">
+                                            {value.beds[bedIndex].numberOfBeds}
+                                          </div>
+                                          <div className="">
+                                            {value.beds[bedIndex].bedType}
+                                          </div>
+                                        </div>
+                                      </>
+                                    );
+                                  })}
                                 </div>
                                 <div className="flex space-x-4">
                                   <Image src={guest} alt="guest" />
-                                  <p className=""> {value.capacity}</p>
+                                  {/* <div className=""> {value.capacity}</div> */}
                                 </div>
                               </div>
                               <div className="flex flex-wrap">
@@ -415,22 +415,21 @@ function ClientViewHotel() {
                                       className="text-sm text-[#64748B] flex items-center gap-x-1"
                                       key={amenityIndex}
                                     >
-                                      <p className="whitespace-nowrap">
+                                      <div className="whitespace-nowrap">
                                         {amenity.name}
-                                      </p>
+                                      </div>
                                       <Dot />
                                     </span>
                                   ))}
                               </div>
                               <div className="text-[#64748B]">
                                 {value.amenities.length > 12 && (
-                                  <p>
+                                  <div>
                                     {value.amenities.length - 12}+ Amenities
-                                  </p>
+                                  </div>
                                 )}
                               </div>
                             </div>
-
                             <div className="flex flex-col items-start justify-start space-y-3">
                               <p className="flex justify-start text-sm font-semibold">
                                 Select Rooms
@@ -438,14 +437,22 @@ function ClientViewHotel() {
                               <div className="flex justify-between items-center w-full pr-4">
                                 <div
                                   className="rounded-full cursor-pointer bg-[#E2E8F0] h-8 w-8 flex items-center justify-center p-2"
-                                  onClick={decrementCount}
+                                  // onClick={() => decrementCount(roomIndex)}
+                                  onClick={(e) => {
+                                    e.stopPropagation(); // Prevent card click
+                                    decrementCount(roomIndex);
+                                  }}
                                 >
                                   <Icons.Minus className="" />
                                 </div>
-                                <p className="">{count}</p>
+                                <p className="">{count[roomIndex]}</p>
                                 <div
                                   className="rounded-full cursor-pointer bg-[#E2E8F0] h-8 w-8 flex items-center justify-center p-2"
-                                  onClick={incrementCount}
+                                  // onClick={() => incrementCount(roomIndex)}
+                                  onClick={(e) => {
+                                    e.stopPropagation(); // Prevent card click
+                                    incrementCount(roomIndex);
+                                  }}
                                 >
                                   <Icons.Plus />
                                 </div>
@@ -462,20 +469,168 @@ function ClientViewHotel() {
                         </Card>
                       );
                     })}
+
+                    {selectedRoom && (
+                      <Dialog
+                        open={isDialogOpen}
+                        onOpenChange={setIsDialogOpen}
+                      >
+                        {/* <DialogOverlay className="bg-black bg-opacity-10" /> */}
+                        <div className="">
+                          <DialogContent className="flex items-center justify-center p-5  min-w-fit  max-h-fit  border-none">
+                            <div className="w-[1200px] flex gap-10">
+                              <div className="flex flex-col gap-3 w-7/12 relative">
+                                <div className="overflow-hidden w-full h-[30rem]">
+                                  <div
+                                    className="flex transition-transform duration-500 ease-in-out"
+                                    style={{
+                                      transform: `translateX(-${
+                                        currentIndex * 100
+                                      }%)`,
+                                    }}
+                                  >
+                                    {selectedRoom.roomImageLinks &&
+                                      selectedRoom.roomImageLinks.map(
+                                        (image, imgIndex) => (
+                                          <div
+                                            className="flex-shrink-0 w-full h-[30rem]"
+                                            key={imgIndex}
+                                            style={{ width: "100%" }}
+                                          >
+                                            <img
+                                              src={image}
+                                              alt={`carouselImage-${imgIndex}`}
+                                              className="w-full h-full object-cover"
+                                            />
+                                          </div>
+                                        )
+                                      )}
+                                  </div>
+                                </div>
+                                <Button
+                                  className="absolute top-56 right-0 text-white bg-gray-100 bg-opacity-40 rounded-full hover:text-white"
+                                  onClick={() => handleRoomNextClick()}
+                                >
+                                  &gt;
+                                </Button>
+                                <Button
+                                  className="absolute top-56 left-0 text-white bg-gray-100 bg-opacity-40 rounded-full hover:text-white"
+                                  onClick={() => handleRoomPrevClick()}
+                                >
+                                  &lt;
+                                </Button>
+                                <div className="flex gap-2 overflow-x-scroll">
+                                  {selectedRoom.roomImageLinks &&
+                                    selectedRoom.roomImageLinks.map(
+                                      (image, imgInd) => (
+                                        <div
+                                          key={imgInd}
+                                          className="flex-none w-40 h-40"
+                                        >
+                                          <img
+                                            alt={`Image ${imgInd + 1}`}
+                                            className="w-full h-full rounded-md object-cover hover:border-2 hover:border-blue-600"
+                                            src={image}
+                                            onClick={() =>
+                                              handleRoomSmallImageClick(
+                                                image,
+                                                imgInd
+                                              )
+                                            }
+                                          />
+                                        </div>
+                                      )
+                                    )}
+                                </div>
+                              </div>
+                              <div className="w-5/12 space-y-5 text-sm">
+                                <DialogTitle>{selectedRoom.type}</DialogTitle>
+                                <div className="">
+                                  {selectedRoom.beds.map((bed, bedInd) => {
+                                    return (
+                                      <div
+                                        className="flex justify-between"
+                                        key={bedInd}
+                                      >
+                                        <div className="flex">
+                                          {" "}
+                                          <div className="font-semibold">
+                                            {" "}
+                                            Bed Type :
+                                          </div>{" "}
+                                          {bed.bedType}
+                                        </div>
+                                        <div className="flex">
+                                          {" "}
+                                          <div className="font-semibold">
+                                            Number of Beds :{" "}
+                                          </div>{" "}
+                                          {bed.numberOfBeds}
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                                <div className="">
+                                  <div className="flex">
+                                    <div className="font-semibold">
+                                      Room Facilities :
+                                    </div>
+                                  </div>
+
+                                  <div className="grid grid-cols-2 mt-2">
+                                    {selectedRoom.amenities.map(
+                                      (item, itemIndex) => {
+                                        return (
+                                          <div className="" key={itemIndex}>
+                                            <div
+                                              className="flex"
+                                              key={itemIndex}
+                                            >
+                                              <div className="mr-2">
+                                                <Icons.Check className="h-4 w-4" />
+                                              </div>
+                                              {item.name}
+                                            </div>
+                                          </div>
+                                        );
+                                      }
+                                    )}
+                                  </div>
+                                </div>
+
+                                <div className="flex">
+                                  <div className="font-semibold">
+                                    Number of Rooms :{" "}
+                                  </div>
+
+                                  {selectedRoom.numberOfRooms}
+                                </div>
+                                <div className="flex">
+                                  <div className="font-semibold">
+                                    Price of the room :{" "}
+                                  </div>
+                                  USD {selectedRoom.price}
+                                </div>
+                              </div>
+                            </div>
+                          </DialogContent>
+                        </div>
+                      </Dialog>
+                    )}
                   </div>
                   <div className=" border-b-2 my-7  "></div>
                 </div>
                 <div className="space-y-7">
-                  <p className="text-2xl font-semibold">
+                  <div className="text-2xl font-semibold">
                     Explore All Facilities
-                  </p>
+                  </div>
                   <div className="grid grid-cols-3 space-y-2">
                     {hotel.facilities
                       .slice(0, visibleFacilitiesCount)
-                      .map((value, index) => {
+                      .map((value, facilityIndex) => {
                         const facilityIcon = facilitiesIcon.facilitiesIcon.find(
                           (icon) => {
-                            console.log(icon);
                             return icon.name === value.name;
                           }
                         );
@@ -484,11 +639,11 @@ function ClientViewHotel() {
                           `${facilityIcon?.icon}`
                         ];
                         return (
-                          <div className="" key={index}>
+                          <div className="" key={facilityIndex}>
                             <div className="flex items-center space-x-4 ">
                               {IconComponent && <IconComponent className="" />}
 
-                              <p className="">{value.name}</p>
+                              <div className="">{value.name}</div>
                             </div>
                             <div className="">
                               {value.subFacilities.map((subValue, subIndex) => {
@@ -498,7 +653,7 @@ function ClientViewHotel() {
                                     key={subIndex}
                                   >
                                     <Dot className="" />
-                                    <p className="">{subValue.name}</p>
+                                    <div className="">{subValue.name}</div>
                                   </span>
                                 );
                               })}
@@ -517,16 +672,16 @@ function ClientViewHotel() {
 
                   <div className=" border-b-2 mt-7"></div>
                   <div className="space-y-7">
-                    <p className="text-2xl font-semibold">House Rules</p>
+                    <div className="text-2xl font-semibold">House Rules</div>
                     <div className="">
-                      {hotel.houseRules.map((value, index) => {
+                      {hotel.houseRules.map((value, ruleIndex) => {
                         return (
-                          <div key={index}>
+                          <div key={ruleIndex}>
                             <div className="flex w-full">
-                              <p className="w-1/4">{value.type}</p>
-                              <p className="w-3/4">{value.details}</p>
+                              <div className="w-1/4">{value.type}</div>
+                              <div className="w-3/4">{value.details}</div>
                             </div>
-                            {index !== hotel.houseRules.length - 1 && (
+                            {ruleIndex !== hotel.houseRules.length - 1 && (
                               <div className="border-t-2 my-5"></div>
                             )}
                           </div>
