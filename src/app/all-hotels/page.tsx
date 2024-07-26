@@ -101,7 +101,10 @@ function AllHotels() {
     requiredFacilities: string[]
   ) => {
     const flattenedFacilities = hotelFacilities.flatMap((facility) =>
-      facility.subFacilities.map((sub) => sub.name)
+      facility.subFacilities.map((sub: { name: string }) => {
+        console.log(sub, "sub");
+        return sub.name;
+      })
     );
     return requiredFacilities.every((facility) =>
       flattenedFacilities.includes(facility)
