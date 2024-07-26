@@ -5,18 +5,24 @@ import { Dot } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { Hotel, Room } from "@/utils/types";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import Layout from "@/components/Layout/Layout";
 import Hero from "@/components/landing/Hero";
 import randomImg from "../../../public/images/an_image_for_hotel_booking.svg";
 
-export default function HotelsDashboard() {
+export default function Page() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AllHotels />
+    </Suspense>
+  );
+}
+
+function AllHotels() {
   const [hotels, setHotels] = useState<Hotel[]>([]);
   const router = useRouter();
-  // const pathname = usePathname();
-  // const locationName = pathname?.split("/").pop() || "";
 
   const searchParams = useSearchParams();
 
@@ -50,7 +56,11 @@ export default function HotelsDashboard() {
 
   const filteredHotels = locationId
     ? hotels.filter((hotel) => {
-        return hotel.locationID.includes(locationId);
+        return (
+          hotel.locationID.toLowerCase().includes(locationId.toLowerCase()) ||
+          hotel.address.toLowerCase().includes(locationId.toLowerCase()) ||
+          hotel.name.toLowerCase().includes(locationId.toLowerCase())
+        );
       })
     : hotels;
 
