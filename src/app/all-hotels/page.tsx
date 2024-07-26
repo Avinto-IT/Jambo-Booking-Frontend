@@ -13,6 +13,12 @@ import Hero from "@/components/landing/Hero";
 import randomImg from "../../../public/images/an_image_for_hotel_booking.svg";
 import FilterSheet, { FilterValues } from "@/components/FilterSheet";
 
+type Facility = {
+  facilityId: string;
+  facilityCategory: string;
+  subFacilities: string[];
+};
+
 export default function Page() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
@@ -23,6 +29,7 @@ export default function Page() {
 
 function AllHotels() {
   const [hotels, setHotels] = useState<Hotel[]>([]);
+  const [facilities, setFacilities] = useState<Record<string, string[]>>({});
   const [filterValues, setFilterValues] = useState<FilterValues>({
     propertyType: null,
     budgetRange: [100, 1000],
@@ -33,6 +40,31 @@ function AllHotels() {
   });
 
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchFacilities = async () => {
+      try {
+        const response = await fetch("/api/getFacilities");
+        const data: Facility[] = await response.json();
+
+        // Transform the data into an object where each key is a facilityCategory
+        const facilitiesByCategory: Record<string, string[]> = {};
+        data.forEach((facility) => {
+          facilitiesByCategory[facility.facilityCategory] =
+            facility.subFacilities;
+        });
+
+        // Set the transformed data to the state variable
+        setFacilities(facilitiesByCategory);
+
+        console.log("Facilities fetched successfully", facilitiesByCategory);
+      } catch (error) {
+        console.log("Error fetching facilities:", error);
+      }
+    };
+
+    fetchFacilities();
+  }, []);
 
   const searchParams = useSearchParams();
 
@@ -64,6 +96,18 @@ function AllHotels() {
     router.push(`/all-hotels/view-hotel-details?id=${hotelId}`);
   };
 
+  const hasRequiredFacilities = (
+    hotelFacilities: any[],
+    requiredFacilities: string[]
+  ) => {
+    const flattenedFacilities = hotelFacilities.flatMap((facility) =>
+      facility.subFacilities.map((sub) => sub.name)
+    );
+    return requiredFacilities.every((facility) =>
+      flattenedFacilities.includes(facility)
+    );
+  };
+
   const filteredHotels = hotels.filter((hotel) => {
     const lowestPricedRoom = getLowestPricedRoom(hotel.rooms);
     const price = lowestPricedRoom ? parseInt(lowestPricedRoom.price) : null;
@@ -75,7 +119,8 @@ function AllHotels() {
         hotel.name.toLowerCase().includes(locationId.toLowerCase())) &&
       price !== null &&
       price >= filterValues.budgetRange[0] &&
-      price <= filterValues.budgetRange[1]
+      price <= filterValues.budgetRange[1] &&
+      hasRequiredFacilities(hotel.facilities, filterValues.facilities)
     );
   });
 
@@ -96,7 +141,10 @@ function AllHotels() {
                   These popular hotels have a lot to offer
                 </p>
               </div>
-              <FilterSheet onFilterChange={setFilterValues} />
+              <FilterSheet
+                onFilterChange={setFilterValues}
+                facilities={facilities}
+              />
             </div>
             <div className="grid grid-cols-3 gap-x-5 gap-y-4">
               {filteredHotels.map((hotel, index) => {

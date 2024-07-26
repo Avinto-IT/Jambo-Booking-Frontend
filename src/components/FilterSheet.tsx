@@ -14,7 +14,13 @@ import {
 } from "./ui/sheet";
 import { Button } from "./ui/button";
 import { Slider } from "./ui/slider";
-import { Input } from "./ui/input";
+import { Checkbox } from "./ui/checkbox";
+import { ChevronDown } from "lucide-react";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "./ui/collapsible";
 
 export interface FilterValues {
   propertyType: string | null;
@@ -27,9 +33,13 @@ export interface FilterValues {
 
 interface FilterSheetProps {
   onFilterChange: (filterValues: FilterValues) => void;
+  facilities: Record<string, string[]>;
 }
 
-const FilterSheet: React.FC<FilterSheetProps> = ({ onFilterChange }) => {
+const FilterSheet: React.FC<FilterSheetProps> = ({
+  onFilterChange,
+  facilities,
+}) => {
   const [filterValues, setFilterValues] = React.useState<FilterValues>({
     propertyType: null,
     budgetRange: [100, 5000],
@@ -70,13 +80,11 @@ const FilterSheet: React.FC<FilterSheetProps> = ({ onFilterChange }) => {
             Use these filters to narrow down your search
           </SheetDescription>
         </SheetHeader>
-
         {/* Property Type */}
         <div className="my-4">
           <h3 className="font-semibold">Property Type</h3>
           {/* Add your Property Type filter components here */}
         </div>
-
         {/* Budget Range */}
         <div className="my-4">
           <h3 className="font-semibold">Budget Range</h3>
@@ -105,20 +113,53 @@ const FilterSheet: React.FC<FilterSheetProps> = ({ onFilterChange }) => {
             <div className="tooltip">{`$${filterValues.budgetRange[1]}`}</div>
           </div> */}
         </div>
-
         {/* Room and Beds */}
         <div className="my-4">
           <h3 className="font-semibold">Room and Beds</h3>
           {/* Add your Room and Beds filter components here */}
         </div>
-
+        {/* Facilities */}
         {/* Facilities */}
         <div className="my-16">
           <h3 className="font-semibold">Facilities</h3>
-          {/* Add your Facilities filter components here */}
-          <div className="border rounded-lg my-6 p-6">asdasd</div>
+          {Object.keys(facilities).map((category) => (
+            <div key={category} className="my-4 p-4 border rounded-lg">
+              <Collapsible>
+                <div className="flex w-full justify-between items-center">
+                  <h4 className="font-semibold">{category}</h4>
+                  <CollapsibleTrigger asChild>
+                    <Button variant="ghost">
+                      <ChevronDown className="h-4 w-4" />
+                    </Button>
+                  </CollapsibleTrigger>
+                </div>
+                <CollapsibleContent>
+                  <div className="grid grid-cols-2 gap-4 my-6">
+                    {facilities[category].map((facility, index) => (
+                      <div key={index} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={facility}
+                          checked={filterValues.facilities.includes(facility)}
+                          onCheckedChange={(checked) =>
+                            handleFilterChange(
+                              "facilities",
+                              checked
+                                ? [...filterValues.facilities, facility]
+                                : filterValues.facilities.filter(
+                                    (f) => f !== facility
+                                  )
+                            )
+                          }
+                        />
+                        <label htmlFor={facility}>{facility}</label>
+                      </div>
+                    ))}
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+            </div>
+          ))}
         </div>
-
         <SheetFooter>
           <Button
             className="px-4 py-2 bg-primary text-white rounded"
