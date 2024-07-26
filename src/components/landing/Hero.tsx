@@ -70,7 +70,7 @@ export default function Hero() {
           <div className="flex flex-col md:flex-row items-center justify-center gap-4">
             <Select
               instanceId="location-select"
-              options={locations.map((location) => ({
+              options={locations?.map((location) => ({
                 value: location.locationID,
                 label: `${location.city}, ${location.country}`,
               }))}
