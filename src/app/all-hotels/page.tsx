@@ -11,7 +11,7 @@ import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import Layout from "@/components/Layout/Layout";
 import Hero from "@/components/landing/Hero";
 import randomImg from "../../../public/images/an_image_for_hotel_booking.svg";
-import FilterSheet from "@/components/FilterSheet";
+import FilterSheet, { FilterValues } from "@/components/FilterSheet";
 
 export default function Page() {
   return (
@@ -23,6 +23,15 @@ export default function Page() {
 
 function AllHotels() {
   const [hotels, setHotels] = useState<Hotel[]>([]);
+  const [filterValues, setFilterValues] = useState<FilterValues>({
+    propertyType: null,
+    budgetRange: [100, 1000],
+    bedrooms: null,
+    beds: null,
+    bathrooms: null,
+    facilities: [],
+  });
+
   const router = useRouter();
 
   const searchParams = useSearchParams();
@@ -55,15 +64,22 @@ function AllHotels() {
     router.push(`/all-hotels/view-hotel-details?id=${hotelId}`);
   };
 
-  const filteredHotels = locationId
-    ? hotels.filter((hotel) => {
-        return (
-          hotel.locationID.toLowerCase().includes(locationId.toLowerCase()) ||
-          hotel.address.toLowerCase().includes(locationId.toLowerCase()) ||
-          hotel.name.toLowerCase().includes(locationId.toLowerCase())
-        );
-      })
-    : hotels;
+  const filteredHotels = hotels.filter((hotel) => {
+    const lowestPricedRoom = getLowestPricedRoom(hotel.rooms);
+    const price = lowestPricedRoom ? parseInt(lowestPricedRoom.price) : null;
+
+    return (
+      (!locationId ||
+        hotel.locationID.toLowerCase().includes(locationId.toLowerCase()) ||
+        hotel.address.toLowerCase().includes(locationId.toLowerCase()) ||
+        hotel.name.toLowerCase().includes(locationId.toLowerCase())) &&
+      price !== null &&
+      price >= filterValues.budgetRange[0] &&
+      price <= filterValues.budgetRange[1]
+    );
+  });
+
+  console.log(filteredHotels, "after hotel");
 
   return (
     <Layout>
@@ -72,15 +88,15 @@ function AllHotels() {
         <MaxWidthWrapper>
           <div className="py-10">
             <div className="flex justify-between w-full">
-            <div className="h-20 gap-2 mb-4">
-              <p className=" text-3xl font-semibold tracking-tight leading-10">
-                All the Hotels
-              </p>
-              <p className="leading-7 mt-1 tracking-tight ">
-                These popular hotels have a lot to offer
-              </p>
-            </div>
-            <FilterSheet />
+              <div className="h-20 gap-2 mb-4">
+                <p className=" text-3xl font-semibold tracking-tight leading-10">
+                  All the Hotels
+                </p>
+                <p className="leading-7 mt-1 tracking-tight ">
+                  These popular hotels have a lot to offer
+                </p>
+              </div>
+              <FilterSheet onFilterChange={setFilterValues} />
             </div>
             <div className="grid grid-cols-3 gap-x-5 gap-y-4">
               {filteredHotels.map((hotel, index) => {
