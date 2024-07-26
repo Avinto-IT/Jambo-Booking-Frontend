@@ -23,7 +23,7 @@ const TopImgSignUp: React.FC<TopImgProp> = ({
           alt="topimage"
           className=" w-full "
           priority={true}
-          objectFit="cover"
+          // objectFit="cover"
         />
         <div className="absolute inset-0 w-full h-full bg-[#020617] opacity-75"></div>
         <div className="w-7/12 absolute top-24 left-10 flex flex-col  text-white  ">

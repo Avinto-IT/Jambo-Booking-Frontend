@@ -30,8 +30,7 @@ const AgentSignup = () => {
   return (
     <div>
       <LayoutThree
-        imgTitle="Discover Exceptional Hotel Deals 
-for Your Clients"
+        imgTitle="Discover Exceptional Hotel Deals for Your Clients"
         description="Welcome to Jambo Travels, the premier platform for travel agencies and agents. Easily book the best hotels at competitive prices and provide your clients with unforgettable experiences. Streamline your booking process with our user-friendly interface, dedicated support, and exclusive B2B rates."
         buttonName="Agent"
       >
