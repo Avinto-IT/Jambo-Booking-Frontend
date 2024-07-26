@@ -53,9 +53,12 @@ model User {
   lastName         String
   password         String
   email            String           @unique
+  affiliatedHotel  String?
   contactNumber    String
   role             String //This will be either a) Hotel b) Agent c) Jambo(Admin)
   dateOfBirth      DateTime
+  address          String
+  toursCompleted   Int?
   bookings         Booking[]
   bookingHistories BookingHistory[]
   gradeID          String?          @db.ObjectId
@@ -100,4 +103,10 @@ model BookingHistory {
 model HouseRules {
   houseRuleId String @id @default(auto()) @map("_id") @db.ObjectId
   houseRule   String
+}
+
+model Facilities {
+  facilityId       String @id @default(auto()) @map("_id") @db.ObjectId
+  facilityCategory String
+  subFacilities    Json
 }

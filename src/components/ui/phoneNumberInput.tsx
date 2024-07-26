@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {}
 
-const InputNumber = React.forwardRef<HTMLInputElement, InputProps>(
+const InputPhoneNumber = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, ...props }, ref) => {
     return (
       <input
@@ -17,14 +17,13 @@ const InputNumber = React.forwardRef<HTMLInputElement, InputProps>(
         ref={ref}
         onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
           const input = e.target;
-          input.value = input.value.replace(/[^0-9]/g, "");
+          input.value = input.value.replace(/[^0-9+\-]/g, "");
         }}
-        min={1}
         {...props}
       />
     );
   }
 );
-InputNumber.displayName = "InputNumber";
+InputPhoneNumber.displayName = "InputPhoneNumber";
 
-export { InputNumber };
+export { InputPhoneNumber };

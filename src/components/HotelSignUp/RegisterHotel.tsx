@@ -1,5 +1,3 @@
-"use client";
-
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { z } from "zod";
@@ -12,21 +10,10 @@ import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
-
-const locationSchema = z.object({
-  locationID: z.string(),
-  city: z.string(),
-  country: z.string(),
-});
-
-const locationsSchema = z.array(locationSchema);
-
-type Location = z.infer<typeof locationSchema>;
-
-type LocationOption = {
-  value: string;
-  label: string;
-};
+import { InputNumber } from "../ui/numberInput";
+import { toast, Toaster } from "sonner";
+import SideCard from "./SideCard";
+import { InputPhoneNumber } from "../ui/phoneNumberInput";
 
 const signUpSchema = z
   .object({
@@ -35,113 +22,124 @@ const signUpSchema = z
     email: z.string().email(),
     phone: z
       .string()
-      .regex(/^\d+$/, { message: "Phone number must contain only digits" })
+      // .regex(/^\d+$/, { message: "Phone number must contain only digits" })
       .min(10, { message: "Phone number must be at least 10 digits long" }),
     hotelname: z
       .string()
-      .min(3, { message: "Must be 3  or more characters long" }),
-    password: z
-      .string()
-      .min(7, "Password must be 7 or more characters long")
-      .regex(/[A-Z]/, {
-        message: "Password must contain at least one uppercase letter",
-      })
-      .regex(/[a-z]/, {
-        message: "Password must contain at least one lowercase letter",
-      })
-      .regex(/\d/, { message: "Password must contain at least one number" })
-      .regex(/[^a-zA-Z0-9]/, {
-        message: "Password must contain at least one special character",
+      .min(3, { message: "Must be 3 or more characters long" }),
+    birthYear: z
+      .number()
+      .int()
+      // .min(1900, { message: "Year must be 1900 or later" })
+      .max(new Date().getFullYear(), {
+        message: `Year must be ${new Date().getFullYear()} or earlier`,
       }),
+    birthMonth: z
+      .number()
+      .int()
+      .min(1, { message: "Month must be between 1 and 12" })
+      .max(12, { message: "Month must be between 1 and 12" }),
+    birthDay: z
+      .number()
+      .int()
+      .min(1, { message: "Day must be between 1 and 31" })
+      .max(31, { message: "Day must be between 1 and 31" }),
+    address: z.string().min(1, "Please enter your address"),
+    city: z.string().min(1, "Please enter your city"),
+    country: z.string().min(1, "Please enter your country"),
+    postalCode: z.string().min(1, "Please enter your postal code"),
+    password: z.string().min(7, "Password must be 7 or more characters long"),
+    // .regex(/[A-Z]/, {
+    //   message: "Password must contain at least one uppercase letter",
+    // })
+    // .regex(/[a-z]/, {
+    //   message: "Password must contain at least one lowercase letter",
+    // })
+    // .regex(/\d/, { message: "Password must contain at least one number" })
+    // .regex(/[^a-zA-Z0-9]/, {
+    //   message: "Password must contain at least one special character",
+    // }),
     confirmpassword: z.string(),
-    location: z.string(),
   })
   .refine((data) => data.password === data.confirmpassword, {
     message: "Passwords must match",
     path: ["confirmpassword"],
   });
+
 type TSignUpSchema = z.infer<typeof signUpSchema>;
+
 const RegisterHotel = () => {
   const {
     setError,
     register,
     handleSubmit,
-    control,
-    trigger,
-    reset,
-    watch,
-    setValue,
     formState: { errors, isSubmitSuccessful },
   } = useForm<TSignUpSchema>({
     resolver: zodResolver(signUpSchema),
-    // } = useForm<FormValue>({
   });
+
+  const [isSubmitButtonClicked, setIsSubmitButtonClicked] = useState(false);
   const onSubmit = async (data: FieldValues) => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    reset();
-    setLocations([]);
-  };
-
-  const [locations, setLocations] = useState<Location[]>([]);
-
-  useEffect(() => {
-    const fetchLocations = async () => {
-      try {
-        const response = await fetch("/api/getLocation");
-        const data = await response.json();
-
-        // Validate data with zod
-        const result = locationsSchema.safeParse(data);
-        if (result.success) {
-          setLocations(result.data);
-        } else {
-          console.error("Validation error:", result.error);
-        }
-      } catch (error) {
-        console.error("Error fetching locations:", error);
+    setIsSubmitButtonClicked(true);
+    try {
+      const response = await fetch("/api/registerHotel", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          firstName: data.firstName,
+          lastName: data.lastName,
+          email: data.email,
+          password: data.password,
+          contactNumber: data.phone,
+          dateOfBirth: `${data.birthYear}-${data.birthMonth
+            .toString()
+            .padStart(2, "0")}-${data.birthDay.toString().padStart(2, "0")}`,
+          affiliatedHotel: data.hotelname,
+          address: `${data.address}, ${data.city}, ${data.country}, ${data.postalCode}`,
+        }),
+      });
+      const result = await response.json();
+      if (response.ok) {
+        toast.success(result.message);
+        setIsSubmitButtonClicked(false);
+      } else {
+        toast.error(result.error);
+        setIsSubmitButtonClicked(false);
       }
-    };
-
-    fetchLocations();
-  }, []);
-
-  const handleLocationChange = (selectedOption: LocationOption | null) => {
-    if (selectedOption) {
-      // Assuming setValue is defined elsewhere in your component
-      setValue("location", selectedOption.value);
+    } catch (error) {
+      console.log(error);
+      toast.error("Error: Unable to register hotel.");
+      setIsSubmitButtonClicked(false);
     }
   };
 
-  const locationOptions: LocationOption[] = locations.map((location) => ({
-    value: location.locationID,
-    label: `${location.city}, ${location.country}`,
-  }));
-
   return (
     <div className="text-[#020617] flex">
-      <div className=" w-1/2  ">
-        <p className="text-3xl font-semibold">Register Hotel Account </p>
+      <div className="w-1/2">
+        <p className="text-3xl font-semibold">Register Hotel Account</p>
         <p className="text-sm text-[#64748B] mt-3">
           Enter your information to create an account.
         </p>
         <br />
         <form onSubmit={handleSubmit(onSubmit)} className="">
           <div className="flex flex-col space-y-5 text-[#64748B]">
-            <div className="flex space-x-4 ">
-              <Label className="space-y-2  w-1/2">
-                <span className="">First name</span>
+            <div className="flex space-x-4">
+              <Label className="space-y-2 w-1/2">
+                <span className="font-semibold">First name</span>
                 <Input
                   {...register("firstName", {})}
-                  placeholder="max"
+                  placeholder="Max"
                   className="w-full"
                 />
                 {errors.firstName && (
-                  <p className=" text-red-600 ">{`${errors.firstName.message}`}</p>
+                  <p className="text-red-600">{`${errors.firstName.message}`}</p>
                 )}
               </Label>
 
               <Label className="space-y-2 w-1/2">
-                <span className="">Last name</span>
+                <span className="font-semibold">Last name</span>
                 <Input
                   {...register("lastName", {})}
                   placeholder="Robinson"
@@ -153,7 +151,7 @@ const RegisterHotel = () => {
               </Label>
             </div>
             <Label className="space-y-2 w-full">
-              <span className="">Email</span>
+              <span className="font-semibold">Email</span>
               <Input
                 {...register("email")}
                 placeholder="m@example.com"
@@ -164,42 +162,116 @@ const RegisterHotel = () => {
               )}
             </Label>
             <Label className="space-y-2 w-full">
-              <span className="">Phone Number</span>
-              <Input
-                {...register("phone")}
-                placeholder="+977 9812345678"
-                className="w-full"
-              />
-              {errors.phone && (
-                <p className="text-red-600 ">{`${errors.phone.message}`}</p>
-              )}
-            </Label>
-            <Label className="space-y-2 w-full">
-              <span className="">Name of Hotel</span>
+              <span className="font-semibold">Name of Hotel</span>
               <Input
                 {...register("hotelname")}
                 placeholder="Max Agency"
                 className="w-full"
               />
               {errors.hotelname && (
-                <p className="text-red-600 ">{`${errors.hotelname.message}`}</p>
+                <p className="text-red-600">{`${errors.hotelname.message}`}</p>
               )}
             </Label>
             <Label className="space-y-2 w-full">
-              <span className="">Location</span>
-              <Select
-                {...register("location")}
-                options={locationOptions}
-                onChange={handleLocationChange}
-                placeholder="Select Location"
+              <span className="font-semibold">Hotel Location</span>
+              <div className="flex gap-x-3">
+                <div className="w-full flex flex-col gap-y-2">
+                  <span className="text-xs">Address</span>
+                  <Input
+                    {...register("address")}
+                    placeholder="123 Main St"
+                    className="w-full"
+                  />
+                  {errors.address && (
+                    <p className="text-red-600">{`${errors.address.message}`}</p>
+                  )}
+                </div>
+              </div>
+              <div className="flex gap-x-3">
+                <div className="w-1/3 flex flex-col gap-y-2">
+                  <span className="text-xs">City</span>
+                  <Input
+                    {...register("city")}
+                    placeholder="City"
+                    className="w-full"
+                  />
+                  {errors.city && (
+                    <p className="text-red-600">{`${errors.city.message}`}</p>
+                  )}
+                </div>
+                <div className="w-1/3 flex flex-col gap-y-2">
+                  <span className="text-xs">Country</span>
+                  <Input
+                    {...register("country")}
+                    placeholder="Country"
+                    className="w-full"
+                  />
+                  {errors.country && (
+                    <p className="text-red-600">{`${errors.country.message}`}</p>
+                  )}
+                </div>
+                <div className="w-1/3 flex flex-col gap-y-2">
+                  <span className="text-xs">Postal Code</span>
+                  <Input
+                    {...register("postalCode")}
+                    placeholder="Postal Code"
+                    className="w-full"
+                  />
+                  {errors.postalCode && (
+                    <p className="text-red-600">{`${errors.postalCode.message}`}</p>
+                  )}
+                </div>
+              </div>
+            </Label>
+            <Label className="space-y-2 w-full">
+              <span className="font-semibold">Phone Number</span>
+              <InputPhoneNumber
+                {...register("phone")}
+                placeholder="+977-9812345678"
+                className="w-full"
               />
-              {errors.location && (
-                <p className=" text-red-600 ">{`${errors.location.message}`}</p>
+              {errors.phone && (
+                <p className="text-red-600">{`${errors.phone.message}`}</p>
               )}
+            </Label>
+            <Label className="space-y-2 w-full">
+              <span className="font-semibold">Your Date Of Birth</span>
+              <div className="flex gap-x-3">
+                <div className="w-1/2 flex flex-col gap-y-2">
+                  <span className="text-xs">Year</span>
+                  <InputNumber
+                    {...register("birthYear", { valueAsNumber: true })}
+                    placeholder="1990"
+                  />
+                  {errors.birthYear && (
+                    <p className="text-red-600">{`${errors.birthYear.message}`}</p>
+                  )}
+                </div>
+                <div className="w-1/4 flex flex-col gap-y-2">
+                  <span className="text-xs">Month</span>
+                  <InputNumber
+                    {...register("birthMonth", { valueAsNumber: true })}
+                    placeholder="05"
+                  />
+                  {errors.birthMonth && (
+                    <p className="text-red-600">{`${errors.birthMonth.message}`}</p>
+                  )}
+                </div>
+                <div className="w-1/4 flex flex-col gap-y-2">
+                  <span className="text-xs">Day</span>
+                  <InputNumber
+                    {...register("birthDay", { valueAsNumber: true })}
+                    placeholder="23"
+                  />
+                  {errors.birthDay && (
+                    <p className="text-red-600">{`${errors.birthDay.message}`}</p>
+                  )}
+                </div>
+              </div>
             </Label>
 
             <Label className="space-y-2 w-full">
-              <span className="">Password</span>
+              <span className="font-semibold">Password</span>
               <Input
                 type="password"
                 {...register("password")}
@@ -207,11 +279,11 @@ const RegisterHotel = () => {
                 className="w-full"
               />
               {errors.password && (
-                <p className="text-red-600 ">{`${errors.password.message}`}</p>
+                <p className="text-red-600">{`${errors.password.message}`}</p>
               )}
             </Label>
             <Label className="space-y-2 w-full">
-              <span className="">Confirm Password</span>
+              <span className="font-semibold">Confirm Password</span>
               <Input
                 type="password"
                 {...register("confirmpassword")}
@@ -219,16 +291,17 @@ const RegisterHotel = () => {
                 className="w-full"
               />
               {errors.confirmpassword && (
-                <p className="text-red-600 ">{`${errors.confirmpassword.message}`}</p>
+                <p className="text-red-600">{`${errors.confirmpassword.message}`}</p>
               )}
             </Label>
             <Button
-              className=" w-full h-10 bg-blue-600 hover:bg-blue-800"
+              className="w-full h-10 bg-blue-600 hover:bg-blue-800"
               type="submit"
+              disabled={isSubmitButtonClicked}
             >
               Register account
             </Button>
-            <div className=" flex justify-center text-sm">
+            <div className="flex justify-center text-sm">
               <p className="text-[#64748B]">Already have an account? </p>
               <Link href="/login" className="text-blue-600">
                 Sign In
@@ -238,57 +311,12 @@ const RegisterHotel = () => {
         </form>
       </div>
 
-      <div className="w-1/2 h-fit  flex justify-end pl-24  tracking-tighter leading-7">
-        <Card className="bg-[#FEFCE8] rounded-lg py-6 space-y-1 pr-5 ">
-          <div className="flex justify-start items-start pl-5 gap-4 ">
-            <Image src={tick} alt="tickmark" className="pt-1" />
-            <div className="">
-              <p className="text-xl font-semibold">
-                Increased Bookings and Revenue
-              </p>
-              <p className="text-[#6B7280]">
-                Our extensive network of travel agents ensures higher visibility
-                and increased bookings.
-              </p>
-            </div>
-          </div>
-          <div className="flex justify-start items-start pl-5 gap-4 pt-2 ">
-            <Image src={tick} alt="tickmark" className="pt-1" />
-            <div className="">
-              <p className="text-xl font-semibold">Enhanced Market Reach</p>
-              <p className="text-[#6B7280]">
-                Connect with a worldwide network of travel agencies and agents,
-                expanding your market reach.
-              </p>
-            </div>
-          </div>
-          <div className="flex justify-start items-start pl-5 gap-4 pt-2 ">
-            <Image src={tick} alt="tickmark" className="pt-1" />
-            <div className="">
-              <p className="text-xl font-semibold">
-                Improved Guest Satisfaction
-              </p>
-              <p className="text-[#6B7280]">
-                Provide seamless booking experiences with real-time room
-                availability and instant confirmations.
-              </p>
-            </div>
-          </div>
-          <div className="flex justify-start items-start pl-5 gap-4 pt-2 ">
-            <Image src={tick} alt="tickmark" className="pt-1" />
-            <div className="">
-              <p className="text-xl font-semibold">
-                Comprehensive Performance Analytics
-              </p>
-              <p className="text-[#6B7280]">
-                Access in-depth reports on booking trends, guest demographics,
-                and market performance.
-              </p>
-            </div>
-          </div>
-        </Card>
+      <div className="w-1/2 h-fit flex justify-end pl-24 tracking-tighter leading-7">
+        <SideCard />
       </div>
+      <Toaster />
     </div>
   );
 };
+
 export default RegisterHotel;
