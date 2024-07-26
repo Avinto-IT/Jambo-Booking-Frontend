@@ -1,28 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
 
 const prisma = new PrismaClient();
-
-// Predefined facility categories
-const predefinedFacilityCategories = [
-  "Amenities",
-  "Dining",
-  "Recreation",
-  "Business Services",
-  "Transportation",
-  "Guest Services",
-  "Housekeeping",
-  "Luggage",
-  "Accessibility",
-  "Security",
-  "Emergency Services",
-  "Recreational Activities",
-  "Wellness and Spa",
-  "Entertainment",
-  "Children's Services",
-  "Pet Services",
-  "Technology",
-];
 
 async function addFacilityHandler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
@@ -35,6 +14,12 @@ async function addFacilityHandler(req: NextApiRequest, res: NextApiResponse) {
     return res.status(400).json({ message: "Facility Id is missing." });
   }
 
+  if (!Array.isArray(subFacilities)) {
+    return res
+      .status(400)
+      .json({ message: "Sub Facilities should be an array." });
+  }
+
   try {
     // Check if the facility with the given ID exists
     const existingFacility = await prisma.facilities.findUnique({
@@ -42,19 +27,24 @@ async function addFacilityHandler(req: NextApiRequest, res: NextApiResponse) {
     });
 
     if (existingFacility) {
-      // Validate the facility category
+      // Ensure existing subFacilities is parsed as a JSON array
+      let existingSubFacilities: string[] = [];
       if (
-        !predefinedFacilityCategories.includes(
-          existingFacility.facilityCategory
-        )
+        existingFacility.subFacilities &&
+        Array.isArray(existingFacility.subFacilities)
       ) {
-        return res.status(400).json({ message: "Invalid Facility Category." });
+        existingSubFacilities = existingFacility.subFacilities as string[];
       }
+
+      // Merge the existing subFacilities with the new ones and remove duplicates
+      const updatedSubFacilities = Array.from(
+        new Set([...existingSubFacilities, ...subFacilities])
+      );
 
       // Update the existing facility
       const updatedFacility = await prisma.facilities.update({
         where: { facilityId },
-        data: { subFacilities },
+        data: { subFacilities: updatedSubFacilities as Prisma.JsonArray },
       });
       return res.status(200).json({
         message: "Facility updated successfully",
