@@ -11,6 +11,7 @@ import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import Layout from "@/components/Layout/Layout";
 import Hero from "@/components/landing/Hero";
 import randomImg from "../../../public/images/an_image_for_hotel_booking.svg";
+import FilterSheet from "@/components/FilterSheet";
 
 export default function Page() {
   return (
@@ -34,7 +35,7 @@ function AllHotels() {
         const response = await fetch("/api/getHotels");
         const data = await response.json();
         setHotels(data.hotels); // Corrected this line
-        console.log(hotels);
+        console.log(data.hotels, "hotels");
       } catch (error) {
         console.log("Error fetching hotels:", error);
       }
@@ -70,13 +71,16 @@ function AllHotels() {
       <div className="flex justify-center">
         <MaxWidthWrapper>
           <div className="py-10">
+            <div className="flex justify-between w-full">
             <div className="h-20 gap-2 mb-4">
               <p className=" text-3xl font-semibold tracking-tight leading-10">
                 All the Hotels
               </p>
-              <p className=" leading-7 mt-1 tracking-tight ">
+              <p className="leading-7 mt-1 tracking-tight ">
                 These popular hotels have a lot to offer
               </p>
+            </div>
+            <FilterSheet />
             </div>
             <div className="grid grid-cols-3 gap-x-5 gap-y-4">
               {filteredHotels.map((hotel, index) => {
