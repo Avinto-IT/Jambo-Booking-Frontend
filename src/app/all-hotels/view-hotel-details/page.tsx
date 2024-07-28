@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/dialog";
 import Layout from "@/components/Layout/Layout";
 import Hero from "@/components/landing/Hero";
+import BookingConfirmation from "./booking-confirmation/page";
 
 interface Room {
   type: string;
@@ -80,7 +81,7 @@ function ClientViewHotel() {
 
   useEffect(() => {
     if (hotel?.rooms) {
-      setCount(Array(hotel.rooms.length).fill(1));
+      setCount(Array(hotel.rooms.length).fill(0));
     }
   }, [hotel]);
 

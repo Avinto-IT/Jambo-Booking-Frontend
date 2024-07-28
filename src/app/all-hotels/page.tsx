@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { Dot } from "lucide-react";
+import { Dot, Filter } from "lucide-react";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
@@ -11,6 +11,7 @@ import { Suspense, useEffect, useState } from "react";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import Layout from "@/components/Layout/Layout";
 import Hero from "@/components/landing/Hero";
+import { Button } from "@/components/ui/button";
 
 export default function Page() {
   return (
@@ -94,6 +95,15 @@ function AllHotels() {
                 <p className=" leading-7 mt-1 tracking-tight ">
                   These popular hotels have a lot to offer
                 </p>
+                <div className="flex justify-end w-full">
+                  <Button
+                    variant="outline"
+                    className="leading-7 mt-1 tracking-tight space-x-1 "
+                  >
+                    <Filter className="h-4 w-4" />
+                    <p className="">Show Filter</p>
+                  </Button>
+                </div>
               </div>
               <div className="grid grid-cols-3 gap-x-5 gap-y-4">
                 {filteredHotels.map((hotel, index) => {
@@ -176,6 +186,9 @@ function SkeletonCard() {
     <div className="space-y-5 w-full">
       <Skeleton className="h-6 w-52" />
       <Skeleton className="h-4 w-80" />
+      <div className=" flex justify-end w-full">
+        <Skeleton className="h-6 w-32" />
+      </div>
       <div className="flex flex-row justify-between space-x-7 w-full h-72">
         <Skeleton className=" w-1/3" />
 

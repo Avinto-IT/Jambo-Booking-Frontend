@@ -1,16 +1,15 @@
-"use client";
+//layout for users that are logged in.
+// src/components/Layout.tsx
 import React, { ReactNode } from "react";
+
+import Jambologo from "../../../public/images/footer/Vector2.svg";
+import facebook from "../../../public/images/footer/Facebook.svg";
+import twitter from "../../../public/images/footer/Twitter.svg";
+import instagram from "../../../public/images/footer/Instagram.svg";
 
 import Image from "next/image";
 import Link from "next/link";
 import Navbar from "../Navbar";
-import instagram from "../../../public/images/footer/Instagram.svg";
-import twitter from "../../../public/images/footer/Twitter.svg";
-
-import facebook from "../../../public/images/footer/Facebook.svg";
-import Jambologo from "../../../public/images/footer/Vector2.svg";
-import { ChevronDown, CircleUserRound, User } from "lucide-react";
-import topimg from "../blog/head/Header_Image.svg";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,24 +18,18 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-import TopImg from "../TopImg";
 import { Button } from "../ui/button";
+import { User } from "lucide-react";
 
-interface LayoutTwoProps {
+interface LayoutProps {
   children: ReactNode;
   title?: string;
-  imgTitle: string;
 }
 
-const LayoutTwo: React.FC<LayoutTwoProps> = ({
-  children,
-  title = "My App",
-  imgTitle,
-}) => {
+const UserLayout: React.FC<LayoutProps> = ({ children, title = "My App" }) => {
   return (
     <div className="min-h-screen w-full flex flex-col">
-      <header className="p-y-4">
+      <header className="p-4">
         <nav className="px-16 py-6 flex justify-between items-center h-[88px]">
           <Link href="/">
             <Image
@@ -46,62 +39,36 @@ const LayoutTwo: React.FC<LayoutTwoProps> = ({
               height={40}
             />
           </Link>
-          {imgTitle === "Booking Confirmation" ? (
-            <div className="mr-72  ">
-              <Navbar />
-            </div>
-          ) : (
+          <div className="mr-72  ">
             <Navbar />
-          )}
-          {imgTitle === "Booking Confirmation" ? (
-            <div className=" flex items-center justify-center">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="overflow-hidden rounded-full"
-                  >
-                    <User />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>Settings</DropdownMenuItem>
-                  <DropdownMenuItem>Support</DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>Logout</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          ) : (
-            <div className="flex space-x-4">
-              <Link
-                href="/signup-agent"
-                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-black rounded"
-              >
-                Signup as Agent
-              </Link>
-              <Link
-                href="/signup-hotel"
-                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-black rounded"
-              >
-                Signup as Hotel
-              </Link>
-              <Link
-                href="/login"
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
-              >
-                Login
-              </Link>
-            </div>
-          )}
+          </div>
+          <div className=" flex items-center justify-center">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="overflow-hidden rounded-full"
+                >
+                  <User />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Settings</DropdownMenuItem>
+                <DropdownMenuItem>Support</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Logout</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </nav>
-        <TopImg title={imgTitle} />
       </header>
-
       <main className="flex-grow max-w-[1920px]">{children}</main>
+      {/* <footer className="bg-gray-800 text-white text-center p-4">
+        <p>© 2024 My App. All rights reserved.</p>
+      </footer> */}
       <footer className="bg-[#1E3A8A] text-white pb-16">
         <div className="h-full flex flex-col justify-center items-center">
           <div className=" h-11/12 flex justify-between  items-center w-full px-16 mt-6">
@@ -140,13 +107,13 @@ const LayoutTwo: React.FC<LayoutTwoProps> = ({
               </div>
               <div className="flex flex-col gap-y-4 items-center">
                 <p className="mb-1 font-semibold">LEGAL INFO</p>
-                <Link href="/privacy-policy" className="">
+                <Link href="/" className="">
                   Privacy Policy
                 </Link>
-                <Link href="/terms" className="">
+                <Link href="/" className="">
                   Terms and Conditions
                 </Link>
-                <Link href="/cookies" className="">
+                <Link href="/" className="">
                   Cookie Policy
                 </Link>
               </div>
@@ -174,4 +141,4 @@ const LayoutTwo: React.FC<LayoutTwoProps> = ({
   );
 };
 
-export default LayoutTwo;
+export default UserLayout;
