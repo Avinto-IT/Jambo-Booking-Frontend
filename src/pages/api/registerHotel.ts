@@ -12,8 +12,16 @@ export default async function hotelRegisterHandler(
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { firstName, lastName, password, email, contactNumber, dateOfBirth } =
-    req.body;
+  const {
+    firstName,
+    lastName,
+    password,
+    email,
+    contactNumber,
+    dateOfBirth,
+    affiliatedHotel,
+    address,
+  } = req.body;
 
   if (!firstName) {
     return res.status(400).json({ error: "First name is required" });
@@ -32,6 +40,12 @@ export default async function hotelRegisterHandler(
   }
   if (!dateOfBirth) {
     return res.status(400).json({ error: "Date of birth is required" });
+  }
+  if (!affiliatedHotel) {
+    return res.status(400).json({ error: "Affiliated hotel is required" });
+  }
+  if (!address) {
+    return res.status(400).json({ error: "Affiliated hotel is required" });
   }
 
   try {
@@ -55,12 +69,14 @@ export default async function hotelRegisterHandler(
         contactNumber,
         role: "hotel", // Hard-coded role value
         dateOfBirth: new Date(dateOfBirth),
+        affiliatedHotel: affiliatedHotel,
+        address: address,
       },
     });
 
     return res.status(200).json({
-      message:
-        "Your account has been added to the registration queue. You will receive an email when it is successfully registered.",
+      user,
+      message: "You have been registered succesfully",
     });
   } catch (error) {
     console.error("Registration error:", error);

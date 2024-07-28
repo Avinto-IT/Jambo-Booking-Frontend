@@ -111,3 +111,8 @@ export interface HouseRuleInterface {
   id: string;
   houseRule: string;
 }
+export interface FacilitiesInterface {
+  facilityId: string;
+  facilityCategory: string;
+  subFacilities: string[];
+}
