@@ -22,7 +22,7 @@ export interface Hotel {
   facilities: {
     name: string;
     comment: string;
-    subFacilities: string[];
+    subFacilities: { id: number; name: { value: string; label: string } }[];
   }[];
   description: string;
   // houseRules: { [key: string]: boolean };
@@ -105,6 +105,7 @@ export interface Room {
     price: string;
     createdAt: string;
   }[];
+  roomImageLinks: File[];
 }
 
 export interface HouseRuleInterface {
