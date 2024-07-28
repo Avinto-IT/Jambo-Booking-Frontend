@@ -102,7 +102,7 @@ function AllHotels() {
   ) => {
     const flattenedFacilities = hotelFacilities.flatMap((facility) =>
       facility.subFacilities.map((sub: { name: string }) => {
-        console.log(sub, "sub");
+        // console.log(sub, "sub");
         return sub.name;
       })
     );
@@ -127,7 +127,7 @@ function AllHotels() {
     );
   });
 
-  console.log(filteredHotels, "after hotel");
+  // console.log(filteredHotels, "after hotel");
 
   return (
     <Layout>

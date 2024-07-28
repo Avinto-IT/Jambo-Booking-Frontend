@@ -40,14 +40,17 @@ const FilterSheet: React.FC<FilterSheetProps> = ({
   onFilterChange,
   facilities,
 }) => {
-  const [filterValues, setFilterValues] = React.useState<FilterValues>({
+  const initialFilterValues: FilterValues = {
     propertyType: null,
     budgetRange: [100, 5000],
     bedrooms: null,
     beds: null,
     bathrooms: null,
     facilities: [],
-  });
+  };
+
+  const [filterValues, setFilterValues] =
+    React.useState<FilterValues>(initialFilterValues);
 
   const handleFilterChange = (key: keyof FilterValues, value: any) => {
     const updatedFilterValues = {
@@ -56,6 +59,11 @@ const FilterSheet: React.FC<FilterSheetProps> = ({
     };
     setFilterValues(updatedFilterValues);
     onFilterChange(updatedFilterValues);
+  };
+
+  const handleClearFilters = () => {
+    setFilterValues(initialFilterValues);
+    onFilterChange(initialFilterValues);
   };
 
   React.useEffect(() => {
@@ -107,11 +115,6 @@ const FilterSheet: React.FC<FilterSheetProps> = ({
               ${filterValues.budgetRange[1]}
             </div>
           </div>
-
-          {/* <div className="flex justify-between mt-2">
-            <div className="tooltip">{`$${filterValues.budgetRange[0]}`}</div>
-            <div className="tooltip">{`$${filterValues.budgetRange[1]}`}</div>
-          </div> */}
         </div>
         {/* Room and Beds */}
         <div className="my-4">
@@ -119,45 +122,48 @@ const FilterSheet: React.FC<FilterSheetProps> = ({
           {/* Add your Room and Beds filter components here */}
         </div>
         {/* Facilities */}
-        {/* Facilities */}
         <div className="my-16">
           <h3 className="font-semibold">Facilities</h3>
           {Object.keys(facilities).map((category) => (
-            <div key={category} className="my-4 p-4 border rounded-lg">
-              <Collapsible>
-                <div className="flex w-full justify-between items-center">
-                  <h4 className="font-semibold">{category}</h4>
-                  <CollapsibleTrigger asChild>
+            <Collapsible key={category}>
+              <CollapsibleTrigger asChild>
+                <div className="my-4 p-4 border rounded-lg">
+                  <div className="flex w-full justify-between items-center">
+                    <h4 className="font-semibold">{category}</h4>
                     <Button variant="ghost">
                       <ChevronDown className="h-4 w-4" />
                     </Button>
-                  </CollapsibleTrigger>
-                </div>
-                <CollapsibleContent>
-                  <div className="grid grid-cols-2 gap-4 my-6">
-                    {facilities[category].map((facility, index) => (
-                      <div key={index} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={facility}
-                          checked={filterValues.facilities.includes(facility)}
-                          onCheckedChange={(checked) =>
-                            handleFilterChange(
-                              "facilities",
-                              checked
-                                ? [...filterValues.facilities, facility]
-                                : filterValues.facilities.filter(
-                                    (f) => f !== facility
-                                  )
-                            )
-                          }
-                        />
-                        <label htmlFor={facility}>{facility}</label>
-                      </div>
-                    ))}
                   </div>
-                </CollapsibleContent>
-              </Collapsible>
-            </div>
+                  <CollapsibleContent>
+                    <div className="grid grid-cols-2 gap-4 my-6">
+                      {facilities[category].map((facility, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center space-x-2"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <Checkbox
+                            id={facility}
+                            checked={filterValues.facilities.includes(facility)}
+                            onCheckedChange={(checked) =>
+                              handleFilterChange(
+                                "facilities",
+                                checked
+                                  ? [...filterValues.facilities, facility]
+                                  : filterValues.facilities.filter(
+                                      (f) => f !== facility
+                                    )
+                              )
+                            }
+                          />
+                          <label htmlFor={facility}>{facility}</label>
+                        </div>
+                      ))}
+                    </div>
+                  </CollapsibleContent>
+                </div>
+              </CollapsibleTrigger>
+            </Collapsible>
           ))}
         </div>
         <SheetFooter>
@@ -166,6 +172,13 @@ const FilterSheet: React.FC<FilterSheetProps> = ({
             onClick={() => console.log(filterValues)}
           >
             Apply Filters
+          </Button>
+          <Button
+            variant="outline"
+            className="px-4 py-2 border rounded"
+            onClick={handleClearFilters}
+          >
+            Clear Filters
           </Button>
         </SheetFooter>
       </SheetContent>
