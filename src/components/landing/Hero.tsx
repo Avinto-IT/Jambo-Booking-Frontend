@@ -33,7 +33,7 @@ export default function Hero() {
     const selectedLocation = locations.find(
       (location) => location.locationID === selectedOption.value
     );
-    setLocationChange(selectedLocation?.locationID);
+    setLocationChange(selectedLocation?.city);
   };
   const handleInputChange = (newValue: any) => {
     setInputValue(newValue);
