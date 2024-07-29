@@ -1,9 +1,10 @@
 "use client";
 import Image from "next/image";
-import { Dot } from "lucide-react";
+import { Dot, Filter } from "lucide-react";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
+import { Skeleton } from "@/components/ui/skeleton";
 import { Hotel, Room } from "@/utils/types";
 import { Suspense, useEffect, useState } from "react";
 
@@ -79,6 +80,8 @@ function AllHotels() {
         console.log(data.hotels, "hotels");
       } catch (error) {
         console.log("Error fetching hotels:", error);
+      } finally {
+        // setLoading(false);
       }
     };
     fetchHotels();
@@ -217,8 +220,27 @@ function AllHotels() {
               })}
             </div>
           </div>
+          {/* )} */}
         </MaxWidthWrapper>
       </div>
     </Layout>
+  );
+}
+
+function SkeletonCard() {
+  return (
+    <div className="space-y-5 w-full">
+      <Skeleton className="h-6 w-52" />
+      <Skeleton className="h-4 w-80" />
+      <div className=" flex justify-end w-full">
+        <Skeleton className="h-6 w-32" />
+      </div>
+      <div className="flex flex-row justify-between space-x-7 w-full h-72">
+        <Skeleton className=" w-1/3" />
+
+        <Skeleton className=" w-1/3" />
+        <Skeleton className=" w-1/3" />
+      </div>
+    </div>
   );
 }

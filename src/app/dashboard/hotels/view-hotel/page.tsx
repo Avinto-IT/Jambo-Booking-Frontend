@@ -41,7 +41,10 @@ interface Hotel {
   imageLinks: string[];
   address: string;
   description: string;
-  facilities: { name: string; subFacilities: { name: string }[] }[];
+  facilities: {
+    name: string;
+    subFacilities: { name: { label: string; value: string } }[];
+  }[];
   rooms: Room[];
   houseRules: { type: string; details: string }[];
 }
@@ -608,7 +611,9 @@ function AdminViewHotel() {
                                     key={subIndex}
                                   >
                                     <Dot className="" />
-                                    <div className="">{subValue.name}</div>
+                                    <div className="">
+                                      {subValue.name.value}
+                                    </div>
                                   </span>
                                 );
                               })}
