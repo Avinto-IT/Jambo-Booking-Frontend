@@ -14,7 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dot } from "lucide-react";
 // import { Hotel } from "@prisma/client";
 import { useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 
 interface Room {
   type: string;
@@ -42,7 +42,14 @@ interface Hotel {
   discount: number;
 }
 
-export default function BookingConfirmation() {
+export default function Page() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <BookingConfirmation />
+    </Suspense>
+  );
+}
+function BookingConfirmation() {
   const searchParams = useSearchParams();
   const id = searchParams?.get("id");
   //   const [hotel, setHotel] = useState<Hotel>();
@@ -171,8 +178,8 @@ export default function BookingConfirmation() {
                 <CardHeader>
                   <CardTitle className="text-2xl">Special Requests</CardTitle>
                   <CardDescription>
-                    Special requests can't be guaranteed, but the property will
-                    do its best to meet your needs. You can always make a
+                    Special requests can&apos;t be guaranteed, but the property
+                    will do its best to meet your needs. You can always make a
                     special request after your booking is complete.
                   </CardDescription>
                 </CardHeader>

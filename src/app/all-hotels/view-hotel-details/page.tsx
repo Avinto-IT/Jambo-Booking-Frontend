@@ -11,7 +11,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import facilitiesIcon from "../../../../data/facilities.json";
 import * as Icons from "lucide-react";
-import AdminLayout from "@/components/Layout/AdminLayout";
+import useFacilityIcon from "../../../utils/facilityIcon";
 
 import {
   Dialog,
@@ -22,7 +22,8 @@ import {
 } from "@/components/ui/dialog";
 import Layout from "@/components/Layout/Layout";
 import Hero from "@/components/landing/Hero";
-import BookingConfirmation from "./booking-confirmation/page";
+// import BookingConfirmation from "./booking-confirmation/page";
+// import UseFacilityIcon from "../../../utils/facilityIcon";
 
 interface Room {
   type: string;
@@ -78,7 +79,8 @@ function ClientViewHotel() {
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [count, setCount] = useState<number[]>([]);
-
+  const { getIconComponent } = useFacilityIcon();
+  // const { getIconName, facilityNames } = useFacilityIcon();                /////       ////        /////
   useEffect(() => {
     if (hotel?.rooms) {
       setCount(Array(hotel.rooms.length).fill(0));
@@ -341,7 +343,7 @@ function ClientViewHotel() {
                     Top Facilities
                   </div>
                   <div className="grid gap-5 grid-cols-3">
-                    {hotel.facilities.map((facility, facilityIndex) => {
+                    {/* {hotel.facilities.map((facility, facilityIndex) => {
                       const facilityIcon = facilitiesIcon.facilitiesIcon.find(
                         (icon) => {
                           return icon.name === facility.name;
@@ -361,6 +363,40 @@ function ClientViewHotel() {
                             {IconComponent && <IconComponent className="" />}
                           </div>
 
+                          <div className="">{facility.name}</div>
+                        </div>
+                      );
+                    })} */}
+                    {/* icon is rendered here but comes from facilityIcon*/}
+                    {/* {hotel.facilities.map((facility, facilityIndex) => {
+                
+                  
+                      const IconComponent = (Icons as any)[
+                        `${getIconName(facility.name)}`
+                        
+                      ];
+                      
+                      if (facilityNames.includes(facility.name))
+                        return (
+                          <div
+                            key={facilityIndex}
+                            className="flex items-center space-x-4"
+                          >
+                            <div>{IconComponent && <IconComponent />}</div>
+                            <div className="">{facility.name}</div>
+                          </div>
+                        );
+                    })} */}
+
+                    {hotel.facilities.map((facility, facilityIndex) => {
+                      const IconComponent = getIconComponent(facility.name);
+
+                      return (
+                        <div
+                          key={facilityIndex}
+                          className="flex items-center space-x-4"
+                        >
+                          <div>{IconComponent && <IconComponent />}</div>
                           <div className="">{facility.name}</div>
                         </div>
                       );
@@ -630,15 +666,8 @@ function ClientViewHotel() {
                     {hotel.facilities
                       .slice(0, visibleFacilitiesCount)
                       .map((value, facilityIndex) => {
-                        const facilityIcon = facilitiesIcon.facilitiesIcon.find(
-                          (icon) => {
-                            return icon.name === value.name;
-                          }
-                        );
+                        const IconComponent = getIconComponent(value.name);
 
-                        const IconComponent = (Icons as any)[
-                          `${facilityIcon?.icon}`
-                        ];
                         return (
                           <div className="" key={facilityIndex}>
                             <div className="flex items-center space-x-4 ">

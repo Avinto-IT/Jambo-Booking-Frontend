@@ -19,6 +19,7 @@ import Link from "next/link";
 import jamboicon from "../../../public/images/login/Logo.svg";
 import Image from "next/image";
 import LoginHeader from "@/components/Logins/LoginHeader";
+import { Form } from "@/components/ui/form";
 
 export default function Login() {
   // const [email, setEmail] = useState("");
@@ -89,6 +90,7 @@ export default function Login() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="grid gap-4">
+                  {/* <form> */}
                   <div className="grid gap-2">
                     <Label htmlFor="email" className="font-semibold">
                       Email
@@ -132,6 +134,7 @@ export default function Login() {
                   >
                     Login
                   </Button>
+                  {/* </form> */}
                 </CardContent>
 
                 <CardFooter>

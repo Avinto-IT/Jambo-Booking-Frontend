@@ -12,6 +12,7 @@ import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import Layout from "@/components/Layout/Layout";
 import Hero from "@/components/landing/Hero";
 import { Button } from "@/components/ui/button";
+import FacilityIcon from "@/utils/facilityIcon";
 
 export default function Page() {
   return (
