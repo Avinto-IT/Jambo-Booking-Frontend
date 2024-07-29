@@ -69,7 +69,10 @@ export default function Login() {
       setMessage("Internal Server Error");
     }
   };
-
+  const handleSubmit = (event: any) => {
+    event.preventDefault(); // Prevent the default form submission behavior
+    handleLogin();
+  };
   return (
     <>
       <LoginHeader
@@ -90,51 +93,52 @@ export default function Login() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="grid gap-4">
-                  {/* <form> */}
-                  <div className="grid gap-2">
-                    <Label htmlFor="email" className="font-semibold">
-                      Email
-                    </Label>
-                    <Input
-                      name="email"
-                      type="email"
-                      placeholder="m@example.com"
-                      // value={fields.email}
-                      // onChange={(e) => setEmail(e.target.value)}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <div className="flex justify-between">
-                      <Label htmlFor="password" className="font-semibold">
-                        Password
+                  <form onSubmit={handleSubmit} className="grid gap-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="email" className="font-semibold">
+                        Email
                       </Label>
-                      <Link
-                        href="/login/forgot-password"
-                        className="text-[#2563EB] text-xs font-semibold"
-                      >
-                        <u>Forgot your password?</u>
-                      </Link>
+                      <Input
+                        name="email"
+                        type="email"
+                        placeholder="m@example.com"
+                        // value={fields.email}
+                        // onChange={(e) => setEmail(e.target.value)}
+                        onChange={handleChange}
+                        required
+                      />
                     </div>
-                    <Input
-                      name="password"
-                      type="password"
-                      placeholder="Enter Password"
-                      // value={fields.password}
-                      // onChange={(e) => setPassword(e.target.value)}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
+                    <div className="grid gap-2">
+                      <div className="flex justify-between">
+                        <Label htmlFor="password" className="font-semibold">
+                          Password
+                        </Label>
+                        <Link
+                          href="/login/forgot-password"
+                          className="text-[#2563EB] text-xs font-semibold"
+                        >
+                          <u>Forgot your password?</u>
+                        </Link>
+                      </div>
+                      <Input
+                        name="password"
+                        type="password"
+                        placeholder="Enter Password"
+                        // value={fields.password}
+                        // onChange={(e) => setPassword(e.target.value)}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
 
-                  <Button
-                    onClick={handleLogin}
-                    className="w-full bg-blue-600 hover:bg-blue-800"
-                  >
-                    Login
-                  </Button>
-                  {/* </form> */}
+                    <Button
+                      type="submit"
+                      // onClick={handleLogin}
+                      className="w-full bg-blue-600  hover:bg-blue-800"
+                    >
+                      Login
+                    </Button>
+                  </form>
                 </CardContent>
 
                 <CardFooter>
