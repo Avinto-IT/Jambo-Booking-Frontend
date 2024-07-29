@@ -49,6 +49,9 @@ async function bookHotelRoomHandler(req: NextApiRequest, res: NextApiResponse) {
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
+    if (user.role !== "agent") {
+      return res.status(403).json({ error: "Only agents can book rooms" });
+    }
 
     // Check if the hotel exists
     const hotel = await prisma.hotel.findUnique({
@@ -80,6 +83,7 @@ async function bookHotelRoomHandler(req: NextApiRequest, res: NextApiResponse) {
         userID,
         hotelID,
         bookingStartDate: new Date(bookingStartDate),
+        requestedDate: new Date(),
         bookingEndDate: new Date(bookingEndDate),
         status: "pending",
         guests,
