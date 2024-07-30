@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import facilitiesIcon from "../../../../../data/facilities.json";
 import * as Icons from "lucide-react";
 import AdminLayout from "@/components/Layout/AdminLayout";
+import UseFacilityIcon from "../../../../utils/facilityIcon";
 
 import {
   Dialog,
@@ -321,7 +322,7 @@ function AdminViewHotel() {
                     Top Facilities
                   </div>
                   <div className="grid gap-5 grid-cols-3">
-                    {hotel.facilities.map((facility, facilityIndex) => {
+                    {/* {hotel.facilities.map((facility, facilityIndex) => {
                       const facilityIcon = facilitiesIcon.facilitiesIcon.find(
                         (icon) => {
                           return icon.name === facility.name;
@@ -341,6 +342,21 @@ function AdminViewHotel() {
                             {IconComponent && <IconComponent className="" />}
                           </div>
 
+                          <div className="">{facility.name}</div>
+                        </div>
+                      );
+                    })} */}
+                    {hotel.facilities.map((facility, facilityIndex) => {
+                      return (
+                        <div
+                          key={facilityIndex}
+                          className="flex items-center space-x-4"
+                        >
+                          <div>
+                            {UseFacilityIcon && (
+                              <UseFacilityIcon nameOfFacility={facility.name} />
+                            )}
+                          </div>
                           <div className="">{facility.name}</div>
                         </div>
                       );
@@ -584,19 +600,12 @@ function AdminViewHotel() {
                     {hotel.facilities
                       .slice(0, visibleFacilitiesCount)
                       .map((value, facilityIndex) => {
-                        const facilityIcon = facilitiesIcon.facilitiesIcon.find(
-                          (icon) => {
-                            return icon.name === value.name;
-                          }
-                        );
-
-                        const IconComponent = (Icons as any)[
-                          `${facilityIcon?.icon}`
-                        ];
                         return (
                           <div className="" key={facilityIndex}>
                             <div className="flex items-center space-x-4 ">
-                              {IconComponent && <IconComponent className="" />}
+                              {UseFacilityIcon && (
+                                <UseFacilityIcon nameOfFacility={value.name} />
+                              )}
 
                               <div className="">{value.name}</div>
                             </div>
