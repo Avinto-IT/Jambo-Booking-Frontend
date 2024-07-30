@@ -647,8 +647,6 @@ function ClientViewHotel() {
                     {hotel.facilities
                       .slice(0, visibleFacilitiesCount)
                       .map((value, facilityIndex) => {
-                        // const IconComponent = getIconComponent(value.name);
-
                         return (
                           <div className="" key={facilityIndex}>
                             <div className="flex items-center space-x-4 ">

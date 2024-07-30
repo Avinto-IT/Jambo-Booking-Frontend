@@ -133,7 +133,7 @@ function AllHotels() {
                         </p>
                       </div>
                       <div className="px-4 text-[#64748B] text-sm">
-                        <div className="mb-2">{hotel.address}</div>
+                        <div className="mb-2 font-medium">{hotel.address}</div>
                         <div className="flex">
                           <div className="flex flex-wrap">
                             {lowestPricedRoom?.amenities
