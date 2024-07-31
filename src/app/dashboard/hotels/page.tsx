@@ -41,7 +41,30 @@ import { toast, Toaster } from "sonner";
 
 export default function HotelsDashboard() {
   const [hotels, setHotels] = useState<Hotel[]>([]);
+  const [activeTab, setActiveTab] = useState("All");
+  const [searchValue, setSearchValue] = useState<string>("");
+
   const router = useRouter();
+
+  const filteredData = () => {
+    let filteredHotels = hotels;
+
+    if (activeTab === "Active") {
+      filteredHotels = filteredHotels.filter((item) => item.isRunning);
+    } else if (activeTab === "Inactive") {
+      filteredHotels = filteredHotels.filter((item) => !item.isRunning);
+    }
+
+    if (searchValue) {
+      filteredHotels = filteredHotels.filter(
+        (hotel) =>
+          hotel.name.toLowerCase().includes(searchValue.toLowerCase()) ||
+          hotel.address.toLowerCase().includes(searchValue.toLowerCase())
+      );
+    }
+
+    return filteredHotels;
+  };
 
   useEffect(() => {
     const fetchHotels = async () => {
@@ -56,6 +79,9 @@ export default function HotelsDashboard() {
     fetchHotels();
   }, []);
 
+  const handleViewClick = (hotelId: string) => {
+    router.push(`/dashboard/hotels/view-hotel?id=${hotelId}`);
+  };
   const handleEditClick = (hotelId: string) => {
     router.push(`/dashboard/hotels/update-hotel?id=${hotelId}`);
   };
@@ -118,11 +144,22 @@ export default function HotelsDashboard() {
                 <DropdownMenuContent align="end">
                   <DropdownMenuLabel>Filter by</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuCheckboxItem checked>
+                  <DropdownMenuCheckboxItem
+                    defaultChecked
+                    onClick={() => setActiveTab("All")}
+                  >
+                    All
+                  </DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem
+                    onClick={() => setActiveTab("Active")}
+                  >
                     Active
                   </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem>Draft</DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem>Archived</DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem
+                    onClick={() => setActiveTab("Inactive")}
+                  >
+                    Inactive
+                  </DropdownMenuCheckboxItem>
                 </DropdownMenuContent>
               </DropdownMenu>
 
@@ -155,6 +192,8 @@ export default function HotelsDashboard() {
                     type="search"
                     placeholder="Search..."
                     className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]"
+                    value={searchValue}
+                    onChange={(event) => setSearchValue(event.target.value)}
                   />
                 </div>
               </div>
@@ -178,7 +217,7 @@ export default function HotelsDashboard() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {hotels.map((hotel, index) => {
+                    {filteredData().map((hotel, index) => {
                       return (
                         <TableRow key={index}>
                           <TableCell className="font-medium">
@@ -189,7 +228,13 @@ export default function HotelsDashboard() {
                             {hotel.name}
                           </TableCell>
                           <TableCell>
-                            <Badge variant="outline">Status</Badge>
+                            <Badge
+                              variant={
+                                hotel.isRunning ? "Approved" : "Rejected"
+                              }
+                            >
+                              {hotel.isRunning ? "Active" : "Inactive"}
+                            </Badge>
                           </TableCell>
                           <TableCell>{hotel.address}</TableCell>
                           <TableCell className="hidden md:table-cell">
@@ -209,6 +254,11 @@ export default function HotelsDashboard() {
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
                                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                <DropdownMenuItem
+                                  onClick={() => handleViewClick(hotel.hotelID)}
+                                >
+                                  View
+                                </DropdownMenuItem>
                                 <DropdownMenuItem
                                   onClick={() => handleEditClick(hotel.hotelID)}
                                 >
@@ -230,11 +280,11 @@ export default function HotelsDashboard() {
                   </TableBody>
                 </Table>
               </CardContent>
-              <CardFooter>
+              {/* <CardFooter>
                 <div className="text-xs text-muted-foreground">
                   Showing <strong>1-10</strong> of <strong>32</strong> products
                 </div>
-              </CardFooter>
+              </CardFooter> */}
             </Card>
           </TabsContent>
         </Tabs>

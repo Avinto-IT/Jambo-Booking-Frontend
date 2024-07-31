@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import world from "../../../public/images/static-from-landing/Locations.svg";
 import Image from "next/image";

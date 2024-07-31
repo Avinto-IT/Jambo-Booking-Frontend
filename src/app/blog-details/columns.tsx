@@ -32,11 +32,18 @@ export const Columns: ColumnDef<Bloginfo>[] = [
 
       return (
         <div className="w-32 h-20 relative flex justify-center items-center">
-          <Image
+          <img
             src={value}
             alt="hotelphoto"
             className="rounded-md object-cover"
           />
+          {/* <Image
+            src={value}
+            alt="hotelphoto"
+            className="rounded-md object-cover"
+            width={32}
+            height={20}
+          /> */}
         </div>
       );
     },

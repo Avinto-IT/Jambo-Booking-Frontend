@@ -25,7 +25,8 @@ export interface Hotel {
     subFacilities: string[];
   }[];
   description: string;
-  houseRules: { [key: string]: boolean };
+  // houseRules: { [key: string]: boolean };
+  houseRules: string[];
   imageLinks: string[];
   primaryImageLink: string;
   isRunning: boolean;
@@ -109,4 +110,9 @@ export interface Room {
 export interface HouseRuleInterface {
   id: string;
   houseRule: string;
+}
+export interface FacilitiesInterface {
+  facilityId: string;
+  facilityCategory: string;
+  subFacilities: string[];
 }

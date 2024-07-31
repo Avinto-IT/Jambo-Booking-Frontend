@@ -22,7 +22,7 @@ const JoinWithUs: React.FC<JoinWithUsProp> = ({ buttonName }) => {
             interface, dedicated support, and exclusive B2B rates.
           </p>
           <Button className="  w-40 h-12 bg-blue-600 hover:bg-blue-800">
-            SignUp as {buttonName}
+            Sign up as {buttonName}
           </Button>
         </div>
       </div>

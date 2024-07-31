@@ -41,6 +41,8 @@ import {
 
 interface LayoutProps {
   children: ReactNode;
+
+  // hotelName: string;
 }
 
 const AdminLayout: React.FC<LayoutProps> = ({ children }) => {
@@ -199,7 +201,7 @@ const AdminLayout: React.FC<LayoutProps> = ({ children }) => {
           </TooltipProvider>
         </nav>
       </aside>
-      <main className="py-4 flex bg-gray-100 flex-col flex-1 ml-14">
+      <main className="py-4 flex bg-[#F1F5F9] bg-opacity-40 flex-col flex-1 ml-14">
         <div className="px-6 w-full flex justify-between">
           <Breadcrumb>
             <BreadcrumbList>

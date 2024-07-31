@@ -25,7 +25,7 @@ interface LayoutThreeProps {
   imgTitle: string;
 }
 
-const Topimgs = () => {
+const TopImages = () => {
   if (
     typeof window !== "undefined" &&
     window.location.href === "/signup-agent"
@@ -80,7 +80,7 @@ const LayoutThree: React.FC<LayoutThreeProps> = ({
           title={imgTitle}
           description={description}
           buttonName={buttonName}
-          topimg={Topimgs()}
+          topimg={TopImages()}
         />
       </header>
 

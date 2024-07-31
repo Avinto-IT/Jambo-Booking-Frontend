@@ -19,6 +19,7 @@ import Link from "next/link";
 import jamboicon from "../../../public/images/login/Logo.svg";
 import Image from "next/image";
 import LoginHeader from "@/components/Logins/LoginHeader";
+import { Form } from "@/components/ui/form";
 
 export default function Login() {
   // const [email, setEmail] = useState("");
@@ -44,6 +45,7 @@ export default function Login() {
         password: fields.password,
       }),
     });
+
     try {
       const data = await response.json();
       if (response.status === 200) {
@@ -55,8 +57,11 @@ export default function Login() {
           sameSite: "strict",
         });
         localStorage.setItem("token", data.token);
-
-        window.location.href = "/dashboard";
+        if (data.user.role === "admin") window.location.href = "/dashboard";
+        else if (data.user.role === "hotel")
+          window.location.href = "/hotel-dashboard";
+        else if (data.user.role === "agent")
+          window.location.href = "/agent-dashboard";
       } else {
         setMessage(data.error || "Login Failed");
       }
@@ -64,7 +69,10 @@ export default function Login() {
       setMessage("Internal Server Error");
     }
   };
-
+  const handleSubmit = (event: any) => {
+    event.preventDefault(); // Prevent the default form submission behavior
+    handleLogin();
+  };
   return (
     <>
       <LoginHeader
@@ -85,49 +93,52 @@ export default function Login() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="grid gap-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="email" className="font-semibold">
-                      Email
-                    </Label>
-                    <Input
-                      name="email"
-                      type="email"
-                      placeholder="m@example.com"
-                      // value={fields.email}
-                      // onChange={(e) => setEmail(e.target.value)}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <div className="flex justify-between">
-                      <Label htmlFor="password" className="font-semibold">
-                        Password
+                  <form onSubmit={handleSubmit} className="grid gap-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="email" className="font-semibold">
+                        Email
                       </Label>
-                      <Link
-                        href="/login/forgot-password"
-                        className="text-[#2563EB] text-xs font-semibold"
-                      >
-                        <u>Forgot your password?</u>
-                      </Link>
+                      <Input
+                        name="email"
+                        type="email"
+                        placeholder="m@example.com"
+                        // value={fields.email}
+                        // onChange={(e) => setEmail(e.target.value)}
+                        onChange={handleChange}
+                        required
+                      />
                     </div>
-                    <Input
-                      name="password"
-                      type="password"
-                      placeholder="Enter Password"
-                      // value={fields.password}
-                      // onChange={(e) => setPassword(e.target.value)}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
+                    <div className="grid gap-2">
+                      <div className="flex justify-between">
+                        <Label htmlFor="password" className="font-semibold">
+                          Password
+                        </Label>
+                        <Link
+                          href="/login/forgot-password"
+                          className="text-[#2563EB] text-xs font-semibold"
+                        >
+                          <u>Forgot your password?</u>
+                        </Link>
+                      </div>
+                      <Input
+                        name="password"
+                        type="password"
+                        placeholder="Enter Password"
+                        // value={fields.password}
+                        // onChange={(e) => setPassword(e.target.value)}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
 
-                  <Button
-                    onClick={handleLogin}
-                    className="w-full bg-blue-600 hover:bg-blue-800"
-                  >
-                    Login
-                  </Button>
+                    <Button
+                      type="submit"
+                      // onClick={handleLogin}
+                      className="w-full bg-blue-600  hover:bg-blue-800"
+                    >
+                      Login
+                    </Button>
+                  </form>
                 </CardContent>
 
                 <CardFooter>

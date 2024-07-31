@@ -5,10 +5,17 @@ interface Location {
   locationID: string;
   city: string;
   country: string;
+  address: string;
+  zipCode: string;
 }
 
 export default function Hero() {
+  const [inputValue, setInputValue] = useState("");
   const [locations, setLocations] = useState<Location[]>([]);
+  const [locationChange, setLocationChange] = useState<string | undefined>(
+    undefined
+  );
+
   useEffect(() => {
     const fetchLocations = async () => {
       try {
@@ -26,7 +33,13 @@ export default function Hero() {
     const selectedLocation = locations.find(
       (location) => location.locationID === selectedOption.value
     );
+    setLocationChange(selectedLocation?.city);
   };
+  const handleInputChange = (newValue: any) => {
+    setInputValue(newValue);
+    if (inputValue) setLocationChange(inputValue);
+  };
+
   const customStyles = {
     control: (provided: any) => ({
       ...provided,
@@ -46,6 +59,12 @@ export default function Hero() {
       height: "52px",
     }),
   };
+  if (!locations) return <>Loading..</>;
+  const handleSearchClick = () => {
+    locationChange
+      ? (window.location.href = `/all-hotels/?id=${locationChange}`)
+      : (window.location.href = "/all-hotels");
+  };
   return (
     <section
       className="relative bg-cover 
@@ -54,7 +73,7 @@ export default function Hero() {
       style={{ backgroundImage: "url('/images/hero.png')" }}
     >
       <div className="absolute inset-0 bg-black opacity-85"></div>
-      <div className="relative z-10 flex flex-col items-center justify-center h-full text-center text-white px-6">
+      <div className="relative z-0 flex flex-col items-center justify-center h-full text-center text-white px-6">
         <h1 className="text-4xl md:text-6xl font-bold mb-4">
           Book Your Stay at Jambo Hotels
         </h1>
@@ -74,9 +93,11 @@ export default function Hero() {
                 label: `${location.city}, ${location.country}`,
               }))}
               onChange={handleLocationChange}
+              onInputChange={handleInputChange}
+              inputValue={inputValue}
               placeholder="Where are you planning to go..."
               styles={customStyles}
-              className="flex-1 rounded-lg bg-white text-black placeholder-gray-500"
+              className="flex-1 rounded-lg bg-white text-black placeholder-gray-500 z-50"
             />
             <input
               type="text"
@@ -88,7 +109,17 @@ export default function Hero() {
               placeholder="Checkout Date"
               className="p-4 rounded-lg bg-white text-black placeholder-gray-500"
             />
-            <button className="p-4 bg-blue-600 text-white rounded-lg">
+            <button
+              className="p-4 bg-blue-600 text-white rounded-lg"
+              onClick={() => {
+                handleSearchClick();
+              }}
+              // onClick={() => {
+              //   locationChange
+              //     ? (window.location.href = `/all-hotels/?id=${locationChange}`)
+              //     : (window.location.href = "/all-hotels");
+              // }}
+            >
               Search
             </button>
           </div>

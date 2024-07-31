@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import MaxWidthWrapper from "../MaxWidthWrapper";
 import { Button } from "@/components/ui/button";

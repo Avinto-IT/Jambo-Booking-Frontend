@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect, useRef, Key } from "react";
+import { useState, useEffect, Key } from "react";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -17,7 +17,6 @@ import { Button } from "@/components/ui/button";
 import AdminLayout from "@/components/Layout/AdminLayout";
 import {
   ChevronDown,
-  Eraser,
   ImagePlus,
   PlusCircle,
   Trash,
@@ -52,7 +51,10 @@ import {
   Title,
   Value,
 } from "@/components/AdminComponents/Sub-Components/ReviewComponents";
-import { uploadFiles } from "@/components/AdminComponents/functions";
+import {
+  uploadMultipleFiles,
+  uploadSingleFile,
+} from "@/components/AdminComponents/functions";
 import {
   Dialog,
   DialogContent,
@@ -61,6 +63,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { InputNumber } from "@/components/ui/numberInput";
 
 interface HouseRule {
   id: number;
@@ -93,6 +96,7 @@ interface Room {
   }[];
 
   amenities: { id: number; name: string }[];
+  roomImageLinks: File[];
 }
 
 interface ContactDetails {
@@ -109,7 +113,6 @@ interface FormData {
   basicInfo: {
     name: string;
     location: { value: string; label: string };
-    discount: string;
     description: string;
   };
   facilities: Facility[];
@@ -133,16 +136,12 @@ interface CollapsedSectionsState {
   houseRules: boolean;
   contactDetails: boolean;
 }
-interface SelectOption {
-  value: string;
-  label: string;
-}
+
 const basicInfoSchema = z.object({
   name: z.string().min(1, "Hotel name is required"),
   location: z.object({
     value: z.string().min(1, "Location is required"),
   }),
-  discount: z.string().optional(),
   description: z.string().min(1, "Description is required"),
 });
 
@@ -227,7 +226,7 @@ export default function AddHotel() {
       contactDetails: true,
     });
   const steps = [
-    { component: BasicInformation, label: "Basic Information" },
+    { component: BasicInformation, label: "Hotel Information" },
     { component: Facilities, label: "Facilities" },
     { component: AddRoom, label: "Room" },
     { component: HouseRules, label: "House Rules" },
@@ -245,7 +244,6 @@ export default function AddHotel() {
       basicInfo: {
         name: "",
         location: { value: "", label: "" },
-        discount: "",
         description: "",
       },
       facilities: [
@@ -272,8 +270,8 @@ export default function AddHotel() {
               numberOfBeds: "",
             },
           ],
-
           amenities: [{ id: 1, name: "" }],
+          roomImageLinks: [],
         },
       ],
       contactForm: {
@@ -338,6 +336,8 @@ export default function AddHotel() {
     null
   );
   const [previewImageLinks, setPreviewImageLinks] = useState<string[]>([]);
+  const [roomImageLinks, setRoomImageLinks] = useState<string[]>([]);
+
   const handlePrimaryImageChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -404,11 +404,26 @@ export default function AddHotel() {
 
   const onSubmit = async (data: FormData) => {
     setIsSubmitClicked(true);
+    let primaryImageLink = "";
+
     let imageLinks = [];
-    if (data.imageLinks || data.primaryImage) {
-      imageLinks = await uploadFiles(data.imageLinks, data.primaryImage);
+    let roomImageLinksArray: string[][] = [];
+
+    if (data.primaryImage) {
+      primaryImageLink = await uploadSingleFile(data.primaryImage);
     }
 
+    if (data.imageLinks && data.imageLinks.length > 0) {
+      imageLinks = await uploadMultipleFiles(data.imageLinks);
+    }
+
+    for (const room of data.rooms) {
+      let roomImageLinks = [];
+      if (room.roomImageLinks.length > 0) {
+        roomImageLinks = await uploadMultipleFiles(room.roomImageLinks);
+      }
+      roomImageLinksArray.push(roomImageLinks);
+    }
     const payload = {
       ...data.basicInfo,
       address: data.basicInfo.location.label,
@@ -422,7 +437,7 @@ export default function AddHotel() {
       })),
       primaryImageLink: data.primaryImage ? imageLinks[0] : "", // Use the primary image link if available
       imageLinks: imageLinks.slice(data.primaryImage ? 1 : 0), // Exclude the primary image link from imageLinks if primary image exists
-      rooms: data.rooms.map((room) => ({
+      rooms: data.rooms.map((room, index) => ({
         type: room.type,
         numberOfRooms: room.numberOfRooms,
         price: room.price,
@@ -430,6 +445,7 @@ export default function AddHotel() {
           bedType: bed.bedType.value,
           numberOfBeds: bed.numberOfBeds,
         })),
+        roomImageLinks: roomImageLinksArray[index], // Set the uploaded room image links
         amenities: room.amenities.map((amenity) => ({
           name: amenity.name,
         })),
@@ -440,9 +456,7 @@ export default function AddHotel() {
         details: houseRule.details,
       })),
       isRunning: data.isRunning,
-      discount: parseFloat(data.basicInfo.discount),
     };
-
     try {
       const response = await fetch("/api/setHotels", {
         method: "POST",
@@ -458,7 +472,7 @@ export default function AddHotel() {
         toast.success("Hotel added successfully!");
         setTimeout(() => {
           router.push("/dashboard/hotels");
-        }, 2000);
+        }, 1500);
       } else {
         toast.error(`Error: ${result.error}`);
         setIsSubmitClicked(false);
@@ -623,7 +637,16 @@ export default function AddHotel() {
         toast.error("Error adding location");
       }
     };
-
+    const handleDeleteImage = (index: number) => {
+      setPreviewImageLinks((prevLinks) =>
+        prevLinks.filter((_, i) => i !== index)
+      );
+      const currentFiles = methods.getValues("imageLinks");
+      const updatedFiles = currentFiles.filter(
+        (_: any, i: number) => i !== index
+      );
+      methods.setValue("imageLinks", updatedFiles);
+    };
     return (
       <div className="grid gap-8">
         <Card x-chunk="dashboard-04-chunk-1 p-6">
@@ -632,7 +655,8 @@ export default function AddHotel() {
               Hotel Details
             </CardTitle>
             <CardDescription>
-              Lipsum Dolor sit amet, consecteur adipiscing elit
+              Add basic hotel details such as name, location. You can always
+              edit your details here
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -643,7 +667,7 @@ export default function AddHotel() {
                   id="name"
                   type="text"
                   className="w-full"
-                  placeholder="Hotel's Name"
+                  placeholder="Radisson Hotel"
                   {...register("basicInfo.name")}
                   onKeyDown={handleKeyDown}
                 />
@@ -664,7 +688,7 @@ export default function AddHotel() {
                       instanceId="location-select"
                       components={{ MenuList }}
                       options={[...locationOptions]}
-                      placeholder="Select Location"
+                      placeholder="Kathmandu,Nepal"
                     />
                   )}
                 />
@@ -675,34 +699,12 @@ export default function AddHotel() {
                 )}
               </div>
               <div className="flex flex-col gap-3">
-                <Label htmlFor="discount">Discount Offer</Label>
-                <Controller
-                  name="basicInfo.discount"
-                  control={methods.control}
-                  render={({ field }) => (
-                    <Input
-                      id="discount"
-                      type="number"
-                      className="w-full"
-                      {...field}
-                      placeholder="Discount Offer"
-                      onKeyDown={handleKeyDown}
-                    />
-                  )}
-                />
-                {errors?.basicInfo?.discount?.message && (
-                  <span className="text-red-500">
-                    {errors?.basicInfo?.discount.message}
-                  </span>
-                )}
-              </div>
-              <div className="flex flex-col gap-3">
                 <Label htmlFor="description">Description</Label>
                 <Textarea
                   id="description"
                   className="w-full"
                   {...register("basicInfo.description")}
-                  placeholder="Description"
+                  placeholder="Located in Kathmandu, 1.7 miles from Hanuman Dhoka, Hotel Lapha provides accommodations with a terrace, free private parking, a restaurant and a bar. "
                   onKeyDown={handleKeyDown}
                 />
                 {errors?.basicInfo?.description?.message && (
@@ -715,6 +717,10 @@ export default function AddHotel() {
                 <Label htmlFor="primaryImage" className="text-base">
                   Primary Image
                 </Label>
+                <div className="-mt-2">
+                  This is the main image of your hotel. Click on Choose files to
+                  upload your image
+                </div>
                 <label
                   htmlFor="primaryImage"
                   className="flex items-center border shadow max-w-max px-3 py-1.5 rounded gap-2 cursor-pointer"
@@ -764,7 +770,8 @@ export default function AddHotel() {
           <CardHeader>
             <CardTitle>Hotel Images</CardTitle>
             <CardDescription>
-              Lipsum dolor sit amet, consectetur adipiscing elit
+              These are the images that will appear along with your primary
+              image. Click on Choose files to upload your image.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -808,11 +815,7 @@ export default function AddHotel() {
 
                         <Trash
                           className="absolute top-1 right-1 text-red-500"
-                          onClick={() => {
-                            setPreviewImageLinks((prevLinks) =>
-                              prevLinks.filter((link, i) => i !== index)
-                            );
-                          }}
+                          onClick={() => handleDeleteImage(index)}
                         />
                       </div>
                     ))
@@ -958,10 +961,12 @@ export default function AddHotel() {
         {facilityFields.map((facility, facilityIndex) => (
           <Card key={facility.id} className="overflow-hidden flex flex-col">
             <CardHeader className="flex flex-row justify-between ">
-              <div>
+              <div className="flex flex-col gap-1">
                 <CardTitle>Facility {facilityIndex + 1}</CardTitle>
                 <CardDescription>
-                  Lipsum dolor sit amet, consectetur adipiscing elit
+                  A facility could be spa, gym, rooftop bar etc. Obs! room
+                  specific facilities such as TV etc should be added in the Room
+                  section
                 </CardDescription>
               </div>
               <Button
@@ -975,7 +980,7 @@ export default function AddHotel() {
             <CardContent>
               <div className="flex flex-col gap-4">
                 <Label htmlFor={`facility-name-${facility.id}`}>
-                  Facility Name
+                  Facility Category
                 </Label>
                 <Controller
                   name={`facilities.${facilityIndex}.name`}
@@ -987,7 +992,7 @@ export default function AddHotel() {
                         value: facility,
                         label: facility,
                       }))}
-                      placeholder="Select facility"
+                      placeholder="Reception/Front Desk"
                     />
                   )}
                 />
@@ -1004,7 +1009,7 @@ export default function AddHotel() {
                   id={`facility-description-${facility.id}`}
                   type="text"
                   {...register(`facilities.${facilityIndex}.description`)}
-                  placeholder="Lorem Ipsum"
+                  placeholder=" Our reception provides exceptional service which begins the moment you step through..."
                   onKeyDown={handleKeyDown}
                 />
                 {errors?.facilities?.[facilityIndex]?.description?.message && (
@@ -1037,7 +1042,7 @@ export default function AddHotel() {
                                 render={({ field }) => (
                                   <Input
                                     {...field}
-                                    placeholder="Lorem Ipsum"
+                                    placeholder="Customer Service Desk"
                                     className="flex-1"
                                     onKeyDown={handleKeyDown}
                                   />
@@ -1072,33 +1077,34 @@ export default function AddHotel() {
                         </TableRow>
                       </TableBody>
                     </Table>
-                    {Array.isArray(errors.facilities) &&
-                      errors?.facilities?.map(
-                        (facilityError, facilityIndex) => (
-                          <div key={facilityIndex}>
-                            {facilityError.subFacilities?.root && (
+                    {Array.isArray(
+                      errors?.facilities?.[facilityIndex]?.subFacilities
+                    ) &&
+                      (
+                        errors.facilities[facilityIndex]?.subFacilities as any
+                      )?.map(
+                        (
+                          subFacilityError: { name: FieldError },
+                          subFacilityIndex: Key | null | undefined
+                        ) => (
+                          <div key={subFacilityIndex}>
+                            {subFacilityError?.name?.message && (
                               <span className="text-red-500">
-                                {facilityError.subFacilities?.root.message}
+                                {subFacilityError?.name?.message}
                               </span>
                             )}
-                            {Array.isArray(facilityError.subFacilities) &&
-                              facilityError.subFacilities.map(
-                                (
-                                  subFacilityError: { name: FieldError },
-                                  subFacilityIndex: Key | null | undefined
-                                ) => (
-                                  <div key={subFacilityIndex}>
-                                    {subFacilityError?.name?.message && (
-                                      <span className="text-red-500">
-                                        {subFacilityError.name.message}
-                                      </span>
-                                    )}
-                                  </div>
-                                )
-                              )}
                           </div>
                         )
                       )}
+                    {errors?.facilities?.[facilityIndex]?.subFacilities?.root
+                      ?.message && (
+                      <span className="text-red-500">
+                        {
+                          errors?.facilities?.[facilityIndex]?.subFacilities
+                            ?.root?.message
+                        }
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -1122,7 +1128,7 @@ export default function AddHotel() {
             Add Facility
           </Button>
         </div>
-        {errors?.facilities?.root && (
+        {errors?.facilities?.root?.message && (
           <span className="text-red-500">
             {errors?.facilities?.root.message}
           </span>
@@ -1135,19 +1141,21 @@ export default function AddHotel() {
     const {
       register,
       formState: { errors },
+      setValue,
+      getValues,
     } = methods;
 
     const addAmenity = (roomIndex: number) => {
       const newAmenity = { id: Date.now(), name: "" };
-      const rooms = methods.getValues("rooms");
+      const rooms = getValues("rooms");
       rooms[roomIndex].amenities.push(newAmenity);
-      methods.setValue("rooms", rooms);
+      setValue("rooms", rooms);
     };
 
     const removeAmenity = (roomIndex: number, amenityIndex: number) => {
-      const rooms = methods.getValues("rooms");
+      const rooms = getValues("rooms");
       rooms[roomIndex].amenities.splice(amenityIndex, 1);
-      methods.setValue("rooms", rooms);
+      setValue("rooms", rooms);
     };
 
     const addBed = (roomIndex: number) => {
@@ -1155,15 +1163,44 @@ export default function AddHotel() {
         bedType: { label: "", value: "" },
         numberOfBeds: "",
       };
-      const rooms = methods.getValues("rooms");
+      const rooms = getValues("rooms");
       rooms[roomIndex].beds.push(newBed);
-      methods.setValue("rooms", rooms);
+      setValue("rooms", rooms);
     };
 
     const removeBed = (roomIndex: number, bedIndex: number) => {
-      const rooms = methods.getValues("rooms");
+      const rooms = getValues("rooms");
       rooms[roomIndex].beds.splice(bedIndex, 1);
-      methods.setValue("rooms", rooms);
+      setValue("rooms", rooms);
+    };
+
+    const handleRoomImageChange = (
+      event: React.ChangeEvent<HTMLInputElement>,
+      roomIndex: number
+    ) => {
+      const files = event.target.files;
+      if (files) {
+        const newFiles = Array.from(files);
+        const currentFiles = methods.getValues(
+          `rooms.${roomIndex}.roomImageLinks`
+        );
+        const allFiles = [...currentFiles, ...newFiles];
+        methods.setValue(`rooms.${roomIndex}.roomImageLinks`, allFiles);
+        setRoomImageLinks((prevLinks) => [
+          ...prevLinks,
+          ...newFiles.map((file) => URL.createObjectURL(file)),
+        ]);
+      }
+    };
+    const handleDeleteImage = (index: number, roomIndex: number) => {
+      setRoomImageLinks((prevLinks) => prevLinks.filter((_, i) => i !== index));
+      const currentFiles = methods.getValues(
+        `rooms.${roomIndex}.roomImageLinks`
+      );
+      const updatedFiles = currentFiles.filter(
+        (_: any, i: number) => i !== index
+      );
+      methods.setValue(`rooms.${roomIndex}.roomImageLinks`, updatedFiles);
     };
     const bedTypeOptions = [
       "Single",
@@ -1186,17 +1223,16 @@ export default function AddHotel() {
       "Hammock",
     ];
 
-    console.log(errors);
-    console.log(methods.getValues());
     return (
       <div className="p-6 space-y-6">
         {roomFields.map((room, roomIndex) => (
           <Card key={room.id} className="overflow-hidden flex flex-col">
-            <CardHeader className="flex flex-row justify-between ">
-              <div>
+            <CardHeader className="flex flex-row justify-between">
+              <div className="flex flex-col gap-1">
                 <CardTitle>Room Type {roomIndex + 1}</CardTitle>
                 <CardDescription>
-                  Lipsum dolor sit amet, consectetur adipiscing elit
+                  Add the different types of rooms available at your hotel,
+                  including their details.
                 </CardDescription>
               </div>
               <Button variant="outline" onClick={() => removeRoom(roomIndex)}>
@@ -1210,62 +1246,58 @@ export default function AddHotel() {
                 <Input
                   id={`room-type-${room.id}`}
                   {...register(`rooms.${roomIndex}.type`)}
-                  placeholder="Lorem Ipsum"
+                  placeholder="Deluxe Room"
                   onKeyDown={handleKeyDown}
                 />
-                {errors?.rooms?.[roomIndex]?.type && (
+                {(errors?.rooms?.[roomIndex]?.type as FieldError)?.message && (
                   <span className="text-red-500">
-                    {(errors.rooms[roomIndex]?.type as FieldError)?.message}
+                    {(errors?.rooms?.[roomIndex]?.type as FieldError).message}
                   </span>
                 )}
                 <Label htmlFor={`number-of-rooms-${room.id}`}>
                   Number of Rooms
                 </Label>
-                <Input
+                <InputNumber
                   id={`number-of-rooms-${room.id}`}
                   type="number"
                   {...register(`rooms.${roomIndex}.numberOfRooms`)}
-                  placeholder="Lorem Ipsum"
+                  placeholder="4"
                   onKeyDown={handleKeyDown}
                 />
                 {errors?.rooms?.[roomIndex]?.numberOfRooms?.message && (
                   <span className="text-red-500">
-                    {
-                      (errors.rooms[roomIndex]?.numberOfRooms as FieldError)
-                        ?.message
-                    }
+                    {errors?.rooms?.[roomIndex]?.numberOfRooms?.message}
                   </span>
                 )}
                 <Label htmlFor={`price-${room.id}`}>Price</Label>
-                <Input
+                <InputNumber
                   id={`price-${room.id}`}
                   type="number"
                   {...register(`rooms.${roomIndex}.price`)}
-                  placeholder="Lorem Ipsum"
+                  placeholder="60"
                   required
                   onKeyDown={handleKeyDown}
                 />
-
                 {errors?.rooms?.[roomIndex]?.price?.message && (
                   <span className="text-red-500">
-                    {(errors.rooms[roomIndex]?.price as FieldError)?.message}
+                    {errors?.rooms?.[roomIndex]?.price?.message}
                   </span>
                 )}
                 <Label htmlFor={`capacity-${room.id}`}>Max Occupants</Label>
-                <Input
+                <InputNumber
                   id={`capacity-${room.id}`}
                   type="number"
                   {...register(`rooms.${roomIndex}.capacity`)}
-                  placeholder="Lorem Ipsum"
+                  placeholder="2"
                   onKeyDown={handleKeyDown}
                 />
                 {errors?.rooms?.[roomIndex]?.capacity?.message && (
                   <span className="text-red-500">
-                    {(errors.rooms[roomIndex]?.capacity as FieldError)?.message}
+                    {errors?.rooms?.[roomIndex]?.capacity?.message}
                   </span>
                 )}
                 <Label>Bed Types</Label>
-                {room.beds.map((bed, bedIndex) => (
+                {room?.beds.map((bed, bedIndex) => (
                   <div key={bedIndex} className="flex gap-4 items-center">
                     <div className="flex-1">
                       <Controller
@@ -1286,16 +1318,14 @@ export default function AddHotel() {
                         ?.value?.message && (
                         <span className="text-red-500">
                           {
-                            (
-                              errors?.rooms?.[roomIndex]?.beds?.[bedIndex]
-                                ?.bedType?.value as FieldError
-                            )?.message
+                            errors?.rooms?.[roomIndex]?.beds?.[bedIndex]
+                              ?.bedType?.value?.message
                           }
                         </span>
                       )}
                     </div>
                     <div className="flex-1">
-                      <Input
+                      <InputNumber
                         id={`rooms.${roomIndex}.beds.${bedIndex}.numberOfBeds`}
                         {...register(
                           `rooms.${roomIndex}.beds.${bedIndex}.numberOfBeds`
@@ -1308,10 +1338,8 @@ export default function AddHotel() {
                         ?.numberOfBeds && (
                         <span className="text-red-500">
                           {
-                            (
-                              errors?.rooms?.[roomIndex]?.beds?.[bedIndex]
-                                ?.numberOfBeds as FieldError
-                            )?.message
+                            errors?.rooms?.[roomIndex]?.beds?.[bedIndex]
+                              ?.numberOfBeds?.message
                           }
                         </span>
                       )}
@@ -1361,7 +1389,7 @@ export default function AddHotel() {
                               render={({ field }) => (
                                 <Input
                                   {...field}
-                                  placeholder="Lorem Ipsum"
+                                  placeholder="Wi-Fi Access"
                                   className="flex-1"
                                   onKeyDown={handleKeyDown}
                                 />
@@ -1383,34 +1411,21 @@ export default function AddHotel() {
                       ))}
                     </TableBody>
                   </Table>
-                  {Array.isArray(errors.rooms) &&
-                    errors.rooms.map((roomError, roomIndex) => (
-                      <div key={roomIndex}>
-                        {roomError?.amenities?.root && (
-                          <span className="text-red-500">
-                            {roomError?.amenities?.root.message}
-                          </span>
-                        )}
-                        {Array.isArray(roomError?.amenities) &&
-                          roomError.amenities.map(
-                            (
-                              amenityError: AmenityError,
-                              amenityIndex: number
-                            ) => {
-                              return (
-                                <div key={amenityIndex}>
-                                  {amenityError?.name?.message && (
-                                    <span className="text-red-500">
-                                      {amenityError?.name.message}
-                                    </span>
-                                  )}
-                                </div>
-                              );
-                            }
+                  {Array.isArray(errors.rooms?.[roomIndex]?.amenities) &&
+                    (errors?.rooms?.[roomIndex]?.amenities as any)?.map(
+                      (
+                        amenityError: AmenityError,
+                        amenityIndex: Key | null | undefined
+                      ) => (
+                        <div key={amenityIndex}>
+                          {amenityError?.name?.message && (
+                            <span className="text-red-500">
+                              {amenityError?.name?.message}
+                            </span>
                           )}
-                      </div>
-                    ))}
-
+                        </div>
+                      )
+                    )}
                   <Button
                     variant="ghost"
                     onClick={() => addAmenity(roomIndex)}
@@ -1419,6 +1434,57 @@ export default function AddHotel() {
                     <PlusCircle className="h-4 w-4" />
                     Add Amenity
                   </Button>
+                  {errors?.rooms?.[roomIndex]?.amenities?.root?.message && (
+                    <span className="text-red-500">
+                      {errors?.rooms?.[roomIndex]?.amenities?.root?.message}
+                    </span>
+                  )}
+                </div>
+                <Label htmlFor={`room-images-${room.id}`}>
+                  Upload Room Images
+                </Label>
+                <label
+                  htmlFor={`room-images-${room.id}`}
+                  className="flex items-center max-w-max border px-3 py-1.5 rounded-md shadow gap-2 cursor-pointer"
+                >
+                  <Upload className="w-4 h-4" />
+                  Choose Files
+                  <input
+                    id={`room-images-${room.id}`}
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => handleRoomImageChange(e, roomIndex)}
+                  />
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  {roomImageLinks.length > 0 &&
+                    getValues(`rooms.${roomIndex}.roomImageLinks`).map(
+                      (link, index) => (
+                        <div key={index} className="relative rounded-md w-full">
+                          <DialogBox
+                            previewPrimaryImage={URL.createObjectURL(link)}
+                          >
+                            <Image
+                              alt={`Image ${index + 1}`}
+                              className="w-full rounded-md "
+                              style={{ height: "200px", objectFit: "cover" }}
+                              src={URL.createObjectURL(link)}
+                              width={200}
+                              height={100}
+                            />
+                          </DialogBox>
+
+                          <Trash
+                            className="absolute top-1 right-1 text-red-500"
+                            onClick={() => {
+                              handleDeleteImage(index, roomIndex);
+                            }}
+                          />
+                        </div>
+                      )
+                    )}
                 </div>
               </div>
             </CardContent>
@@ -1436,6 +1502,7 @@ export default function AddHotel() {
                 capacity: "",
                 beds: [{ bedType: { label: "", value: "" }, numberOfBeds: "" }],
                 amenities: [{ id: Date.now(), name: "" }],
+                roomImageLinks: [],
               })
             }
             className="flex items-center gap-1"
@@ -1445,7 +1512,7 @@ export default function AddHotel() {
           </Button>
         </div>
         {errors?.rooms?.root?.message && (
-          <span className="text-red-500">{errors?.rooms?.root.message}</span>
+          <span className="text-red-500">{errors?.rooms?.root?.message}</span>
         )}
       </div>
     );
@@ -1559,10 +1626,11 @@ export default function AddHotel() {
         {houseRuleFields.map((houseRule, index) => (
           <Card key={houseRule.id} className=" flex flex-col">
             <CardHeader className="flex flex-row justify-between ">
-              <div>
+              <div className="flex flex-col gap-1">
                 <CardTitle>House Rule {index + 1}</CardTitle>
                 <CardDescription>
-                  Lipsum dolor sit amet, consectetur adipiscing elit
+                  List the different types of house rules for your hotel, along
+                  with their details.
                 </CardDescription>
               </div>
               <Button variant="outline" onClick={() => removeHouseRule(index)}>
@@ -1587,16 +1655,11 @@ export default function AddHotel() {
                     />
                   )}
                 />
-                {Array.isArray(errors.houseRules) &&
-                  errors.houseRules.map((houseRuleError, houseRuleIndex) => (
-                    <div key={houseRuleIndex}>
-                      {houseRuleError?.type?.value?.message && (
-                        <span className="text-red-500">
-                          {houseRuleError?.type?.value.message}
-                        </span>
-                      )}
-                    </div>
-                  ))}
+                {(errors?.houseRules?.[index]?.type as any)?.value?.message && (
+                  <span className="text-red-500">
+                    {(errors?.houseRules?.[index]?.type as any).value.message}
+                  </span>
+                )}
                 <Label htmlFor={`house-rule-details-${houseRule.id}`}>
                   Details
                 </Label>
@@ -1686,7 +1749,7 @@ export default function AddHotel() {
           <CardHeader>
             <CardTitle>Contact Details</CardTitle>
             <CardDescription>
-              Lipsum dolor sit amet, consectetur adipiscing elit
+              Add the details of the hotel representative.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -1695,48 +1758,49 @@ export default function AddHotel() {
               <Input
                 id="contact-person-name"
                 {...register("contactForm.name")}
-                placeholder="Lorem Ipsum"
+                placeholder="John Doe"
                 onKeyDown={handleKeyDown}
               />
               {errors?.contactForm?.name?.message && (
                 <span className="text-red-500">
-                  {errors?.contactForm?.name.message}
+                  {errors?.contactForm?.name?.message}
                 </span>
               )}
               <Label htmlFor="role-position">Role / Position</Label>
               <Input
                 id="role-position"
                 {...register("contactForm.position")}
-                placeholder="Lorem Ipsum"
+                placeholder="Manager"
                 onKeyDown={handleKeyDown}
               />
               {errors?.contactForm?.position?.message && (
                 <span className="text-red-500">
-                  {errors?.contactForm?.position.message}
+                  {errors?.contactForm?.position?.message}
                 </span>
               )}
               <Label htmlFor="email-address">Email Address</Label>
               <Input
                 id="email-address"
                 {...register("contactForm.email")}
-                placeholder="Lorem Ipsum"
+                placeholder="m@example.com"
                 onKeyDown={handleKeyDown}
               />
               {errors?.contactForm?.email?.message && (
                 <span className="text-red-500">
-                  {errors?.contactForm?.email.message}
+                  {errors?.contactForm?.email?.message}
                 </span>
               )}
               <Label htmlFor="phone-number">Phone Number</Label>
-              <Input
+              <InputNumber
                 id="phone-number"
+                type="number"
                 {...register("contactForm.number")}
-                placeholder="Lorem Ipsum"
+                placeholder="9812345678"
                 onKeyDown={handleKeyDown}
               />
               {errors?.contactForm?.number?.message && (
                 <span className="text-red-500">
-                  {errors?.contactForm?.number.message}
+                  {errors?.contactForm?.number?.message}
                 </span>
               )}
             </div>
@@ -1747,7 +1811,7 @@ export default function AddHotel() {
           <CardHeader>
             <CardTitle>Social Links</CardTitle>
             <CardDescription>
-              Lipsum dolor sit amet, consectetur adipiscing elit
+              Add hotel&apos;s social media links.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -1830,9 +1894,12 @@ export default function AddHotel() {
               />
 
               <CardTitle className="text-2xl font-semibold">
-                General Information
+                Hotel Information
                 <div className="text-sm font-normal text-slate-400">
-                  Lipsum dolor sit amet, consectetur adipiscing elit
+                  <div className="">General information of your hotel</div>
+                  <div className="">
+                    Click on edit to modify hotel information.
+                  </div>
                 </div>
               </CardTitle>
             </div>
@@ -1855,10 +1922,6 @@ export default function AddHotel() {
                 <div className="flex justify-between items-center">
                   <Title>Location</Title>
                   <Value>{formData.basicInfo.location.label}</Value>
-                </div>
-                <div className="flex justify-between items-center border-b">
-                  <Title>Discount Offer</Title>
-                  <Value>{formData.basicInfo.discount}</Value>
                 </div>
                 <div className="flex flex-col gap-3">
                   <Title>Description</Title>
@@ -1906,7 +1969,10 @@ export default function AddHotel() {
               <CardTitle className="text-2xl font-semibold">
                 Facilities
                 <div className="text-sm font-normal text-slate-400">
-                  Lipsum dolor sit amet, consectetur adipiscing elit
+                  <div className="">Facilities provided by your hotel</div>
+                  <div className="">
+                    Click on edit to modify the facilities.
+                  </div>
                 </div>
               </CardTitle>
             </div>
@@ -1926,7 +1992,7 @@ export default function AddHotel() {
                     Facility {index + 1}
                   </Label>
                   <div className="flex items-center justify-between">
-                    <Title>Name</Title>
+                    <Title>Category</Title>
                     <Value className="font-medium">{facility.name.value}</Value>
                   </div>
                   <div>
@@ -1961,7 +2027,8 @@ export default function AddHotel() {
               <CardTitle className="text-2xl font-semibold">
                 Rooms
                 <div className="text-sm font-normal text-slate-400">
-                  Lipsum dolor sit amet, consectetur adipiscing elit
+                  <div className="">Rooms of your hotel</div>
+                  <div className="">Click on edit to modify the rooms.</div>
                 </div>
               </CardTitle>
             </div>
@@ -1990,7 +2057,7 @@ export default function AddHotel() {
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <Title>Price</Title>
+                    <Title>Price(USD)</Title>
                     <Value> {room.price}</Value>
                   </div>
 
@@ -2004,7 +2071,7 @@ export default function AddHotel() {
                     {room.beds.map((bed, bedIndex) => (
                       <div
                         key={bedIndex}
-                        className="flex items-center justify-between"
+                        className="flex flex-col items-between justify-center"
                       >
                         <div className="flex items-center justify-between">
                           <Title>Bed Type</Title>
@@ -2026,6 +2093,21 @@ export default function AddHotel() {
                       ))}
                     </ul>
                   </div>
+                  <div className="flex flex-col gap-y-3">
+                    <Title>Room Images</Title>
+                    <div className="grid grid-cols-5 gap-2 overflow-x-scroll">
+                      {room.roomImageLinks?.map((file, index) => (
+                        <Image
+                          key={index}
+                          alt={`Image ${index + 1}`}
+                          className="w-full rounded-md object-cover"
+                          height={100}
+                          src={URL.createObjectURL(file)}
+                          width={100}
+                        />
+                      ))}
+                    </div>
+                  </div>
                 </div>
               ))}
             </CardContent>
@@ -2045,7 +2127,10 @@ export default function AddHotel() {
               <CardTitle className="text-2xl font-semibold">
                 House Rules
                 <div className="text-sm font-normal text-slate-400">
-                  Lipsum dolor sit amet, consectetur adipiscing elit
+                  <div className="">House Rules of your hotel</div>
+                  <div className="">
+                    Click on edit to modify the house rules.
+                  </div>
                 </div>
               </CardTitle>
             </div>
@@ -2090,7 +2175,10 @@ export default function AddHotel() {
               <CardTitle className="text-2xl font-semibold">
                 Contact Details
                 <div className="text-sm font-normal text-slate-400">
-                  Lipsum dolor sit amet, consectetur adipiscing elit
+                  <div className="">Contact of your hotel</div>
+                  <div className="">
+                    Click on edit to modify your information.
+                  </div>
                 </div>
               </CardTitle>
             </div>

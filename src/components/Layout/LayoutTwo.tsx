@@ -9,10 +9,19 @@ import twitter from "../../../public/images/footer/Twitter.svg";
 
 import facebook from "../../../public/images/footer/Facebook.svg";
 import Jambologo from "../../../public/images/footer/Vector2.svg";
-import { ChevronDown, CircleUserRound } from "lucide-react";
+import { ChevronDown, CircleUserRound, User } from "lucide-react";
 import topimg from "../blog/head/Header_Image.svg";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 import TopImg from "../TopImg";
+import { Button } from "../ui/button";
 
 interface LayoutTwoProps {
   children: ReactNode;
@@ -37,28 +46,57 @@ const LayoutTwo: React.FC<LayoutTwoProps> = ({
               height={40}
             />
           </Link>
-          <Navbar />
-
-          <div className="flex space-x-4">
-            <Link
-              href="/signup-agent"
-              className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-black rounded"
-            >
-              Signup as Agent
-            </Link>
-            <Link
-              href="/signup-hotel"
-              className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-black rounded"
-            >
-              Signup as Hotel
-            </Link>
-            <Link
-              href="/login"
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
-            >
-              Login
-            </Link>
-          </div>
+          {imgTitle === "Booking Confirmation" ? (
+            <div className="mr-72  ">
+              <Navbar />
+            </div>
+          ) : (
+            <Navbar />
+          )}
+          {imgTitle === "Booking Confirmation" ? (
+            <div className=" flex items-center justify-center">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="overflow-hidden rounded-full"
+                  >
+                    <User />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>Settings</DropdownMenuItem>
+                  <DropdownMenuItem>Support</DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>Logout</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          ) : (
+            <div className="flex space-x-4">
+              <Link
+                href="/signup-agent"
+                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-black rounded"
+              >
+                Signup as Agent
+              </Link>
+              <Link
+                href="/signup-hotel"
+                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-black rounded"
+              >
+                Signup as Hotel
+              </Link>
+              <Link
+                href="/login"
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
+              >
+                Login
+              </Link>
+            </div>
+          )}
         </nav>
         <TopImg title={imgTitle} />
       </header>
@@ -105,10 +143,10 @@ const LayoutTwo: React.FC<LayoutTwoProps> = ({
                 <Link href="/privacy-policy" className="">
                   Privacy Policy
                 </Link>
-                <Link href="/" className="">
+                <Link href="/terms" className="">
                   Terms and Conditions
                 </Link>
-                <Link href="/" className="">
+                <Link href="/cookies" className="">
                   Cookie Policy
                 </Link>
               </div>

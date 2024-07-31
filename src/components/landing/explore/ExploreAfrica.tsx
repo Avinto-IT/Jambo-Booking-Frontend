@@ -1,3 +1,4 @@
+"use client";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import React from "react";
 import one from "../../../../public/images/explore-east-africa/one.svg";

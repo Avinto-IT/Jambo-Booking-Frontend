@@ -1,6 +1,5 @@
 import React from "react";
-import topimg1 from "../../public/images/head/Image01.svg";
-import topimg2 from "../../public/images/head/Image02.svg";
+
 import Image from "next/image";
 import { Button } from "./ui/button";
 
@@ -24,7 +23,7 @@ const TopImgSignUp: React.FC<TopImgProp> = ({
           alt="topimage"
           className=" w-full "
           priority={true}
-          objectFit="cover"
+          // objectFit="cover"
         />
         <div className="absolute inset-0 w-full h-full bg-[#020617] opacity-75"></div>
         <div className="w-7/12 absolute top-24 left-10 flex flex-col  text-white  ">
