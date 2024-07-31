@@ -58,15 +58,24 @@ export default function BookingDetails({
         setBooking(data.booking);
         setBookingStatus(data.booking.status);
         setBookingRemarks(data.booking.bookingRemarks);
-      } catch (error) {}
+      } catch (error) {
+        console.log("Error fetching booking");
+        new Error("Error fetching booking information.");
+      }
     };
     fetchBooking();
   }, [params.slug]);
   const calculateTotalPrice = (bookingInfo: RoomBookingInfo[]) => {
-    console.log(bookingInfo);
     return bookingInfo.reduce((total, room) => total + room.totalPrice, 0);
   };
 
+  if (!booking) return <>Loading...</>;
+  const daysBooked = calculateDaysBetweenDates(
+    booking?.bookingStartDate,
+    booking?.bookingEndDate
+  );
+  console.log(booking.bookingInfo);
+  const cartTotalPrice = calculateTotalPrice(booking.bookingInfo);
   const handleConfirm = async () => {
     try {
       setIsConfirmButtonClicked(true);
@@ -81,28 +90,28 @@ export default function BookingDetails({
           bookingID: booking?.bookingID,
           newStatus: bookingStatus,
           bookingRemarks: bookingRemarks,
+          bookingStartDate: booking?.bookingStartDate,
+          bookingEndDate: booking?.bookingEndDate,
+          bookingInformation: booking?.bookingInfo,
+          totalAmount: cartTotalPrice,
+          hotelName: booking.hotel.name,
         }),
       });
+      const data = await response.json();
+
       if (response.ok) {
-        toast.message("Booking status changed successfully.");
+        toast.message(data.message);
         setIsConfirmButtonClicked(false);
       } else {
+        toast.error(data.error);
         setIsConfirmButtonClicked(false);
       }
-
-      const data = await response.json();
     } catch (error) {
+      toast.error("Error updating the booking status");
       console.error("Error updating the booking status", error);
       setIsConfirmButtonClicked(false);
     }
   };
-
-  if (!booking) return <>Loading...</>;
-  const daysBooked = calculateDaysBetweenDates(
-    booking?.bookingStartDate,
-    booking?.bookingEndDate
-  );
-  const cartTotalPrice = calculateTotalPrice(booking.bookingInfo);
 
   return (
     <AdminLayout>
