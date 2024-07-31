@@ -38,6 +38,7 @@ import { Hotel } from "@/utils/types";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { toast, Toaster } from "sonner";
+import { dateFormatter } from "@/utils/functions";
 
 export default function HotelsDashboard() {
   const [hotels, setHotels] = useState<Hotel[]>([]);
@@ -114,7 +115,7 @@ export default function HotelsDashboard() {
       toast.message("Error deleting hotel");
     }
   };
-
+  console.log(hotels);
   return (
     <AdminLayout>
       <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
@@ -238,7 +239,7 @@ export default function HotelsDashboard() {
                           </TableCell>
                           <TableCell>{hotel.address}</TableCell>
                           <TableCell className="hidden md:table-cell">
-                            2023-07-12 10:42 AM
+                            {dateFormatter(hotel.addedDate)}
                           </TableCell>
                           <TableCell>
                             <DropdownMenu>

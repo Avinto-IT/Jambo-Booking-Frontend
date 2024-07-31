@@ -167,7 +167,7 @@ function AdminViewHotel() {
     setSelectedRoom(room);
     setIsDialogOpen(true);
   };
-
+  console.log(hotel.primaryImageLink);
   return (
     <AdminLayout>
       <Card className="w-full">

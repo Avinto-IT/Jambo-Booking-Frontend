@@ -26,6 +26,7 @@ export interface Hotel {
   }[];
   description: string;
   // houseRules: { [key: string]: boolean };
+  addedDate: Date;
   houseRules: string[];
   imageLinks: string[];
   primaryImageLink: string;
@@ -43,34 +44,39 @@ export interface Booking {
   status: string;
   guests: number;
   bookingInfo: {
+    beds: { bedType: string; numberOfBeds: string }[];
+    roomCapacity: string;
     roomType: string;
     rooms: number;
     totalPrice: number;
-  };
+    roomPrice: string;
+  }[];
+  specialRequest: string;
+
   hotel: {
     address: string;
-    description: string;
     discount: number;
-    facilities: string[];
     houseRules: string[];
-    imageLinks: string[];
-    isRunning: boolean;
-    locationID: string;
     name: string;
     primaryImageLink: string;
     rooms: Room[];
+    contactDetails: {
+      email: string;
+      name: string;
+      number: string;
+      facebook: string;
+      instagram: string;
+      linkedin: string;
+      position: string;
+    };
   };
   user: {
     agencyName: string | null;
     contactNumber: string;
-    dateOfBirth: string;
     email: string;
     firstName: string;
     gradeID: string | null;
-    hotelID: string | null;
     lastName: string;
-    password: string;
-    role: string;
     userID: string;
   };
 }

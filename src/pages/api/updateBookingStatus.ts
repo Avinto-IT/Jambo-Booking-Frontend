@@ -4,7 +4,6 @@ import jwt from "jsonwebtoken";
 
 const prisma = new PrismaClient();
 const SECRET_KEY = process.env.SECRET_KEY;
-console.log(SECRET_KEY);
 async function UpdateBookingStatusHandler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -13,7 +12,7 @@ async function UpdateBookingStatusHandler(
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { bookingID, newStatus } = req.body;
+  const { bookingID, newStatus, bookingRemarks } = req.body;
 
   if (!bookingID || !newStatus) {
     return res.status(400).json({ error: "Missing bookingID or newStatus" });
@@ -44,7 +43,7 @@ async function UpdateBookingStatusHandler(
 
     const updatedBooking = await prisma.booking.update({
       where: { bookingID },
-      data: { status: newStatus },
+      data: { status: newStatus, bookingRemarks },
     });
 
     return res
