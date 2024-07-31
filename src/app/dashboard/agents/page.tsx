@@ -26,6 +26,15 @@ import AdminLayout from "@/components/Layout/AdminLayout";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 
 interface Agent {
   agencyName: string | null;
@@ -98,7 +107,36 @@ export default function AgentDashboard({}: {}) {
                   Currently applied 10% markup in Hotel price{" "}
                 </CardContent>
                 <CardFooter className="flex justify-end">
-                  <Button variant="outline">Edit Markup</Button>
+                  <Dialog>
+                    <DialogTrigger>
+                      {" "}
+                      <div className="border-2 border-[#E2E8F0] py-2 px-4 gap-2 rounded-md font-medium text-sm hover:bg-slate-100">
+                        Edit Markup
+                      </div>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Edit Markup</DialogTitle>
+                        <DialogDescription>
+                          Make changes to your markup value for each tier here.
+                          Click save when you&apos;re done.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="pt-5 space-y-5 ">
+                        <div className="space-y-3">
+                          <Label>Tier</Label>
+                          <Input type="text" placeholder="Tier A" />
+                        </div>
+                        <div className="space-y-3">
+                          <Label>MarkUp Percent</Label>
+                          <Input type="nujmber" placeholder="10%" />
+                        </div>
+                      </div>
+                      <div className="flex justify-end w-full mt-3">
+                        <Button className=" bg-blue-700">Save Changes</Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </CardFooter>
               </Card>
               <Card x-chunk="dashboard-05-chunk-1">
@@ -111,8 +149,37 @@ export default function AgentDashboard({}: {}) {
                 <CardContent className="text-[#64748B] text-xs">
                   Currently applied 10% markup in Hotel price{" "}
                 </CardContent>
-                <CardFooter className="flex justify-end ">
-                  <Button variant="outline">Edit Markup</Button>
+                <CardFooter className="flex justify-end">
+                  <Dialog>
+                    <DialogTrigger>
+                      {" "}
+                      <div className="border-2 border-[#E2E8F0] py-2 px-4 gap-2 rounded-md font-medium text-sm hover:bg-slate-100">
+                        Edit Markup
+                      </div>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Edit Markup</DialogTitle>
+                        <DialogDescription>
+                          Make changes to your markup value for each tier here.
+                          Click save when you&apos;re done.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="pt-5 space-y-5 ">
+                        <div className="space-y-3">
+                          <Label>Tier</Label>
+                          <Input type="text" placeholder="Tier B" />
+                        </div>
+                        <div className="space-y-3">
+                          <Label>MarkUp Percent</Label>
+                          <Input type="nujmber" placeholder="10%" />
+                        </div>
+                      </div>
+                      <div className="flex justify-end w-full mt-3">
+                        <Button className=" bg-blue-700">Save Changes</Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </CardFooter>
               </Card>
               <Card x-chunk="dashboard-05-chunk-1">
@@ -126,7 +193,36 @@ export default function AgentDashboard({}: {}) {
                   Currently applied 10% markup in Hotel price{" "}
                 </CardContent>
                 <CardFooter className="flex justify-end">
-                  <Button variant="outline">Edit Markup</Button>
+                  <Dialog>
+                    <DialogTrigger>
+                      {" "}
+                      <div className="border-2 border-[#E2E8F0] py-2 px-4 gap-2 rounded-md font-medium text-sm hover:bg-slate-100">
+                        Edit Markup
+                      </div>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Edit Markup</DialogTitle>
+                        <DialogDescription>
+                          Make changes to your markup value for each tier here.
+                          Click save when you&apos;re done.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="pt-5 space-y-5 ">
+                        <div className="space-y-3">
+                          <Label>Tier</Label>
+                          <Input type="text" placeholder="Tier C" />
+                        </div>
+                        <div className="space-y-3">
+                          <Label>MarkUp Percent</Label>
+                          <Input type="nujmber" placeholder="10%" />
+                        </div>
+                      </div>
+                      <div className="flex justify-end w-full mt-3">
+                        <Button className=" bg-blue-700">Save Changes</Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </CardFooter>
               </Card>
             </div>

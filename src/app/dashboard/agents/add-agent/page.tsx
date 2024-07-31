@@ -65,6 +65,7 @@ interface FormData {
     address: string;
 
     tier: { value: string; label: string };
+
     toursCompleted: number;
   };
   password: {
@@ -140,9 +141,10 @@ export default function AddHotel() {
         name: "",
         address: "",
         email: "",
-        // phone: ,
+
         agency: "",
         tier: { value: "", label: "" },
+
         toursCompleted: 2,
       },
       password: {
@@ -232,6 +234,11 @@ export default function AddHotel() {
       setValue,
       formState: { errors },
     } = methods;
+    const tierOptions = [
+      { value: "A", label: "A" },
+      { value: "B", label: "B" },
+      { value: "C", label: "C" },
+    ];
 
     return (
       <div className="grid gap-8">
@@ -337,15 +344,15 @@ export default function AddHotel() {
                     <Select
                       {...field}
                       instanceId="tier-select"
-                      //   components={{ MenuList }}
-                      //   options={[...tierOptions]}
+                      // components={{ tierOptions }}
+                      options={[...tierOptions]}
                       placeholder="Select Tier"
                     />
                   )}
                 />
-                {errors?.basicInfo?.tier?.value?.message && (
+                {errors?.basicInfo?.tier?.message && (
                   <span className="text-red-500">
-                    {errors?.basicInfo?.tier?.value.message}
+                    {errors?.basicInfo?.tier?.message}
                   </span>
                 )}
               </div>
@@ -501,10 +508,10 @@ export default function AddHotel() {
                   <Title>Location</Title>
                   <Value>{formData.basicInfo.address}</Value>
                 </div>
-                {/* <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center">
                   <Title>Tier</Title>
-                  <Value>{formData.basicInfo.tier}</Value>
-                </div> */}
+                  <Value>{formData.basicInfo.tier.value}</Value>
+                </div>
                 <div className="flex justify-between items-center">
                   <Title>Tours Completed</Title>
                   <Value>{formData.basicInfo.toursCompleted}</Value>
