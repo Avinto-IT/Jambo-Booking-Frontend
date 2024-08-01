@@ -77,20 +77,21 @@ model Location {
 }
 
 model Booking {
-  bookingID        String           @id @default(auto()) @map("_id") @db.ObjectId
-  userID           String           @db.ObjectId
-  hotelID          String           @db.ObjectId
-  bookingStartDate DateTime
-  bookingEndDate   DateTime
-  requestedDate    DateTime
-  status           String
-  guests           Int
-  bookingInfo      Json
-  bookingRemarks   String?
-  specialRequest   String
-  user             User             @relation(fields: [userID], references: [userID])
-  hotel            Hotel            @relation(fields: [hotelID], references: [hotelID])
-  bookingHistory   BookingHistory[]
+  bookingID         String           @id @default(auto()) @map("_id") @db.ObjectId
+  userID            String           @db.ObjectId
+  hotelID           String           @db.ObjectId
+  bookingStartDate  DateTime
+  bookingEndDate    DateTime
+  requestedDate     DateTime
+  status            String
+  guests            Int
+  bookingInfo       Json
+  totalBookingPrice Int
+  bookingRemarks    String?
+  specialRequest    String
+  user              User             @relation(fields: [userID], references: [userID])
+  hotel             Hotel            @relation(fields: [hotelID], references: [hotelID])
+  bookingHistory    BookingHistory[]
 }
 
 model BookingHistory {

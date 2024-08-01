@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
 import { verifyToken } from "@/lib/middleware";
+import { calculateDaysBetweenDates } from "@/utils/functions";
 
 const prisma = new PrismaClient();
 
@@ -59,6 +60,10 @@ async function bookHotelRoomHandler(req: NextApiRequest, res: NextApiResponse) {
     if (!hotel) {
       return res.status(404).json({ error: "Hotel not found" });
     }
+    const numberOfDaysBooked = calculateDaysBetweenDates(
+      bookingStartDate,
+      bookingEndDate
+    );
 
     const rooms = hotel.rooms as unknown as Array<{
       type: string;
@@ -69,6 +74,7 @@ async function bookHotelRoomHandler(req: NextApiRequest, res: NextApiResponse) {
         numberOfBeds: string;
       }>;
     }>;
+    let totalBookingPrice = 0;
 
     const updatedBookingInfo = bookingInfo.map((info) => {
       const room = rooms?.find((room) => room.type === info.roomType);
@@ -76,13 +82,15 @@ async function bookHotelRoomHandler(req: NextApiRequest, res: NextApiResponse) {
         throw new Error(`Cannot find room type: ${info.roomType}`);
       }
       const beds = room.beds;
-      // console.log(room);
       const roomCapacity = room.capacity;
-      const totalPrice = room.price * info.rooms;
       const roomPrice = room.price;
+
+      const totalRoomPrice = roomPrice * info.rooms * numberOfDaysBooked;
+      totalBookingPrice += totalRoomPrice;
+
       return {
         ...info,
-        totalPrice,
+        totalRoomPrice,
         beds,
         roomCapacity,
         roomPrice,
@@ -101,6 +109,7 @@ async function bookHotelRoomHandler(req: NextApiRequest, res: NextApiResponse) {
         guests,
         bookingInfo: updatedBookingInfo,
         specialRequest,
+        totalBookingPrice,
       },
     });
 

@@ -48,10 +48,11 @@ export interface Booking {
     roomCapacity: string;
     roomType: string;
     rooms: number;
-    totalPrice: number;
+    totalRoomPrice: number;
     roomPrice: string;
   }[];
   specialRequest: string;
+  totalBookingPrice: number;
 
   hotel: {
     address: string;
