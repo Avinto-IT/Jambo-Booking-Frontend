@@ -1,7 +1,6 @@
 "use client";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
-// import { Hotel } from "@/utils/types";
 import { Dot } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import React, { Suspense, useEffect, useState } from "react";
@@ -10,8 +9,11 @@ import guest from "../../../../public/images/Guest.svg";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import facilitiesIcon from "../../../../data/facilities.json";
+import { addDays, format } from "date-fns";
+
 import * as Icons from "lucide-react";
 import UseFacilityIcon from "../../../utils/facilityIcon";
+import { DateRange } from "react-day-picker";
 
 import {
   Dialog,
@@ -21,17 +23,27 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import Layout from "@/components/Layout/Layout";
-// import Hero from "@/components/landing/Hero";
 import Hero from "@/components/HotelHero/Hero";
 import { BedIcon } from "@/components/Icons/AdminIcons";
-// import BookingConfirmation from "./booking-confirmation/page";
-// import UseFacilityIcon from "../../../utils/facilityIcon";
+import { DatePickerWithRange } from "@/components/DateRangePicker";
+import {
+  Select,
+  SelectGroup,
+  SelectValue,
+  SelectTrigger,
+  SelectContent,
+  SelectLabel,
+  SelectItem,
+  SelectSeparator,
+  SelectScrollUpButton,
+  SelectScrollDownButton,
+} from "@/components/ui/select";
 
 interface Room {
   type: string;
   numberOfRooms: string;
   price: string;
-  capacity: number;
+  capacity: string;
 
   beds: {
     bedType: string;
@@ -71,12 +83,22 @@ function ClientViewHotel() {
 
   const [hotel, setHotel] = useState<Hotel>();
   const [token, setToken] = useState<string | null>(null);
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+    from: new Date(2022, 0, 20),
+    to: addDays(new Date(2022, 0, 20), 10),
+  });
+
   const [isCarouselOpen, setIsCarouselOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [count, setCount] = useState<number[]>([]);
-  // const { getIconComponent } = useFacilityIcon();
+  const [guests, setGuests] = useState<number | undefined>(undefined);
+
+  const handleDateChange = (newDate: DateRange | undefined) => {
+    setDateRange(newDate);
+  };
+
   useEffect(() => {
     if (hotel?.rooms) {
       setCount(Array(hotel.rooms.length).fill(0));
@@ -181,9 +203,15 @@ function ClientViewHotel() {
     });
   };
 
+  const totalOccupancy = hotel.rooms.reduce(
+    (sum, room) => sum + parseInt(room.capacity),
+    0
+  );
+
+  const guestOptions = Array.from({ length: totalOccupancy }, (_, i) => i + 1);
+
   return (
     <Layout>
-      {/* <Hero title={hotel.address.slice(0, hotel.address.indexOf(","))} /> */}
       <Hero title={hotel.name} />
       <Card className="w-full">
         <div className="flex justify-center">
@@ -348,8 +376,8 @@ function ClientViewHotel() {
                               {value.type}
                             </CardTitle>
                             <div className="flex justify-between">
-                              <div className="space-y-2 w-2/3 pr-5 ">
-                                <div className="flex justify-start w-full font-medium ">
+                              <div className="space-y-2 w-2/3">
+                                <div className="flex justify-start w-full font-medium gap-8">
                                   <div className="flex flex-col font-normal items-start">
                                     {value.beds.map((bed, bedIndex) => (
                                       <div
@@ -649,11 +677,47 @@ function ClientViewHotel() {
                   </div>
                 </div>
                 <div className="col-span-2 ">
-                  <Card className="shadow-xl p-6 gap-4">
-                    <CardTitle>TEST</CardTitle>
-                    <CardContent className="gap-y-4">
-                      <div>lol</div>
-                      <div>lol</div>
+                  <Card className="shadow-xl p-6 gap-4 border border-slate-200 max-w-[370px] text-[16px]">
+                    <CardTitle>
+                      <span className="text-xl font-medium">$Price </span>
+                      <span className="text-[16px] font-normal text-foreground">
+                        / night
+                      </span>
+                    </CardTitle>
+                    <CardContent className="space-y-4 text-sm font-medium p-0">
+                      <div className="flex flex-col my-4">
+                        <div className="grid grid-cols-2 my-3">
+                          <div>Check in</div>
+                          <div>Check out</div>
+                        </div>
+                        <DatePickerWithRange
+                          onDateChange={handleDateChange}
+                          from={dateRange?.from}
+                          to={dateRange?.to}
+                        />
+                      </div>
+                      <div>Guests</div>
+                      <Select
+                        onValueChange={(value) => setGuests(Number(value))}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select number of guests" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {guestOptions.map((option) => (
+                            <SelectItem key={option} value={String(option)}>
+                              {option}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Button className="w-full bg-[#2563EB] ">Reserve</Button>
+                      <div className="flex flex-col w-full border border-red-500">
+                        <div className="flex justify-between border-t border-slate-200">
+                          <span>Total</span>
+                          <span>$123</span>
+                        </div>
+                      </div>
                     </CardContent>
                   </Card>
                 </div>
