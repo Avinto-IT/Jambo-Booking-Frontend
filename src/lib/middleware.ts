@@ -21,9 +21,6 @@ export const verifyToken = (
       .json({ error: "Internal server error: SECRET_KEY is not set" });
   }
 
-  console.log("SECRET_KEY:", SECRET_KEY);
-  console.log("Token:", token);
-
   try {
     const decoded = jwt.verify(token, SECRET_KEY);
     (req as any).user = decoded;

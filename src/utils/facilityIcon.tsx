@@ -76,9 +76,29 @@
 
 //   return { facilityNames, getIconName };
 //}
-
 import React, { useEffect, useState } from "react";
-import * as Icons from "lucide-react";
+import amenities from "../../public/images/facility-icon/amenitiesIcon.svg";
+import dining from "../../public/images/facility-icon/diningIcon.svg";
+import recreation from "../../public/images/facility-icon/recreationIcon.svg";
+import businessService from "../../public/images/facility-icon/businessIcon.svg";
+import transportation from "../../public/images/facility-icon/transportationIcon.svg";
+import guestServices from "../../public/images/facility-icon/guestServicesIcon.svg";
+import housekeeping from "../../public/images/facility-icon/houseKeepingIcon.svg";
+import luggage from "../../public/images/facility-icon/luggageIcon.svg";
+import security from "../../public/images/facility-icon/securityIcon.svg";
+import accessibility from "../../public/images/facility-icon/accessibilityIcon.svg";
+import emergencyServices from "../../public/images/facility-icon/emergencyServicesIcon.svg";
+import recreationalActivities from "../../public/images/facility-icon/recreationIcon.svg";
+import wellnessAndSpa from "../../public/images/facility-icon/wellnessAndSpaIcon.svg";
+import entertainment from "../../public/images/facility-icon/entertainmentIcon.svg";
+import childrenServices from "../../public/images/facility-icon/childrenServicesIcon.svg";
+import petServices from "../../public/images/facility-icon/petServicesIcon.svg";
+import technology from "../../public/images/facility-icon/technologyIcon.svg";
+import sustainability from "../../public/images/facility-icon/sustainabilityIcon.svg";
+import events from "../../public/images/facility-icon/eventsIcon.svg";
+import miscellaneous from "../../public/images/facility-icon/miscellaneousIcon.svg";
+import Image from "next/image";
+
 interface Facility {
   facilityId: string;
   facilityCategory: string;
@@ -86,8 +106,12 @@ interface Facility {
   subFacilities: any[];
 }
 
-export default function UseFacilityIcon() {
-  const [facilityNames, setFacilityNames] = useState<string[]>([]);
+interface IconComponentProps {
+  nameOfFacility: string;
+}
+
+const UseFacilityIcon: React.FC<IconComponentProps> = ({ nameOfFacility }) => {
+  // const [facilityNames, setFacilityNames] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchFacilities = async () => {
@@ -96,7 +120,7 @@ export default function UseFacilityIcon() {
         const data: Facility[] = await response.json();
         console.log("Data fetched", data);
         const names = data.map((facility) => facility.facilityCategory);
-        setFacilityNames(names);
+        // setFacilityNames(names);
       } catch (error) {
         console.log("Error fetching facilities:", error);
       }
@@ -107,62 +131,57 @@ export default function UseFacilityIcon() {
   const getIconName = (facilityCategory: string): string | null => {
     switch (facilityCategory) {
       case "Amenities":
-        return "ConciergeBell";
+        return amenities;
       case "Dining":
-        return "ChefHat";
+        return dining;
       case "Recreation":
-        return "TreePalm";
+        return recreation;
       case "Business Services":
-        return "Handshake";
+        return businessService;
       case "Transportation":
-        return "Car";
+        return transportation;
       case "Guest Services":
-        return "HandPlatter";
+        return guestServices;
       case "Housekeeping":
-        return "WashingMachine";
+        return housekeeping;
       case "Luggage":
-        return "Luggage";
+        return luggage;
       case "Accessibility":
-        return "Accessibility";
+        return accessibility;
       case "Security":
-        return "Shield";
+        return security;
       case "Emergency Services":
-        return "Siren";
+        return emergencyServices;
       case "Recreational Activities":
-        return "Tent";
+        return recreationalActivities;
       case "Wellness and Spa":
-        return "Clover";
+        return wellnessAndSpa;
       case "Entertainment":
-        return "Drama";
-      case "Childrens Services":
-        return "Baby";
+        return entertainment;
+      case "Children's Services":
+        return childrenServices;
       case "Pet Services":
-        return "PawPrint";
+        return petServices;
       case "Technology":
-        return "Pickaxe";
+        return technology;
       case "Sustainability":
-        return "Flower";
+        return sustainability;
       case "Events":
-        return "CalendarCheck";
+        return events;
       case "Miscellaneous":
-        return "Currency";
+        return miscellaneous;
       default:
         return null;
     }
   };
 
-  const getIconComponent = (nameOfFacility: string): any => {
-    if (nameOfFacility && facilityNames.includes(nameOfFacility)) {
-      const facility = facilityNames.find(
-        (facility) => facility === nameOfFacility
-      );
-      if (facility) {
-        const IconComponent = (Icons as any)[`${getIconName(nameOfFacility)}`];
-        return IconComponent;
-      }
-    }
-    return null;
-  };
+  const iconSrc = getIconName(nameOfFacility);
 
-  return { getIconComponent };
-}
+  if (iconSrc) {
+    return <Image src={iconSrc} alt={nameOfFacility} />;
+  } else {
+    return null;
+  }
+};
+
+export default UseFacilityIcon;

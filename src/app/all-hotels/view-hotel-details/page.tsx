@@ -11,7 +11,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import facilitiesIcon from "../../../../data/facilities.json";
 import * as Icons from "lucide-react";
-import useFacilityIcon from "../../../utils/facilityIcon";
+import UseFacilityIcon from "../../../utils/facilityIcon";
 
 import {
   Dialog,
@@ -21,7 +21,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import Layout from "@/components/Layout/Layout";
-import Hero from "@/components/landing/Hero";
+// import Hero from "@/components/landing/Hero";
+import Hero from "@/components/HotelHero/Hero";
 // import BookingConfirmation from "./booking-confirmation/page";
 // import UseFacilityIcon from "../../../utils/facilityIcon";
 
@@ -74,8 +75,7 @@ function ClientViewHotel() {
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [count, setCount] = useState<number[]>([]);
-  const { getIconComponent } = useFacilityIcon();
-  // const { getIconName, facilityNames } = useFacilityIcon();                /////       ////        /////
+  // const { getIconComponent } = useFacilityIcon();
   useEffect(() => {
     if (hotel?.rooms) {
       setCount(Array(hotel.rooms.length).fill(0));
@@ -182,7 +182,8 @@ function ClientViewHotel() {
 
   return (
     <Layout>
-      <Hero />
+      {/* <Hero title={hotel.address.slice(0, hotel.address.indexOf(","))} /> */}
+      <Hero title={hotel.name} />
       <Card className="w-full">
         <div className="flex justify-center">
           <MaxWidthWrapper className="max-w-screen-2xl">
