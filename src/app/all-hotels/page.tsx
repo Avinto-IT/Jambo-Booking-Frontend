@@ -10,7 +10,8 @@ import { Suspense, useEffect, useState } from "react";
 
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import Layout from "@/components/Layout/Layout";
-import Hero from "@/components/landing/Hero";
+// import Hero from "@/components/landing/Hero";
+import Hero from "@/components/HotelHero/Hero";
 import { Button } from "@/components/ui/button";
 import FacilityIcon from "@/utils/facilityIcon";
 
@@ -26,7 +27,6 @@ function AllHotels() {
   const [hotels, setHotels] = useState<Hotel[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const [ind, setInd] = useState(null);
 
   const searchParams = useSearchParams();
 
@@ -72,7 +72,8 @@ function AllHotels() {
 
   return (
     <Layout>
-      <Hero />
+      <Hero title={locationId} />
+      {/* {locationId ? <Hero title={locationId} /> : <Hero title="search" />} */}
       <div className="flex justify-center">
         <MaxWidthWrapper>
           {loading ? (
@@ -132,7 +133,7 @@ function AllHotels() {
                         </p>
                       </div>
                       <div className="px-4 text-[#64748B] text-sm">
-                        <div className="mb-2">{hotel.address}</div>
+                        <div className="mb-2 font-medium">{hotel.address}</div>
                         <div className="flex">
                           <div className="flex flex-wrap">
                             {lowestPricedRoom?.amenities

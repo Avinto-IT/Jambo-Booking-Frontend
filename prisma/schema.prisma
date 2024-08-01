@@ -86,6 +86,8 @@ model Booking {
   status           String
   guests           Int
   bookingInfo      Json
+  bookingRemarks   String?
+  specialRequest   String
   user             User             @relation(fields: [userID], references: [userID])
   hotel            Hotel            @relation(fields: [hotelID], references: [hotelID])
   bookingHistory   BookingHistory[]

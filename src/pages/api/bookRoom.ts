@@ -14,9 +14,9 @@ async function bookHotelRoomHandler(req: NextApiRequest, res: NextApiResponse) {
     hotelID,
     bookingStartDate,
     bookingEndDate,
-    // status,
     guests,
     bookingInfo,
+    specialRequest,
   } = req.body;
 
   if (!userID) {
@@ -26,19 +26,18 @@ async function bookHotelRoomHandler(req: NextApiRequest, res: NextApiResponse) {
     return res.status(400).json({ error: "Hotel ID is required" });
   }
   if (!bookingStartDate) {
-    return res.status(400).json({ error: "Booking date is required" });
+    return res.status(400).json({ error: "Booking start date is required" });
   }
   if (!bookingEndDate) {
-    return res.status(400).json({ error: "Booking date is required" });
+    return res.status(400).json({ error: "Booking end date is required" });
   }
-  // if (!status) {
-  //   return res.status(400).json({ error: "Status is required" });
-  // }
   if (guests === undefined || guests === null) {
     return res.status(400).json({ error: "Number of guests is required" });
   }
-  if (bookingInfo === undefined || bookingInfo === null) {
-    return res.status(400).json({ error: "Number of rooms is required" });
+  if (!Array.isArray(bookingInfo) || bookingInfo.length === 0) {
+    return res
+      .status(400)
+      .json({ error: "Booking information is required and must be an array" });
   }
 
   try {
@@ -64,18 +63,31 @@ async function bookHotelRoomHandler(req: NextApiRequest, res: NextApiResponse) {
     const rooms = hotel.rooms as unknown as Array<{
       type: string;
       price: number;
+      capacity: string;
+      beds: Array<{
+        bedType: string;
+        numberOfBeds: string;
+      }>;
     }>;
-    const room = rooms?.find((room) => room.type === bookingInfo.roomType);
 
-    if (!room) {
-      return res.status(400).json({ error: "Cannot find the room type" });
-    }
-    const totalPrice = room.price * bookingInfo.rooms;
-
-    const updatedBookingInfo = {
-      ...bookingInfo,
-      totalPrice,
-    };
+    const updatedBookingInfo = bookingInfo.map((info) => {
+      const room = rooms?.find((room) => room.type === info.roomType);
+      if (!room) {
+        throw new Error(`Cannot find room type: ${info.roomType}`);
+      }
+      const beds = room.beds;
+      // console.log(room);
+      const roomCapacity = room.capacity;
+      const totalPrice = room.price * info.rooms;
+      const roomPrice = room.price;
+      return {
+        ...info,
+        totalPrice,
+        beds,
+        roomCapacity,
+        roomPrice,
+      };
+    });
 
     // Create the booking
     const booking = await prisma.booking.create({
@@ -85,9 +97,10 @@ async function bookHotelRoomHandler(req: NextApiRequest, res: NextApiResponse) {
         bookingStartDate: new Date(bookingStartDate),
         requestedDate: new Date(),
         bookingEndDate: new Date(bookingEndDate),
-        status: "pending",
+        status: "requested",
         guests,
         bookingInfo: updatedBookingInfo,
+        specialRequest,
       },
     });
 
@@ -102,7 +115,9 @@ async function bookHotelRoomHandler(req: NextApiRequest, res: NextApiResponse) {
     return res.status(201).json({ message: "Booking successful", booking });
   } catch (error) {
     console.error("Booking error:", error);
-    return res.status(500).json({ error: "Booking failed" });
+    return res
+      .status(500)
+      .json({ error: "Booking failed/Internal Server Error" });
   } finally {
     await prisma.$disconnect();
   }
