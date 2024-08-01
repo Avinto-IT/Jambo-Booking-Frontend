@@ -134,7 +134,7 @@ function AllHotels() {
 
   return (
     <Layout>
-      <Hero title={locationId} />
+      <Hero title="xd" />
       {/* {locationId ? <Hero title={locationId} /> : <Hero title="search" />} */}
       <div className="flex justify-center">
         <MaxWidthWrapper>

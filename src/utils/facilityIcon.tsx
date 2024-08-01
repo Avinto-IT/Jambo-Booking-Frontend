@@ -107,10 +107,10 @@ interface Facility {
 }
 
 interface IconComponentProps {
-  nameOfFacility: string;
+  name: string;
 }
 
-const UseFacilityIcon: React.FC<IconComponentProps> = ({ nameOfFacility }) => {
+const UseFacilityIcon: React.FC<IconComponentProps> = ({ name }) => {
   // const [facilityNames, setFacilityNames] = useState<string[]>([]);
 
   useEffect(() => {
@@ -175,10 +175,10 @@ const UseFacilityIcon: React.FC<IconComponentProps> = ({ nameOfFacility }) => {
     }
   };
 
-  const iconSrc = getIconName(nameOfFacility);
+  const iconSrc = getIconName(name);
 
   if (iconSrc) {
-    return <Image src={iconSrc} alt={nameOfFacility} />;
+    return <Image src={iconSrc} alt={name} />;
   } else {
     return null;
   }

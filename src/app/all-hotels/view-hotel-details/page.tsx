@@ -23,6 +23,7 @@ import {
 import Layout from "@/components/Layout/Layout";
 // import Hero from "@/components/landing/Hero";
 import Hero from "@/components/HotelHero/Hero";
+import { BedIcon } from "@/components/Icons/AdminIcons";
 // import BookingConfirmation from "./booking-confirmation/page";
 // import UseFacilityIcon from "../../../utils/facilityIcon";
 
@@ -288,7 +289,7 @@ function ClientViewHotel() {
                 </div>
               </div>
               <div className="grid grid-cols-6 gap-20">
-                <div className="space-y-4 col-span-4 border border-red-500">
+                <div className="space-y-4 col-span-4 ">
                   <div className="space-y-3">
                     <div className="text-2xl font-semibold">Basic Overview</div>
                     <div className="pb-5">{hotel.address}</div>
@@ -319,26 +320,13 @@ function ClientViewHotel() {
                     </div>
                     <div className="grid gap-6 grid-cols-2">
                       {hotel.facilities.map((facility, facilityIndex) => {
-                        const facilityIcon = facilitiesIcon.facilitiesIcon.find(
-                          (icon) => {
-                            return icon.name === facility.name;
-                          }
-                        );
-
-                        const IconComponent = (Icons as any)[
-                          `${facilityIcon?.icon}`
-                        ];
-
                         return (
                           <div
                             key={facilityIndex}
-                            className="flex items-center space-x-4"
+                            className="flex items-center gap-4"
                           >
-                            <div className="">
-                              {IconComponent && <IconComponent className="" />}
-                            </div>
-
-                            <div className="">{facility.name}</div>
+                            <UseFacilityIcon name={facility.name} />
+                            {facility.name}
                           </div>
                         );
                       })}
@@ -360,25 +348,28 @@ function ClientViewHotel() {
                               {value.type}
                             </CardTitle>
                             <div className="flex justify-between">
-                              <div className="space-y-2 w-2/3 pr-5 border border-red-500">
-                                <div className="flex justify-between w-3/5 font-medium">
-                                  <div className="flex font-normal items-center">
-                                    <Image src={bed} alt="bed" />
+                              <div className="space-y-2 w-2/3 pr-5 ">
+                                <div className="flex justify-start w-full font-medium ">
+                                  <div className="flex flex-col font-normal items-start">
                                     {value.beds.map((bed, bedIndex) => (
-                                      <div className="flex" key={bedIndex}>
-                                        <div className="pl-4 pr-1">
-                                          {bed.numberOfBeds}
-                                        </div>
-                                        <div className="font-normal">
-                                          {bed.bedType} <span> beds</span>
+                                      <div
+                                        className="flex gap-4"
+                                        key={bedIndex}
+                                      >
+                                        <div className="flex gap-4">
+                                          <BedIcon />
+                                          <span className="font-normal">
+                                            {bed.numberOfBeds} {bed.bedType}{" "}
+                                            <span> bed(s)</span>
+                                          </span>
                                         </div>
                                       </div>
                                     ))}
                                   </div>
-                                  <div className="flex space-x-4 font-normal items-center">
-                                    <Image src={guest} alt="guest" />
-                                    <div className="">
-                                      {value.capacity} <span> guests</span>
+                                  <div className="flex px-4 font-normal items-start">
+                                    <div className="flex gap-4">
+                                      <Image src={guest} alt="guest" />
+                                      <span>{value.capacity} guests</span>
                                     </div>
                                   </div>
                                 </div>
@@ -591,25 +582,21 @@ function ClientViewHotel() {
                     <div className="text-2xl font-semibold">
                       Explore All Facilities
                     </div>
-                    <div className="grid grid-cols-3 space-y-2">
+                    {/* <UseFacilityIcon name="Security" /> */}
+                    <div className="grid grid-cols-3">
                       {hotel.facilities
                         .slice(0, visibleFacilitiesCount)
                         .map((value, facilityIndex) => {
-                          const facilityIcon =
-                            facilitiesIcon.facilitiesIcon.find((icon) => {
-                              return icon.name === value.name;
-                            });
-
-                          const IconComponent = (Icons as any)[
-                            `${facilityIcon?.icon}`
-                          ];
                           return (
-                            <div className="col-span-1" key={facilityIndex}>
-                              <div className="flex items-center space-x-4">
-                                {IconComponent && (
-                                  <IconComponent className="" />
+                            <div
+                              className="col-span-1 my-4"
+                              key={facilityIndex}
+                            >
+                              <div className="flex items-center gap-4">
+                                {UseFacilityIcon && (
+                                  <UseFacilityIcon name={value.name} />
                                 )}
-                                <div className="">{value.name}</div>
+                                <span>{value.name}</span>
                               </div>
                               <div className="">
                                 {value.subFacilities.map(
@@ -645,7 +632,10 @@ function ClientViewHotel() {
                           return (
                             <div key={ruleIndex}>
                               <div className="flex w-full">
-                                <div className="w-1/4">{value.type}</div>
+                                <div className="w-1/4">
+                                  <UseFacilityIcon name={value.type} />
+                                  {value.type}
+                                </div>
                                 <div className="w-3/4">{value.details}</div>
                               </div>
                               {ruleIndex !== hotel.houseRules.length - 1 && (
@@ -658,7 +648,7 @@ function ClientViewHotel() {
                     </div>
                   </div>
                 </div>
-                <div className="col-span-2 border border-red-500">
+                <div className="col-span-2 ">
                   <Card className="shadow-xl p-6 gap-4">
                     <CardTitle>TEST</CardTitle>
                     <CardContent className="gap-y-4">

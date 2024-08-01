@@ -9,7 +9,7 @@ interface Location {
   zipCode: string;
 }
 
-export default function Hero() {
+export default function Hero({ title = "" }: { title: string }) {
   const [inputValue, setInputValue] = useState("");
   const [locations, setLocations] = useState<Location[]>([]);
   const [locationChange, setLocationChange] = useState<string | undefined>(
