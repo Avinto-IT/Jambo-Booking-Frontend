@@ -39,6 +39,14 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog";
 
 interface LayoutProps {
   children: ReactNode;
@@ -101,9 +109,9 @@ const AgentLayout: React.FC<LayoutProps> = ({ children }) => {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href="/agent-dashboard/bookings"
+                  href="/agent-dashboard/booking"
                   className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors md:h-8 md:w-8 ${
-                    pathname === "/agent-dashboard/bookings"
+                    pathname === "/agent-dashboard/booking"
                       ? "bg-[#F1F5F9]"
                       : "text-primary"
                   }`}
@@ -121,9 +129,11 @@ const AgentLayout: React.FC<LayoutProps> = ({ children }) => {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href="#"
+                  href="/agent-dashboard/settings"
                   className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors md:h-8 md:w-8 ${
-                    pathname === "#" ? "bg-[#F1F5F9]" : "text-primary"
+                    pathname === "/agent-dashboard/settings"
+                      ? "bg-[#F1F5F9]"
+                      : "text-primary"
                   }`}
                 >
                   <Settings className="h-5 w-5" />
@@ -177,10 +187,12 @@ const AgentLayout: React.FC<LayoutProps> = ({ children }) => {
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Settings</DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link href="/agent-dashboard/settings">Settings</Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem>Support</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Logout</DropdownMenuItem>
+                <DropdownMenuItem></DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

@@ -23,6 +23,7 @@ import {
 import Layout from "@/components/Layout/Layout";
 // import Hero from "@/components/landing/Hero";
 import Hero from "@/components/HotelHero/Hero";
+import UseHouseRuleIcon from "@/utils/houseRulesIcon";
 // import BookingConfirmation from "./booking-confirmation/page";
 // import UseFacilityIcon from "../../../utils/facilityIcon";
 
@@ -688,8 +689,14 @@ function ClientViewHotel() {
                       {hotel.houseRules.map((value, ruleIndex) => {
                         return (
                           <div key={ruleIndex}>
-                            <div className="flex w-full">
-                              <div className="w-1/4">{value.type}</div>
+                            <div className="flex w-full items-center">
+                              <div className="w-1/4 flex gap-x-4">
+                                {UseHouseRuleIcon && (
+                                  <UseHouseRuleIcon nameOfRule={value.type} />
+                                )}
+
+                                {value.type}
+                              </div>
                               <div className="w-3/4">{value.details}</div>
                             </div>
                             {ruleIndex !== hotel.houseRules.length - 1 && (

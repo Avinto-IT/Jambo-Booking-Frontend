@@ -1,62 +1,106 @@
 "use client";
 import AdminDashboard from "../../components/dashboard/AdminDashboard";
 import React, { useEffect, useState } from "react";
-import { Agent, Booking, Hotel, UserDetails } from "@/utils/types";
-
+// import { Agent,  } from "@/utils/types";
+import Cookies from "js-cookie";
 import withAuth from "@/lib/loginAuth";
 import AgentDashboard from "@/components/dashboard/AgentDashboard";
+import AgentBookings from "./booking/page";
 
+interface User {
+  userID: string;
+  agencyName: string;
+  firstName: string;
+  lastName: string;
+  password: string;
+  email: string;
+  affiliatedHotel: string | null;
+  contactNumber: string;
+  role: string;
+  dateOfBirth: string;
+  address: string;
+  toursCompleted: number;
+  gradeID: string | null;
+  hotelID: string | null;
+  bookings: Booking[];
+}
+
+interface Booking {
+  bookingID: string;
+  userID: string;
+  hotelID: string;
+  bookingStartDate: string;
+  bookingEndDate: string;
+  status: string;
+  guests: number;
+  bookingInfo: BookingInfo[];
+  hotel: Hotel;
+}
+
+interface BookingInfo {
+  roomType: string;
+  rooms: number;
+  totalPrice: number;
+  beds: Bed[];
+  roomCapacity: string;
+  totalRoomPrice: string;
+  roomPrice?: string; // Optional, present only in some cases
+}
+
+interface Bed {
+  bedType: string;
+  numberOfBeds: string;
+}
+
+interface Hotel {
+  name: string;
+  address: string;
+}
+// export default function AdminUpdateHotel() {
+//   return (
+//     <Suspense fallback={<div>Loading...</div>}>
+//       <AdminUpdateHotelContent />
+//     </Suspense>
+//   );
+// }
+// const AdminUpdateHotelContent = () => {
 const Dashboard: React.FC = ({}) => {
-  const [hotels, setHotels] = useState<Hotel[]>([]);
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [agents, setAgents] = useState<Agent[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [agent, setAgent] = useState<User | null>(null);
 
-  useEffect(() => {
-    const fetchHotels = async () => {
+  const userDetails = Cookies.get("userDetails");
+  const getUserIDFromCookie = () => {
+    if (userDetails) {
       try {
-        const response = await fetch("/api/getHotels");
-        const data = await response.json();
-        setHotels(data.hotels); // Corrected this line
+        const parsedUserDetails = JSON.parse(userDetails);
+        return parsedUserDetails.userID;
       } catch (error) {
-        console.log("Error fetching hotels:", error);
-      } finally {
-        setLoading(false);
+        console.error("Error parsing user details from cookie:", error);
+        return null;
       }
-    };
-    fetchHotels();
-  }, []);
-  useEffect(() => {
-    const fetchBookings = async () => {
-      try {
-        const response = await fetch("/api/getAllBookings");
-        const data = await response.json();
-        console.log(data, "1123123");
-        setBookings(data.bookings);
-      } catch (error) {
-        console.log("Error fetching bookings:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchBookings();
-  }, []);
+    } else {
+      console.warn("User details not found in cookie");
+      return null;
+    }
+  };
+  const agentId = getUserIDFromCookie();
+
   useEffect(() => {
     const fetchAgents = async () => {
       try {
-        const response = await fetch("/api/getAgents");
+        const response = await fetch(`/api/getAgentById?id=${agentId}`, {
+          method: "GET",
+        });
         const data = await response.json();
-        setAgents(data.agents);
+        setAgent(data.user);
       } catch (error) {
-        console.log("Error fetching bookings:", error);
-      } finally {
-        setLoading(false);
+        console.error("Error fetching agent data:", error);
       }
     };
+
     fetchAgents();
   }, []);
 
-  return <AgentDashboard hotels={hotels} agents={agents} bookings={bookings} />;
+  return <>{agent && <AgentDashboard agent={agent} />} </>;
 };
 
 export default withAuth(Dashboard);

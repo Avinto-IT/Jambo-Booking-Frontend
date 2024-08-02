@@ -3,22 +3,7 @@ import BreadcrumbHome from "@/components/Home-Breadcrumb/BreadcrumbHome";
 
 import LayoutThree from "@/components/Layout/LayoutThree";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import tick from "../../../public/images/Tickmark.svg";
-import Image from "next/image";
-import { Card } from "@/components/ui/card";
+
 import RegisterAgent from "@/components/AgentSignUp/RegisterAgent";
 import BuildSomethingGreat from "@/components/AgentSignUp/BuildSomethingGreat";
 import Staticpage from "@/components/landing/StaticPage";

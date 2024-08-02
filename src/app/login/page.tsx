@@ -48,6 +48,7 @@ export default function Login() {
 
     try {
       const data = await response.json();
+
       if (response.status === 200) {
         const userDetails = data.user;
         setMessage(data.message);
@@ -57,6 +58,7 @@ export default function Login() {
           sameSite: "strict",
         });
         localStorage.setItem("token", data.token);
+        localStorage.setItem("userID", userDetails.userID);
         if (data.user.role === "admin") window.location.href = "/dashboard";
         else if (data.user.role === "hotel")
           window.location.href = "/hotel-dashboard";
