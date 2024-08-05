@@ -188,7 +188,7 @@ export default function AgentBookings() {
     return date.toLocaleDateString("en-US", options);
   };
   const handleViewClick = (bookingID: string) => {
-    router.push(`/agent-dashboard/booking/view-booking?id=${bookingID}`);
+    router.push(`booking/${bookingID}`);
   };
   return (
     <AgentLayout>
