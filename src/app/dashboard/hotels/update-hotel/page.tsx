@@ -29,12 +29,21 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
+import DialogBox from "@/components/AdminComponents/ImagePopup";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import Select, { components, MenuListProps } from "react-select";
-import { HouseRuleInterface, Location } from "@/utils/types";
+import Select, {
+  components,
+  GroupBase,
+  MenuListProps,
+  OptionsOrGroups,
+} from "react-select";
+import {
+  HouseRuleInterface,
+  Location,
+  FacilitiesInterface,
+} from "@/utils/types";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Table,
@@ -50,7 +59,6 @@ import {
   Title,
   Value,
 } from "@/components/AdminComponents/Sub-Components/ReviewComponents";
-import DialogBox from "@/components/AdminComponents/ImagePopup";
 import {
   uploadMultipleFiles,
   uploadSingleFile,
@@ -64,6 +72,10 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { InputNumber } from "@/components/ui/numberInput";
+interface OptionType {
+  value: string;
+  label: string;
+}
 interface HouseRule {
   id: number;
   type: {
@@ -76,8 +88,8 @@ interface HouseRule {
 interface Facility {
   id: number;
   name: { label: string; value: string };
-  description: string;
-  subFacilities: { id: number; name: string }[];
+  // description: string;
+  subFacilities: { id: number; name: { value: string; label: string } }[];
 }
 
 interface Room {
@@ -139,20 +151,23 @@ const basicInfoSchema = z.object({
   name: z.string().min(1, "Hotel name is required"),
   location: z.object({
     value: z.string().min(1, "Location is required"),
-    // label: z.string().min(1, "Location label is required"),
   }),
   description: z.string().min(1, "Description is required"),
 });
 
 const facilitySchema = z.object({
   name: z.object({
-    label: z.string().min(1, "Facility is required"),
-    value: z.string().min(1, "Facility is required"),
+    label: z.string().min(1, "Facility Category is required"),
+    value: z.string().min(1, "Facility Category is required"),
   }),
-  description: z.string().min(1, "Description is required"),
   subFacilities: z
     .array(
-      z.object({ name: z.string().min(1, "Sub-facility name is required") })
+      z.object({
+        name: z.object({
+          label: z.string().min(1, "Facility name is required"),
+          value: z.string().min(1, "Facility name is required"),
+        }),
+      })
     )
     .min(1, "At least one sub-facility is required"),
 });
@@ -221,6 +236,29 @@ export default function AdminUpdateHotel() {
   );
 }
 const AdminUpdateHotelContent = () => {
+  const [facilities, setFacilities] = useState<FacilitiesInterface[]>([]);
+  const [subFacilitiesMap, setSubFacilitiesMap] = useState<{
+    [key: string]: string[];
+  }>({});
+  useEffect(() => {
+    const fetchFacilities = async () => {
+      try {
+        const response = await fetch("/api/getFacilities");
+        const data: FacilitiesInterface[] = await response.json();
+        setFacilities(data);
+
+        // Create a map of facility categories to sub-facilities
+        const map: { [key: string]: string[] } = {};
+        data.forEach((facility) => {
+          map[facility.facilityCategory] = facility.subFacilities;
+        });
+        setSubFacilitiesMap(map);
+      } catch (error) {
+        console.error("Error fetching facilities:", error);
+      }
+    };
+    fetchFacilities();
+  }, []);
   const steps = [
     { component: BasicInformation, label: "Hotel Information" },
     { component: Facilities, label: "Facilities" },
@@ -270,8 +308,8 @@ const AdminUpdateHotelContent = () => {
         {
           id: 1,
           name: { label: "", value: "" },
-          description: "",
-          subFacilities: [{ id: 1, name: "" }],
+          // description: "",
+          subFacilities: [{ id: Date.now(), name: { value: "", label: "" } }],
         },
       ],
       rooms: [
@@ -331,6 +369,7 @@ const AdminUpdateHotelContent = () => {
 
           if (data.hotel) {
             // Create a temporary array to hold all room images
+
             const tempRoomImageLinks: string[] = [];
             data.hotel.rooms.forEach((room: Room) => {
               room.roomImageLinks.forEach((link) => {
@@ -359,11 +398,14 @@ const AdminUpdateHotelContent = () => {
                     label: facility.name,
                     value: facility.name,
                   },
-                  description: facility.description,
+                  // description: facility.description,
                   subFacilities: facility.subFacilities.map(
                     (subFacility, subIndex) => ({
                       id: subIndex,
-                      name: subFacility.name,
+                      name: {
+                        value: subFacility.name,
+                        label: subFacility.name,
+                      },
                     })
                   ),
                 })
@@ -432,7 +474,6 @@ const AdminUpdateHotelContent = () => {
     };
 
     fetchLocations();
-    console.log("fetching locations");
   }, []);
 
   useEffect(() => {
@@ -522,17 +563,19 @@ const AdminUpdateHotelContent = () => {
     setIsSubmitClicked(true);
     let primaryImageLink = "";
 
-    let imageLinks = [];
-    let roomImageLinksArray: string[][] = [];
-
+    // Handle primary image upload separately
     if (data.primaryImage) {
       primaryImageLink = await uploadSingleFile(data.primaryImage);
     }
 
+    // Handle multiple image uploads
+    let imageLinks = [];
     if (data.imageLinks && data.imageLinks.length > 0) {
       imageLinks = await uploadMultipleFiles(data.imageLinks);
     }
 
+    // Handle room image uploads
+    let roomImageLinksArray = [];
     for (const room of data.rooms) {
       let roomImageLinks = [];
       if (room.roomImageLinks.length > 0) {
@@ -546,14 +589,14 @@ const AdminUpdateHotelContent = () => {
       address: data.basicInfo.location.label,
       locationID: data.basicInfo.location.value,
       facilities: data.facilities.map((facility) => ({
-        name: facility.name.value,
-        description: facility.description,
+        name: facility.name.label,
+        // description: facility.description,
         subFacilities: facility.subFacilities.map((subFacility) => ({
-          name: subFacility.name,
+          name: subFacility.name.value,
         })),
       })),
-      primaryImageLink: data.primaryImage ? imageLinks[0] : "",
-      imageLinks: imageLinks.slice(data.primaryImage ? 1 : 0),
+      primaryImageLink, // Assign the primary image link directly
+      imageLinks, // Assign the image links array directly
       rooms: data.rooms.map((room, index) => ({
         type: room.type,
         numberOfRooms: room.numberOfRooms,
@@ -623,7 +666,6 @@ const AdminUpdateHotelContent = () => {
       event.preventDefault();
     }
   };
-  console.log(hotel);
   function BasicInformation() {
     const {
       register,
@@ -743,7 +785,7 @@ const AdminUpdateHotelContent = () => {
             value: result.location.locationID,
             label: `${result.location.address}, ${result.location.city}, ${result.location.country}, ${result.location.zipCode}`,
           };
-          console.log(newLoc);
+
           setLocations((prevLocations) => [...prevLocations, result.location]);
           setValue("basicInfo.location", newLoc);
           closeDialog();
@@ -1040,204 +1082,229 @@ const AdminUpdateHotelContent = () => {
   function Facilities() {
     const {
       register,
+      control,
       formState: { errors },
+      watch,
+      getValues,
+      setValue,
     } = methods;
-
-    const facilitiesList = [
-      "Reception/Front Desk",
-      "Room Amenities",
-      "Bathroom Amenities",
-      "Food and Beverage",
-      "Facilities and Services",
-      "Accessibility",
-      "Parking",
-      "Security",
-      "Leisure and Recreation",
-      "Additional Services",
-    ];
+    const facilitiesWatch = watch("facilities");
 
     const addSubFacility = (facilityIndex: number) => {
-      const newSubFacility = { id: Date.now(), name: "" };
-      const facilities = methods.getValues("facilities");
+      const newSubFacility = {
+        id: Date.now(),
+        name: { value: "", label: "" },
+      };
+      const facilities = getValues("facilities");
       facilities[facilityIndex].subFacilities.push(newSubFacility);
-      methods.setValue("facilities", facilities);
+      setValue("facilities", facilities);
     };
 
     const removeSubFacility = (
       facilityIndex: number,
       subFacilityIndex: number
     ) => {
-      const facilities = methods.getValues("facilities");
-
+      const facilities = getValues("facilities");
       facilities[facilityIndex].subFacilities.splice(subFacilityIndex, 1);
-
-      methods.setValue("facilities", facilities);
+      setValue("facilities", facilities);
     };
 
     return (
       <div className="p-6 space-y-6">
-        {facilityFields.map((facility, facilityIndex) => (
-          <Card key={facility.id} className="overflow-hidden flex flex-col">
-            <CardHeader className="flex flex-row justify-between ">
-              <div className="flex flex-col gap-1">
-                <CardTitle>Facility {facilityIndex + 1}</CardTitle>
-                <CardDescription>
-                  A facility could be spa, gym, rooftop bar etc. Obs! room
-                  specific facilities such as TV etc should be added in the Room
-                  section
-                </CardDescription>
-              </div>
-              <Button
-                variant="outline"
-                onClick={() => removeFacility(facilityIndex)}
-              >
-                <Trash className="h-4 w-4" />
-                Remove Facility
-              </Button>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-col gap-4">
-                <Label htmlFor={`facility-name-${facility.id}`}>
-                  Facility Category
-                </Label>
-                <Controller
-                  name={`facilities.${facilityIndex}.name`}
-                  control={methods.control}
-                  render={({ field }) => (
-                    <Select
-                      {...field}
-                      options={facilitiesList.map((facility) => ({
-                        value: facility,
-                        label: facility,
-                      }))}
-                      placeholder="Select facility"
-                    />
-                  )}
-                />
-                {errors?.facilities?.[facilityIndex]?.name?.value?.message && (
-                  <span className="text-red-500">
-                    {errors?.facilities?.[facilityIndex]?.name?.value?.message}
-                  </span>
-                )}
+        {facilityFields.map((facility, facilityIndex) => {
+          const selectedFacilityCategory =
+            facilitiesWatch[facilityIndex]?.name?.label;
 
-                <Label htmlFor={`facility-description-${facility.id}`}>
-                  Short Description
-                </Label>
-                <Input
-                  id={`facility-description-${facility.id}`}
-                  type="text"
-                  {...register(`facilities.${facilityIndex}.description`)}
-                  placeholder=" Our reception provides exceptional service which begins the moment you step through..."
-                  onKeyDown={handleKeyDown}
-                />
-                {errors?.facilities?.[facilityIndex]?.description?.message && (
-                  <span className="text-red-500">
-                    {errors?.facilities?.[facilityIndex]?.description?.message}
-                  </span>
-                )}
-                <div>
-                  <div className="grid gap-4">
-                    <Table className="w-full">
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead className="text-left">S.No.</TableHead>
-                          <TableHead className="text-left">
-                            Sub Facility
-                          </TableHead>
-                          <TableHead className="text-left">Actions</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {facility.subFacilities.map((subFacility, subIndex) => (
-                          <TableRow key={subFacility.id}>
-                            <TableCell className="font-semibold">
-                              {String(subIndex + 1).padStart(2, "0")}
-                            </TableCell>
-                            <TableCell>
-                              <Controller
-                                name={`facilities.${facilityIndex}.subFacilities.${subIndex}.name`}
-                                control={methods.control}
-                                render={({ field }) => (
-                                  <Input
-                                    {...field}
-                                    placeholder="Customer Service Desk"
-                                    className="flex-1"
-                                    onKeyDown={handleKeyDown}
+          // Log the selected facility category and subFacilitiesMap for debugging
+          console.log("Selected Facility Category:", selectedFacilityCategory);
+          console.log("SubFacilitiesMap:", subFacilitiesMap);
+
+          const subFacilityOptions: OptionsOrGroups<
+            OptionType,
+            GroupBase<OptionType>
+          > = selectedFacilityCategory
+            ? (subFacilitiesMap[selectedFacilityCategory] || []).map(
+                (subFacilityName) => ({
+                  value: subFacilityName,
+                  label: subFacilityName,
+                })
+              )
+            : [];
+
+          return (
+            <Card key={facility.id} className="overflow-hidden flex flex-col">
+              <CardHeader className="flex flex-row justify-between">
+                <div className="flex flex-col gap-1">
+                  <CardTitle>Facility {facilityIndex + 1}</CardTitle>
+                  <CardDescription>
+                    A facility could be spa, gym, rooftop bar etc. Obs! room
+                    specific facilities such as TV etc should be added in the
+                    Room section
+                  </CardDescription>
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={() => removeFacility(facilityIndex)}
+                >
+                  <Trash className="h-4 w-4" />
+                  Remove Facility
+                </Button>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-col gap-4">
+                  <Label htmlFor={`facility-name-${facility.id}`}>
+                    Facility Category
+                  </Label>
+                  <Controller
+                    name={`facilities.${facilityIndex}.name`}
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        {...field}
+                        options={facilities.map((facility) => ({
+                          value: facility.facilityCategory,
+                          label: facility.facilityCategory,
+                        }))}
+                        placeholder="Select Facility Category"
+                        menuPosition="fixed" // Prevents the menu from shifting the content
+                        styles={{
+                          menuPortal: (base) => ({
+                            ...base,
+                            zIndex: 9999,
+                          }),
+                        }}
+                      />
+                    )}
+                  />
+                  {errors?.facilities?.[facilityIndex]?.name?.value
+                    ?.message && (
+                    <span className="text-red-500">
+                      {
+                        errors?.facilities?.[facilityIndex]?.name?.value
+                          ?.message
+                      }
+                    </span>
+                  )}
+                  <div>
+                    <div className="grid gap-4">
+                      <Table className="w-full">
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="text-left">S.No.</TableHead>
+                            <TableHead className="text-left">
+                              Facility Name
+                            </TableHead>
+                            <TableHead className="text-left">Actions</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {facility.subFacilities.map(
+                            (subFacility, subIndex) => (
+                              <TableRow key={subFacility.id}>
+                                <TableCell className="font-semibold">
+                                  {String(subIndex + 1).padStart(2, "0")}
+                                </TableCell>
+                                <TableCell>
+                                  <Controller
+                                    name={`facilities.${facilityIndex}.subFacilities.${subIndex}.name`}
+                                    control={control}
+                                    render={({ field }) => {
+                                      console.log("SubFacility Field:", field);
+                                      return (
+                                        <Select
+                                          {...field}
+                                          options={subFacilityOptions}
+                                          placeholder="Select Sub Facility"
+                                          className="w-96"
+                                          menuPosition="fixed" // Prevents the menu from shifting the content
+                                          styles={{
+                                            menuPortal: (base) => ({
+                                              ...base,
+                                              zIndex: 9999,
+                                            }),
+                                          }}
+                                        />
+                                      );
+                                    }}
                                   />
-                                )}
-                              />
-                            </TableCell>
-                            <TableCell>
+                                </TableCell>
+                                <TableCell>
+                                  <Button
+                                    variant="outline"
+                                    size="icon"
+                                    onClick={() =>
+                                      removeSubFacility(facilityIndex, subIndex)
+                                    }
+                                  >
+                                    <Trash className="h-4 w-4" />
+                                  </Button>
+                                </TableCell>
+                              </TableRow>
+                            )
+                          )}
+                          <TableRow>
+                            <TableCell colSpan={3}>
+                              <div className="text-xs text-muted-foreground">
+                                Note: The facility name is only interactable
+                                after the category has been selected
+                              </div>
                               <Button
-                                variant="outline"
-                                size="icon"
-                                onClick={() => {
-                                  removeSubFacility(facilityIndex, subIndex);
-                                }}
+                                variant="ghost"
+                                onClick={() => addSubFacility(facilityIndex)}
+                                className="flex items-center gap-1"
                               >
-                                <Trash className="h-4 w-4" />
+                                <PlusCircle className="h-4 w-4" />
+                                Add Facility
                               </Button>
                             </TableCell>
                           </TableRow>
-                        ))}
-
-                        <TableRow>
-                          <TableCell colSpan={3} className="">
-                            <Button
-                              variant="ghost"
-                              onClick={() => addSubFacility(facilityIndex)}
-                              className="flex items-center gap-1"
-                            >
-                              <PlusCircle className="h-4 w-4" />
-                              Add Sub Facility
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      </TableBody>
-                    </Table>
-                    {Array.isArray(
-                      errors?.facilities?.[facilityIndex]?.subFacilities
-                    ) &&
-                      (
-                        errors.facilities[facilityIndex]?.subFacilities as any
-                      )?.map(
+                        </TableBody>
+                      </Table>
+                      {Array.isArray(
+                        errors?.facilities?.[facilityIndex]?.subFacilities
+                      ) &&
                         (
-                          subFacilityError: { name: FieldError },
-                          subFacilityIndex: Key | null | undefined
-                        ) => (
+                          errors.facilities[facilityIndex]
+                            ?.subFacilities as any[]
+                        ).map((subFacilityError, subFacilityIndex) => (
                           <div key={subFacilityIndex}>
-                            {subFacilityError?.name?.message && (
+                            {(subFacilityError as any)?.name?.value
+                              ?.message && (
                               <span className="text-red-500">
-                                {subFacilityError?.name?.message}
+                                {
+                                  (subFacilityError as any)?.name?.value
+                                    ?.message
+                                }
                               </span>
                             )}
                           </div>
-                        )
+                        ))}
+                      {errors?.facilities?.[facilityIndex]?.subFacilities?.root
+                        ?.message && (
+                        <span className="text-red-500">
+                          {
+                            errors?.facilities?.[facilityIndex]?.subFacilities
+                              ?.root?.message
+                          }
+                        </span>
                       )}
-                    {errors?.facilities?.[facilityIndex]?.subFacilities?.root
-                      ?.message && (
-                      <span className="text-red-500">
-                        {
-                          errors?.facilities?.[facilityIndex]?.subFacilities
-                            ?.root?.message
-                        }
-                      </span>
-                    )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-        <div className="w-full p-6 border-2  rounded-lg flex items-center justify-center">
+              </CardContent>
+            </Card>
+          );
+        })}
+        <div className="w-full p-6 border-2 rounded-lg flex items-center justify-center">
           <Button
             variant="ghost"
             onClick={() =>
               appendFacility({
                 id: Date.now(),
                 name: { label: "", value: "" },
-                description: "",
-                subFacilities: [{ id: Date.now(), name: "" }],
+                subFacilities: [
+                  { id: Date.now(), name: { value: "", label: "" } },
+                ],
               })
             }
             className="flex items-center gap-1"
@@ -2113,16 +2180,16 @@ const AdminUpdateHotelContent = () => {
                     <Title>Category</Title>
                     <Value className="font-medium">{facility.name.value}</Value>
                   </div>
-                  <div>
+                  {/* <div>
                     <Title>Description </Title>
                     <Value>{facility.description}</Value>
-                  </div>
+                  </div> */}
 
                   <div>
                     <Title>Sub Facilities</Title>
                     <ul className="list-disc pl-5">
                       {facility.subFacilities.map((subFacility, subIndex) => (
-                        <li key={subIndex}>{subFacility.name}</li>
+                        <li key={subIndex}>{subFacility.name.value}</li>
                       ))}
                     </ul>
                   </div>

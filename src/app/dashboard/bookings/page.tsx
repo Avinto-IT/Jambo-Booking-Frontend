@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { User } from "lucide-react";
+import { Eye, MoreHorizontal, Search, User } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -13,7 +13,15 @@ import {
 } from "@/components/ui/card";
 
 import { Progress } from "@/components/ui/progress";
-
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Table,
   TableBody,
@@ -22,36 +30,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Tabs } from "@/components/ui/tabs";
+import { useRouter } from "next/navigation";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DateRangePicker from "../../../components/AdminComponents/Sub-Components/DateRangePicker";
 import AdminLayout from "@/components/Layout/AdminLayout";
-interface Hotel {
-  hotelID: string;
-  name: string;
-  address: string;
-  locationID: string;
-  facilities: {
-    name: string;
-    comment: string;
-    subFacilities: string[];
-  }[];
-  description: string;
-  houseRules: { [key: string]: boolean };
-  imageLinks: string[];
-  primaryImageLink: string;
-  isRunning: boolean;
-  rooms: {
-    type: string;
-    price: number;
-    capacity: string;
-    bed: {
-      bedType: string;
-      numberOfBeds: string;
-    };
-    amenities: { [key: string]: boolean };
-  }[];
-  discount: number;
-}
+import { Badge } from "@/components/ui/badge";
+import { dateFormatter } from "@/utils/functions";
+import { Input } from "@/components/ui/input";
 
 interface Booking {
   bookingID: string;
@@ -103,41 +88,13 @@ interface Booking {
   };
 }
 
-interface Agent {
-  agencyName: string | null;
-  contactNumber: string;
-  dateOfBirth: string;
-  email: string;
-  firstName: string;
-  gradeID: string | null;
-  hotelID: string | null;
-  lastName: string;
-  password: string;
-  role: string;
-  userID: string;
-}
-
-interface Booking {}
 export default function AdminBookingDashboard({}: {}) {
-  const [hotels, setHotels] = useState<Hotel[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
-  const [agents, setAgents] = useState<Agent[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [activeTab, setActiveTab] = useState<string>("all");
+  const [searchValue, setSearchValue] = useState("");
+  const router = useRouter();
 
-  useEffect(() => {
-    const fetchHotels = async () => {
-      try {
-        const response = await fetch("/api/getHotels");
-        const data = await response.json();
-        setHotels(data.hotels); // Corrected this line
-      } catch (error) {
-        console.log("Error fetching hotels:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchHotels();
-  }, []);
   useEffect(() => {
     const fetchBookings = async () => {
       try {
@@ -153,22 +110,50 @@ export default function AdminBookingDashboard({}: {}) {
     };
     fetchBookings();
   }, []);
-  useEffect(() => {
-    const fetchAgents = async () => {
-      try {
-        const response = await fetch("/api/getAgents");
-        const data = await response.json();
-        setAgents(data.agents);
-      } catch (error) {
-        console.log("Error fetching bookings:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchAgents();
-  }, []);
-  console.log(bookings);
 
+  const calculateBookingStatusCounts = (bookings: Booking[]) => {
+    const statusCounts = {
+      accepted: 0,
+      rejected: 0,
+      pending: 0,
+      requested: 0,
+    };
+
+    bookings.forEach((booking) => {
+      switch (booking.status) {
+        case "accepted":
+          statusCounts.accepted++;
+          break;
+        case "rejected":
+          statusCounts.rejected++;
+          break;
+        case "pending":
+          statusCounts.pending++;
+          break;
+        case "requested":
+          statusCounts.requested++;
+          break;
+        default:
+          break;
+      }
+    });
+
+    return statusCounts;
+  };
+
+  const bookingCounts = calculateBookingStatusCounts(bookings);
+  const filteredBookings = bookings
+    .filter((booking) => {
+      if (activeTab === "all") return true;
+      return booking.status === activeTab;
+    })
+    .filter((booking) => {
+      const hotelName = booking.hotel.name.toLowerCase();
+      const agentName =
+        `${booking.user.firstName} ${booking.user.lastName}`.toLowerCase();
+      const searchLower = searchValue.toLowerCase();
+      return hotelName.includes(searchLower) || agentName.includes(searchLower);
+    });
   return (
     <AdminLayout>
       <div className="flex flex-col sm:gap-4 ">
@@ -178,7 +163,8 @@ export default function AdminBookingDashboard({}: {}) {
             <span>Manage your details form the dashboard</span>
           </div>
 
-          <DateRangePicker />
+          {/* <DateRangePicker />  */}
+          {/* Discuss with Sakar dai about the date range picker */}
         </div>
         <main className="grid flex-1 items-start gap-4 sm:py-0 md:gap-8 ">
           <div className="grid auto-rows-max items-start gap-4 md:gap-6">
@@ -187,90 +173,168 @@ export default function AdminBookingDashboard({}: {}) {
                 <CardHeader className="pb-3">
                   <CardTitle>Requested</CardTitle>
                   <CardDescription className="max-w-lg text-balance leading-relaxed"></CardDescription>
+                  <CardTitle className="text-4xl">
+                    {bookingCounts.requested}
+                  </CardTitle>
                 </CardHeader>
               </Card>
               <Card x-chunk="dashboard-05-chunk-1">
                 <CardHeader className="pb-2">
                   <CardDescription className="font-medium text-black">
-                    Hotels
+                    Pending
                   </CardDescription>
-                  <CardTitle className="text-4xl">{hotels?.length}</CardTitle>
+                  <CardTitle className="text-4xl">
+                    {bookingCounts.pending}
+                  </CardTitle>
                 </CardHeader>
-                <CardContent></CardContent>
-                <CardFooter>
-                  <Progress value={25} aria-label="25% increase" />
-                </CardFooter>
+                <CardFooter></CardFooter>
               </Card>
               <Card x-chunk="dashboard-05-chunk-2">
                 <CardHeader className="pb-2">
                   <CardDescription className="font-medium text-black">
-                    Agents
+                    Rejected
                   </CardDescription>
-                  <CardTitle className="text-4xl">{agents.length}</CardTitle>
+                  <CardTitle className="text-4xl">
+                    {bookingCounts.rejected}
+                  </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="text-xs text-muted-foreground">
-                    +10% from last month
-                  </div>
-                </CardContent>
-                <CardFooter>
-                  <Progress value={12} aria-label="12% increase" />
-                </CardFooter>
+                <CardFooter></CardFooter>
               </Card>
               <Card x-chunk="dashboard-05-chunk-2">
                 <CardHeader className="pb-2">
                   <CardDescription className="font-medium text-black">
-                    Bookings
+                    Accepted
                   </CardDescription>
-                  <CardTitle className="text-4xl">{bookings?.length}</CardTitle>
+                  <CardTitle className="text-4xl">
+                    {bookingCounts.accepted}
+                  </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="text-xs text-muted-foreground">
-                    +10% from last month
-                  </div>
-                </CardContent>
-                <CardFooter>
-                  <Progress value={12} aria-label="12% increase" />
-                </CardFooter>
+                <CardFooter></CardFooter>
               </Card>
             </div>
 
-            <Tabs className="w-full">
-              <Card x-chunk="dashboard-05-chunk-3">
-                <div className="p-6 flex justify-between items-center">
-                  <CardHeader className="p-0">
-                    <CardTitle className="text-2xl font-semibold">
-                      Bookings
-                    </CardTitle>
-                    <CardDescription>
-                      Recent bookings in Jambo Hotels.
-                    </CardDescription>
-                  </CardHeader>
-                  <Button className=" py-2 px-6  h-10">View All</Button>
-                </div>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Hotel Name</TableHead>
-                        <TableHead className="text-right">Agent Name</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {bookings?.map((booking, index) => {
-                        return (
-                          <TableRow key={index}>
-                            <TableCell>{booking.hotel.name} </TableCell>
-                            <TableCell className="text-right">
-                              {`${booking.user.firstName} ${booking.user.lastName}`}
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
+            <Tabs
+              defaultValue="all"
+              className="flex flex-col gap-y-2"
+              onValueChange={(value) => setActiveTab(value)}
+            >
+              <TabsList className="self-start bg-slate-200">
+                <TabsTrigger value="requested" className="py-1.5">
+                  Requested
+                </TabsTrigger>
+                <TabsTrigger value="pending">Pending</TabsTrigger>
+                <TabsTrigger value="rejected">Rejected</TabsTrigger>
+                <TabsTrigger value="accepted">Accepted</TabsTrigger>
+                <TabsTrigger value="all">All</TabsTrigger>
+              </TabsList>
+              <TabsContent value={activeTab}>
+                <Card x-chunk="dashboard-05-chunk-3">
+                  <div className="p-6 flex justify-between items-center">
+                    <CardHeader className="p-0">
+                      <CardTitle className="text-2xl font-semibold">
+                        Bookings
+                      </CardTitle>
+                      <CardDescription>
+                        Manage your booking and view their overall details.
+                      </CardDescription>
+                    </CardHeader>
+                    <div className="relative ml-auto flex-1 md:grow-0">
+                      <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        type="search"
+                        placeholder="Search..."
+                        className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]"
+                        value={searchValue}
+                        onChange={(event) => setSearchValue(event.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <CardContent>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Hotel ID</TableHead>
+                          <TableHead>Hotel Name</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead>Agent Name</TableHead>
+                          <TableHead>Check In</TableHead>
+                          <TableHead>Check Out</TableHead>
+                          <TableHead>
+                            <span className="sr-only">Actions</span>
+                          </TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {filteredBookings?.map((booking, index) => {
+                          return (
+                            <TableRow key={index}>
+                              <TableCell>{booking.hotelID} </TableCell>
+
+                              <TableCell>{booking.hotel.name} </TableCell>
+                              <TableCell>
+                                <Badge
+                                  variant={
+                                    booking.status === "requested"
+                                      ? "Requested"
+                                      : booking.status === "accepted"
+                                      ? "Approved"
+                                      : booking.status === "pending"
+                                      ? "Pending"
+                                      : "Rejected"
+                                  }
+                                  className="capitalize"
+                                >
+                                  {booking.status}
+                                </Badge>
+                              </TableCell>
+
+                              <TableCell className="">
+                                {`${booking.user.firstName} ${booking.user.lastName}`}
+                              </TableCell>
+                              <TableCell>
+                                {dateFormatter(booking.bookingStartDate)}
+                              </TableCell>
+                              <TableCell>
+                                {dateFormatter(booking.bookingEndDate)}
+                              </TableCell>
+                              <TableCell>
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger asChild>
+                                    <Button
+                                      aria-haspopup="true"
+                                      size="icon"
+                                      variant="ghost"
+                                    >
+                                      <MoreHorizontal className="h-4 w-4" />
+                                      <span className="sr-only">
+                                        Toggle menu
+                                      </span>
+                                    </Button>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent align="end">
+                                    <DropdownMenuLabel>
+                                      Actions
+                                    </DropdownMenuLabel>
+                                    <DropdownMenuItem
+                                      onClick={() =>
+                                        router.push(
+                                          `bookings/${booking.bookingID}`
+                                        )
+                                      }
+                                    >
+                                      View
+                                    </DropdownMenuItem>
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </CardContent>
+                </Card>
+              </TabsContent>
             </Tabs>
           </div>
         </main>

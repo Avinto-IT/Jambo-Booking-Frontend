@@ -1,18 +1,3 @@
-// import React from "react";
-// import { UserDetails } from "@/utils/types";
-
-// export default function HotelDashboard({ user }: { user: UserDetails }) {
-//   return (
-//     <div>
-//       <h1 className="text-2xl font-bold">This is Hotel Dashboard</h1>
-//       <p>Welcome, {user?.firstName}!</p>
-//       <p>Email: {user?.email}</p>
-//       <p>Role: {user?.role}</p>
-//       <p>Contact: {user?.contactNumber}</p>
-//     </div>
-//   );
-// }
-
 import React, { useEffect, useState } from "react";
 
 import { ArrowUpRight, User } from "lucide-react";
@@ -39,6 +24,7 @@ import DateRangePicker from "../AdminComponents/Sub-Components/DateRangePicker";
 
 import { Agent, Booking, Hotel } from "@/utils/types";
 import HotelLayout from "../Layout/HotelLayout";
+import { Button } from "../ui/button";
 export default function HotelDashboard({
   hotels,
   bookings,
@@ -64,14 +50,11 @@ export default function HotelDashboard({
             <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4">
               <Card className="" x-chunk="dashboard-05-chunk-0">
                 <CardHeader className="pb-3">
-                  <CardTitle>Requested</CardTitle>
+                  <CardTitle>Total Revenue</CardTitle>
                 </CardHeader>
                 <CardContent className="max-w-lg text-[#020617] text-2xl font-bold text-balance leading-relaxed">
                   +12,234
                 </CardContent>
-                <CardFooter className="text-[#64748B] text-sm -mt-5">
-                  +19% from last month
-                </CardFooter>
               </Card>
               <Card x-chunk="dashboard-05-chunk-1">
                 <CardHeader className="pb-2">
@@ -80,9 +63,6 @@ export default function HotelDashboard({
                 <CardContent className="max-w-lg text-[#020617] text-2xl font-bold text-balance leading-relaxed">
                   100
                 </CardContent>
-                <CardFooter className="text-[#64748B] text-sm -mt-5">
-                  +5.1% from last month
-                </CardFooter>
               </Card>
               <Card x-chunk="dashboard-05-chunk-1">
                 <CardHeader className="pb-2">
@@ -91,9 +71,6 @@ export default function HotelDashboard({
                 <CardContent className="max-w-lg text-[#020617] text-2xl font-bold text-balance leading-relaxed">
                   100
                 </CardContent>
-                <CardFooter className="text-[#64748B] text-sm -mt-5">
-                  +5.1% from last month
-                </CardFooter>
               </Card>
               <Card x-chunk="dashboard-05-chunk-1">
                 <CardHeader className="pb-2">
@@ -102,9 +79,6 @@ export default function HotelDashboard({
                 <CardContent className="max-w-lg text-[#020617] text-2xl font-bold text-balance leading-relaxed">
                   +12,234
                 </CardContent>
-                <CardFooter className="text-[#64748B] text-sm -mt-5">
-                  +19% from last month
-                </CardFooter>
               </Card>
             </div>
             <div className="w-full justify-between flex gap-6">
@@ -119,10 +93,10 @@ export default function HotelDashboard({
                         Recent bookings in Jambo Hotels.
                       </CardDescription>
                     </CardHeader>
-                    <button className=" flex gap-x-1 py-2 px-6 bg-blue-600 h-10 rounded-md text-[#F8FAFC]">
+                    <Button className=" flex gap-x-1 bg-blue-600 hover:bg-blue-800">
                       View All
                       <ArrowUpRight className="h-5 w-5" />
-                    </button>
+                    </Button>
                   </div>
                   <CardContent>
                     <Table className="text-[#020617] font-medium">

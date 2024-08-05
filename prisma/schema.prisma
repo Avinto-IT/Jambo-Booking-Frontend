@@ -8,10 +8,10 @@ datasource db {
 }
 
 model Hotel {
-  hotelID          String   @id @default(auto()) @map("_id") @db.ObjectId
+  hotelID          String    @id @default(auto()) @map("_id") @db.ObjectId
   name             String
   address          String
-  locationID       String   @db.ObjectId
+  locationID       String    @db.ObjectId
   facilities       Json
   description      String
   houseRules       Json
@@ -21,10 +21,10 @@ model Hotel {
   rooms            Json
   discount         Float
   contactDetails   Json
-
-  location Location  @relation(fields: [locationID], references: [locationID])
-  bookings Booking[]
-  User     User[]
+  addedDate        DateTime
+  location         Location  @relation(fields: [locationID], references: [locationID])
+  bookings         Booking[]
+  User             User[]
 }
 
 model Blog {
@@ -77,18 +77,21 @@ model Location {
 }
 
 model Booking {
-  bookingID        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userID           String   @db.ObjectId
-  hotelID          String   @db.ObjectId
-  bookingStartDate DateTime
-  bookingEndDate   DateTime
-
-  status         String
-  guests         Int
-  bookingInfo    Json
-  user           User             @relation(fields: [userID], references: [userID])
-  hotel          Hotel            @relation(fields: [hotelID], references: [hotelID])
-  bookingHistory BookingHistory[]
+  bookingID         String           @id @default(auto()) @map("_id") @db.ObjectId
+  userID            String           @db.ObjectId
+  hotelID           String           @db.ObjectId
+  bookingStartDate  DateTime
+  bookingEndDate    DateTime
+  requestedDate     DateTime
+  status            String
+  guests            Int
+  bookingInfo       Json
+  totalBookingPrice Int
+  bookingRemarks    String?
+  specialRequest    String
+  user              User             @relation(fields: [userID], references: [userID])
+  hotel             Hotel            @relation(fields: [hotelID], references: [hotelID])
+  bookingHistory    BookingHistory[]
 }
 
 model BookingHistory {
