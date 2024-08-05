@@ -1,6 +1,9 @@
 export const uploadSingleFile = async (file: File) => {
+  if (!file) {
+    console.log("No file provided");
+  }
   const timestamp = Date.now();
-  const fileExtension = file.name.split(".").pop();
+  const fileExtension = file?.name?.split(".").pop();
   const fileName = `${timestamp}_${Math.random()
     .toString(36)
     .slice(2, 11)}.${fileExtension}`;

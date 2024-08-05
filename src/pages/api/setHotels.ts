@@ -103,6 +103,7 @@ async function addHotelHandler(req: NextApiRequest, res: NextApiResponse) {
           connect: { locationID: locationID },
         },
         // locationID,
+        addedDate: new Date(),
         facilities,
         description,
         houseRules,
