@@ -2,19 +2,17 @@
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Dot } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import React, { Suspense, useEffect, useState } from "react";
-import bed from "../../../../public/images/Bed.svg";
 import guest from "../../../../public/images/Guest.svg";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import facilitiesIcon from "../../../../data/facilities.json";
+import { Toaster } from "@/components/ui/sonner";
+
 import { addDays, format } from "date-fns";
-
+import { toast } from "sonner";
 import * as Icons from "lucide-react";
-import UseFacilityIcon from "../../../utils/facilityIcon";
 import { DateRange } from "react-day-picker";
-
 import {
   Dialog,
   DialogContent,
@@ -38,6 +36,7 @@ import {
   SelectScrollUpButton,
   SelectScrollDownButton,
 } from "@/components/ui/select";
+import { CustomIcons } from "@/utils/icons";
 
 interface Room {
   type: string;
@@ -63,6 +62,8 @@ interface Hotel {
   facilities: { name: string; subFacilities: { name: string }[] }[];
   rooms: Room[];
   houseRules: { type: string; details: string }[];
+  discount: number;
+  hotelID: string;
 }
 
 export default function Page() {
@@ -72,6 +73,8 @@ export default function Page() {
     </Suspense>
   );
 }
+
+const cleanFacilityName = (name: string) => name.replace(/[^a-zA-Z0-9]/g, "");
 
 function ClientViewHotel() {
   const [showMore, setShowMore] = useState(false);
@@ -94,6 +97,13 @@ function ClientViewHotel() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [count, setCount] = useState<number[]>([]);
   const [guests, setGuests] = useState<number | undefined>(undefined);
+
+  // New state to store user choices
+  const [userChoices, setUserChoices] = useState<
+    { room: Room; count: number }[]
+  >([]);
+
+  const router = useRouter(); // Initialize router for navigation
 
   const handleDateChange = (newDate: DateRange | undefined) => {
     setDateRange(newDate);
@@ -118,6 +128,17 @@ function ClientViewHotel() {
     };
     fetchHotels();
   }, []);
+
+  useEffect(() => {
+    const newChoices =
+      hotel?.rooms
+        .map((room, index) => ({
+          room,
+          count: count[index],
+        }))
+        .filter((choice) => choice.count > 0) || [];
+    setUserChoices(newChoices);
+  }, [count, hotel]);
 
   if (!hotel) return <>Loading...</>;
 
@@ -203,18 +224,66 @@ function ClientViewHotel() {
     });
   };
 
-  const totalOccupancy = hotel.rooms.reduce(
-    (sum, room) => sum + parseInt(room.capacity),
+  const totalOccupancy = userChoices.reduce(
+    (sum, choice) => sum + parseInt(choice.room.capacity) * choice.count,
     0
   );
 
   const guestOptions = Array.from({ length: totalOccupancy }, (_, i) => i + 1);
 
+  const numberOfDays =
+    dateRange && dateRange.from && dateRange.to
+      ? (dateRange.to.getTime() - dateRange.from.getTime()) /
+        (1000 * 60 * 60 * 24)
+      : 0;
+
+  const totalPrice = userChoices.reduce((sum, choice) => {
+    const price = parseFloat(choice.room.price);
+    return sum + price * choice.count * numberOfDays;
+  }, 0);
+
+  const finalPriceBeforeDiscount = totalPrice * numberOfDays;
+  const discountAmount = (finalPriceBeforeDiscount * hotel.discount) / 100;
+  const finalPrice = finalPriceBeforeDiscount - discountAmount;
+
+  const handleSubmit = () => {
+    if (!dateRange || !dateRange.from || !dateRange.to) {
+      toast.error("Please select a valid date range.");
+      return;
+    }
+    if (userChoices.length === 0) {
+      toast.error("Please select at least one room.");
+      return;
+    }
+    if (!guests || guests === 0) {
+      toast.error("Please select the number of guests.");
+      return;
+    }
+
+    const bookingData = {
+      userID: "currentUser", // replace with actual user ID
+      hotelID: hotel.hotelID,
+      bookingStartDate: dateRange.from.toISOString(),
+      bookingEndDate: dateRange.to.toISOString(),
+      guests,
+      bookingInfo: userChoices.map((choice) => ({
+        roomType: choice.room.type,
+        rooms: choice.count,
+      })),
+    };
+
+    const queryParams = new URLSearchParams({
+      bookingData: JSON.stringify(bookingData),
+    }).toString();
+    router.push(`/booking-review?${queryParams}`);
+  };
+
   return (
     <Layout>
       <Hero title={hotel.name} />
+      <Toaster />
       <Card className="w-full">
-        <div className="flex justify-center">
+        <div className="flex justify-center py-12">
           <MaxWidthWrapper className="max-w-screen-2xl">
             <div className="text-[#020617] my-7 space-y-10 tracking-tight">
               <div className="space-y-5">
@@ -348,12 +417,20 @@ function ClientViewHotel() {
                     </div>
                     <div className="grid gap-6 grid-cols-2">
                       {hotel.facilities.map((facility, facilityIndex) => {
+                        const cleanedName = cleanFacilityName(facility.name);
+                        const IconComponent = CustomIcons[cleanedName];
                         return (
                           <div
                             key={facilityIndex}
                             className="flex items-center gap-4"
                           >
-                            <UseFacilityIcon name={facility.name} />
+                            {IconComponent && (
+                              <IconComponent
+                                height={24}
+                                width={24}
+                                weight="light"
+                              />
+                            )}
                             {facility.name}
                           </div>
                         );
@@ -610,19 +687,24 @@ function ClientViewHotel() {
                     <div className="text-2xl font-semibold">
                       Explore All Facilities
                     </div>
-                    {/* <UseFacilityIcon name="Security" /> */}
                     <div className="grid grid-cols-3">
                       {hotel.facilities
                         .slice(0, visibleFacilitiesCount)
                         .map((value, facilityIndex) => {
+                          const cleanedName = cleanFacilityName(value.name);
+                          const IconComponent = CustomIcons[cleanedName];
                           return (
                             <div
                               className="col-span-1 my-4"
                               key={facilityIndex}
                             >
                               <div className="flex items-center gap-4">
-                                {UseFacilityIcon && (
-                                  <UseFacilityIcon name={value.name} />
+                                {IconComponent && (
+                                  <IconComponent
+                                    height={24}
+                                    width={24}
+                                    weight="light"
+                                  />
                                 )}
                                 <span>{value.name}</span>
                               </div>
@@ -653,15 +735,23 @@ function ClientViewHotel() {
                       </Button>
                     )}
                     <div className="border-b-2 mt-7"></div>
-                    <div className="space-y-7">
+                    <div className="space-y-7 my-8">
                       <div className="text-2xl font-semibold">House Rules</div>
                       <div className="">
                         {hotel.houseRules.map((value, ruleIndex) => {
+                          const cleanedName = cleanFacilityName(value.type);
+                          const IconComponent = CustomIcons[cleanedName];
                           return (
                             <div key={ruleIndex}>
                               <div className="flex w-full">
-                                <div className="w-1/4">
-                                  <UseFacilityIcon name={value.type} />
+                                <div className="flex gap-4 w-1/4">
+                                  {IconComponent && (
+                                    <IconComponent
+                                      height={24}
+                                      width={24}
+                                      weight="light"
+                                    />
+                                  )}
                                   {value.type}
                                 </div>
                                 <div className="w-3/4">{value.details}</div>
@@ -679,7 +769,9 @@ function ClientViewHotel() {
                 <div className="col-span-2 ">
                   <Card className="shadow-xl p-6 gap-4 border border-slate-200 max-w-[370px] text-[16px]">
                     <CardTitle>
-                      <span className="text-xl font-medium">$Price </span>
+                      <span className="text-xl font-medium">
+                        ${totalPrice.toFixed(0)}
+                      </span>
                       <span className="text-[16px] font-normal text-foreground">
                         / night
                       </span>
@@ -699,6 +791,7 @@ function ClientViewHotel() {
                       <div>Guests</div>
                       <Select
                         onValueChange={(value) => setGuests(Number(value))}
+                        disabled={userChoices.length === 0}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select number of guests" />
@@ -711,11 +804,30 @@ function ClientViewHotel() {
                           ))}
                         </SelectContent>
                       </Select>
-                      <Button className="w-full bg-[#2563EB] ">Reserve</Button>
-                      <div className="flex flex-col w-full border border-red-500">
-                        <div className="flex justify-between border-t border-slate-200">
+                      <Button
+                        className="w-full bg-[#2563EB]"
+                        onClick={handleSubmit}
+                      >
+                        Reserve
+                      </Button>
+                      <div className="flex flex-col w-full  text-foreground font-normal text-base  space-y-2">
+                        <div className="flex justify-between">
+                          <span>
+                            ${totalPrice.toFixed(0)} x {numberOfDays} days{" "}
+                          </span>
+                          <span>${(totalPrice * numberOfDays).toFixed(0)}</span>
+                        </div>
+                        {discountAmount > 0 && (
+                          <div className="flex justify-between">
+                            <span>Discount </span>
+                            <span className="text-[#10B981]">
+                              -${discountAmount.toFixed(0)} | {hotel.discount}%
+                            </span>
+                          </div>
+                        )}
+                        <div className="flex justify-between  border-t border-slate-200 pt-4">
                           <span>Total</span>
-                          <span>$123</span>
+                          <span>${finalPrice.toFixed(0)}</span>
                         </div>
                       </div>
                     </CardContent>
