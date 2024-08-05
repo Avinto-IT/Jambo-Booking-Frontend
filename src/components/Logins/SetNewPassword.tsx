@@ -99,10 +99,7 @@ const SetNewPassword: React.FC<SetNewPasswordProp> = ({ onButtonClick }) => {
               </div>
 
               {/* <CardFooter> */}
-              <Button
-                className="w-full bg-blue-600 hover:bg-blue-800"
-                onClick={handleChangePassword}
-              >
+              <Button className="w-full" onClick={handleChangePassword}>
                 Change Password
               </Button>
 

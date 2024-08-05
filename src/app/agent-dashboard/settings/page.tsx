@@ -147,8 +147,9 @@ export default function Page() {
                 </DialogHeader>
                 <div className="flex outlline  outline-black gap-2">
                   <Button variant="outline">Discard</Button>
-                  <Button asChild className="bg-blue-700 hover:bg-blue-800">
-                    <Link href="/login">Login</Link>
+                  {/* <Button asChild className="bg-blue-700 hover:bg-blue-800"> */}
+                  <Button asChild variant="default">
+                    <Link href="/login">Logout</Link>
                   </Button>
                 </div>
               </DialogContent>

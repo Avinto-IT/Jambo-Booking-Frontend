@@ -79,7 +79,7 @@ export default function Login() {
     <>
       <LoginHeader
         handleBack={() => {
-          const handleBack = null;
+          window.location.href = "/";
         }}
       />
 
@@ -136,7 +136,7 @@ export default function Login() {
                     <Button
                       type="submit"
                       // onClick={handleLogin}
-                      className="w-full bg-blue-600  hover:bg-blue-800"
+                      className="w-full "
                     >
                       Login
                     </Button>

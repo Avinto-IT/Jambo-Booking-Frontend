@@ -87,7 +87,9 @@ function AllHotels() {
                   <div className="flex text-2xl font-semibold tracking-tight leading-10">
                     {" "}
                     <p className="">{locationId}: </p>
-                    <p className=" ">{filteredHotels.length} hotels found</p>
+                    <p className=" ">
+                      &nbsp;{filteredHotels.length} hotels found
+                    </p>
                   </div>
                 ) : (
                   <p className=" text-3xl font-semibold tracking-tight leading-10">
@@ -115,7 +117,7 @@ function AllHotels() {
                   return (
                     <div
                       key={index}
-                      className="flex flex-col mb-2 border pb-5 border-gray-200 rounded-lg"
+                      className="flex flex-col mb-2 border pb-5 border-gray-200 rounded-lg hover:cursor-pointer"
                       onClick={() => {
                         handleViewClick(hotel.hotelID);
                       }}

@@ -166,9 +166,7 @@ const Contact: React.FC = ({}) => {
                   </form>
                 </CardContent>
                 <CardFooter className="">
-                  <Button className="w-full bg-blue-700 hover:bg-blue-900">
-                    Send a message
-                  </Button>
+                  <Button className="w-full">Send a message</Button>
                 </CardFooter>
               </div>
             </div>

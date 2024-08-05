@@ -111,7 +111,7 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onButtonClick }) => {
                 <Toaster />
 
                 <Button
-                  className="w-full bg-blue-600 hover:bg-blue-800"
+                  className="w-full "
                   onClick={() => {
                     handleResetClick();
                     showToast();

@@ -2286,20 +2286,20 @@ export default function AddHotel() {
                 <div className="flex gap-1.5">
                   {currentStep > 0 ? (
                     <Button
-                      className="bg-white text-black"
+                      className=""
+                      variant="outline"
                       type="button"
                       onClick={handleBack}
                     >
                       Back
                     </Button>
                   ) : (
-                    <Button className="bg-white text-black" type="button">
+                    <Button variant="outline" type="button">
                       <Link href="/dashboard/hotels">Discard</Link>
                     </Button>
                   )}
                   {currentStep < steps.length - 1 ? (
                     <Button
-                      className="bg-blue-700 hover:bg-blue-900"
                       type="button"
                       onClick={(e) => {
                         e.preventDefault();
@@ -2310,7 +2310,6 @@ export default function AddHotel() {
                     </Button>
                   ) : (
                     <Button
-                      className="bg-blue-700 hover:bg-blue-900"
                       type="submit"
                       disabled={isSubmitClicked ? true : false}
                     >

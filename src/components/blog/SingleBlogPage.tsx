@@ -108,7 +108,7 @@ function SingleBlogPage() {
               <br />
               {datum.map((index) => (
                 <div
-                  className=" mt-2.5  mb-7    "
+                  className=" mt-2.5  mb-7  hover:cursor-pointer  "
                   key={index.ID}
                   onClick={() => {
                     window.location.href = `/blogs/${index.ID}`;

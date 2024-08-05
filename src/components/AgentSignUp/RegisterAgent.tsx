@@ -315,7 +315,7 @@ const RegisterAgent = () => {
             </Label>
             <Button
               type="submit"
-              className="w-full h-10 bg-blue-600 hover:bg-blue-800"
+              className="w-full h-10"
               disabled={isSubmitButtonClicked}
             >
               Register account

@@ -93,13 +93,13 @@ const Layout: React.FC<LayoutProps> = ({ children, title = "My App" }) => {
               </div>
               <div className="flex flex-col gap-y-4 items-center">
                 <p className="mb-1 font-semibold">LEGAL INFO</p>
-                <Link href="/" className="">
+                <Link href="/privacy-policy" className="">
                   Privacy Policy
                 </Link>
-                <Link href="/" className="">
+                <Link href="/terms-and-conditions" className="">
                   Terms and Conditions
                 </Link>
-                <Link href="/" className="">
+                <Link href="/cookie-policy" className="">
                   Cookie Policy
                 </Link>
               </div>

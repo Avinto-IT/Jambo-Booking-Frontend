@@ -68,10 +68,7 @@ const CheckEmail: React.FC<CheckEmailProps> = ({ onButtonClick }) => {
                 </InputOTP>
               </div>
 
-              <Button
-                className="w-full bg-blue-600 hover:bg-blue-800"
-                onClick={onButtonClick}
-              >
+              <Button className="w-full " onClick={onButtonClick}>
                 Verify Email
               </Button>
             </CardContent>

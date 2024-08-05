@@ -102,6 +102,8 @@ export default function AgentBookings() {
   const [searchValue, setSearchValue] = useState<string>("");
   //   const [agent, setAgent] = useState<User[]>([]);
   const [agent, setAgent] = useState<User | null>(null);
+  const router = useRouter();
+
   const userDetails = Cookies.get("userDetails");
   const getUserIDFromCookie = () => {
     if (userDetails) {
@@ -185,7 +187,9 @@ export default function AgentBookings() {
     };
     return date.toLocaleDateString("en-US", options);
   };
-
+  const handleViewClick = (bookingID: string) => {
+    router.push(`/agent-dashboard/booking/view-booking?id=${bookingID}`);
+  };
   return (
     <AgentLayout>
       <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
@@ -256,7 +260,7 @@ export default function AgentBookings() {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              <Button size="sm" className="h-7 gap-1 py-2 bg-blue-600">
+              <Button size="sm" className="h-7 gap-1 py-2">
                 <PlusCircle className="h-3.5 w-3.5" />
                 <Link
                   href="/agent-dashboard/booking/add-booking"
@@ -335,6 +339,30 @@ export default function AgentBookings() {
                         </TableCell>
                         <TableCell className="hidden md:table-cell">
                           {formatDate(booking.bookingEndDate)}
+                        </TableCell>
+                        <TableCell>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                aria-haspopup="true"
+                                size="icon"
+                                variant="ghost"
+                              >
+                                <MoreHorizontal className="h-4 w-4" />
+                                <span className="sr-only">Toggle menu</span>
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  handleViewClick(booking.bookingID)
+                                }
+                              >
+                                View
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </TableCell>
                       </TableRow>
                     ))}

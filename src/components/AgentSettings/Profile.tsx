@@ -79,7 +79,7 @@ const Profile: React.FC<ProfileProps> = ({ agent }) => {
     setError,
     register,
     handleSubmit,
-    formState: { errors, isSubmitSuccessful },
+    formState: { errors },
     reset,
   } = useForm<TProfileScehma>({
     resolver: zodResolver(profileSchema),
@@ -187,7 +187,7 @@ const Profile: React.FC<ProfileProps> = ({ agent }) => {
           </div>
 
           <Button
-            className="bg-blue-700 hover:bg-blue-800 font-light"
+            className=" font-light"
             type="submit"
             disabled={isSubmitButtonClicked}
           >

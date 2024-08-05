@@ -30,18 +30,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import { Dot } from "lucide-react";
-
-import bed from "../../../../../public/images/Bed.svg";
-import guest from "../../../../../public/images/Guest.svg";
-
-import facilitiesIcon from "../../../../../data/facilities.json";
-import * as Icons from "lucide-react";
-
-import staticimg from "../../../../../public/images/static-from-landing/image.svg";
-import staticimg2 from "../../../../../public/images/an_image_for_hotel_booking.svg";
-import staticimg3 from "../../../../../public/images/explore-east-africa/Photo1.svg";
-
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -2414,20 +2402,19 @@ const AdminUpdateHotelContent = () => {
                 <div className="flex gap-1.5">
                   {currentStep > 0 ? (
                     <Button
-                      className="bg-white text-black"
+                      variant="outline"
                       type="button"
                       onClick={handleBack}
                     >
                       Back
                     </Button>
                   ) : (
-                    <Button className="bg-white text-black" type="button">
+                    <Button variant="outline" type="button">
                       <Link href="/dashboard/hotels">Discard</Link>
                     </Button>
                   )}
                   {currentStep < steps.length - 1 ? (
                     <Button
-                      className="bg-blue-700 hover:bg-blue-900"
                       type="button"
                       onClick={(e) => {
                         e.preventDefault();
@@ -2438,7 +2425,6 @@ const AdminUpdateHotelContent = () => {
                     </Button>
                   ) : (
                     <Button
-                      className="bg-blue-700 hover:bg-blue-900"
                       type="submit"
                       disabled={isSubmitClicked ? true : false}
                     >

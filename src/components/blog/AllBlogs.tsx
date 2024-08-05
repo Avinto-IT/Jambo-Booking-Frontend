@@ -65,11 +65,11 @@ function AllBlogs() {
         </div>
 
         <div className="main">
-          <div className="grid gap-5 grid-cols-3 ">
+          <div className="grid gap-5 grid-cols-3">
             {currentItems.map((index, id) => (
               <div
                 key={id}
-                className="flex flex-col mb-2 "
+                className="flex flex-col mb-2 hover:cursor-pointer "
                 onClick={() => {
                   console.log({ id });
 

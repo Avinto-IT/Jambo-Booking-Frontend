@@ -150,7 +150,7 @@ const PrivacyDetails: React.FC<PrivacyDetailsProps> = ({ agent }) => {
           </div>
 
           <Button
-            className="bg-blue-700 hover:bg-blue-800 font-light"
+            className=" font-light"
             type="submit"
             disabled={isSubmitButtonClicked}
           >

@@ -163,7 +163,7 @@ export default function HotelsDashboard() {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              <Button size="sm" className="h-7 gap-1 py-2 bg-blue-600">
+              <Button size="sm" className="h-7 gap-1 py-2 ">
                 <PlusCircle className="h-3.5 w-3.5" />
                 <Link
                   href="/dashboard/hotels/add-hotel"
