@@ -56,14 +56,7 @@ interface Hotel {
   name: string;
   address: string;
 }
-// export default function AdminUpdateHotel() {
-//   return (
-//     <Suspense fallback={<div>Loading...</div>}>
-//       <AdminUpdateHotelContent />
-//     </Suspense>
-//   );
-// }
-// const AdminUpdateHotelContent = () => {
+
 const Dashboard: React.FC = ({}) => {
   const [agent, setAgent] = useState<User | null>(null);
 

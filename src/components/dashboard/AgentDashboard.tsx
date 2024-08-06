@@ -53,6 +53,7 @@ interface Booking {
   guests: number;
   bookingInfo: BookingInfo[];
   hotel: Hotel;
+  totalBookingPrice: number;
 }
 
 interface BookingInfo {
@@ -180,7 +181,7 @@ export default function AgentDashboard({ agent }: AgentDashboardProps) {
                               </div>
                             </TableCell>
                             <TableCell className="text-right">
-                              {booking.bookingInfo[0]?.totalRoomPrice}
+                              <strong>${booking.totalBookingPrice}</strong>
                             </TableCell>
                           </TableRow>
                         ))}
