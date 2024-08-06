@@ -9,7 +9,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
 
-import { addDays, format } from "date-fns";
+import { addDays } from "date-fns";
 import { toast } from "sonner";
 import * as Icons from "lucide-react";
 import { DateRange } from "react-day-picker";
@@ -18,7 +18,6 @@ import {
   DialogContent,
   DialogOverlay,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import Layout from "@/components/Layout/Layout";
 import Hero from "@/components/HotelHero/Hero";
@@ -26,19 +25,15 @@ import { BedIcon } from "@/components/Icons/AdminIcons";
 import { DatePickerWithRange } from "@/components/DateRangePicker";
 import {
   Select,
-  SelectGroup,
   SelectValue,
   SelectTrigger,
   SelectContent,
-  SelectLabel,
   SelectItem,
-  SelectSeparator,
-  SelectScrollUpButton,
-  SelectScrollDownButton,
 } from "@/components/ui/select";
 import { CustomIcons } from "@/utils/icons";
+import Cookies from "js-cookie";
 
-interface Room {
+export interface Room {
   type: string;
   numberOfRooms: string;
   price: string;
@@ -53,7 +48,7 @@ interface Room {
   roomImageLinks: string[];
 }
 
-interface Hotel {
+export interface Hotel {
   name: string;
   primaryImageLink: string;
   imageLinks: string[];
@@ -85,7 +80,7 @@ function ClientViewHotel() {
   const id = searchParams?.get("id");
 
   const [hotel, setHotel] = useState<Hotel>();
-  const [token, setToken] = useState<string | null>(null);
+  // const [token, setToken] = useState<string | null>(null);
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: new Date(2022, 0, 20),
     to: addDays(new Date(2022, 0, 20), 10),
@@ -127,7 +122,28 @@ function ClientViewHotel() {
       }
     };
     fetchHotels();
-  }, []);
+  }, [id]);
+
+  useEffect(() => {
+    const storedBookingData = Cookies.get("bookingData");
+    if (storedBookingData) {
+      const parsedBookingData = JSON.parse(storedBookingData);
+      setDateRange({
+        from: new Date(parsedBookingData.bookingStartDate),
+        to: new Date(parsedBookingData.bookingEndDate),
+      });
+      setGuests(parsedBookingData.guests);
+      console.log(parsedBookingData.guests, "lol");
+      setCount(
+        hotel?.rooms.map((room) => {
+          const userChoice = parsedBookingData.userChoices.find(
+            (choice: any) => choice.room.type === room.type
+          );
+          return userChoice ? userChoice.count : 0;
+        }) || []
+      );
+    }
+  }, [hotel]);
 
   useEffect(() => {
     const newChoices =
@@ -247,6 +263,22 @@ function ClientViewHotel() {
   const finalPrice = finalPriceBeforeDiscount - discountAmount;
 
   const handleSubmit = () => {
+    // Retrieve user details from cookies
+    const storedUserDetails = Cookies.get("userDetails");
+    let userID = null;
+
+    if (storedUserDetails) {
+      const userDetails = JSON.parse(storedUserDetails);
+      userID = userDetails.userID;
+    }
+
+    // Redirect to login if user ID is not found
+    if (!userID) {
+      toast.error("Please login to continue");
+      router.push("/login");
+      return;
+    }
+
     if (!dateRange || !dateRange.from || !dateRange.to) {
       toast.error("Please select a valid date range.");
       return;
@@ -261,7 +293,7 @@ function ClientViewHotel() {
     }
 
     const bookingData = {
-      userID: "currentUser", // replace with actual user ID
+      userID, // Use the retrieved user ID
       hotelID: hotel.hotelID,
       bookingStartDate: dateRange.from.toISOString(),
       bookingEndDate: dateRange.to.toISOString(),
@@ -270,12 +302,21 @@ function ClientViewHotel() {
         roomType: choice.room.type,
         rooms: choice.count,
       })),
+      totalPrice,
+      numberOfDays,
+      discountAmount,
+      finalPrice,
+      userChoices,
     };
 
-    const queryParams = new URLSearchParams({
-      bookingData: JSON.stringify(bookingData),
-    }).toString();
-    router.push(`/booking-review?${queryParams}`);
+    // Store booking data in cookies
+    Cookies.set("bookingData", JSON.stringify(bookingData), {
+      expires: 1, // 1 day
+      secure: true, // Only sent over HTTPS
+      sameSite: "Strict", // Only sent in a first-party context
+    });
+
+    router.push(`/booking-review`);
   };
 
   return (
@@ -792,6 +833,7 @@ function ClientViewHotel() {
                       <Select
                         onValueChange={(value) => setGuests(Number(value))}
                         disabled={userChoices.length === 0}
+                        value={guests ? String(guests) : undefined} // Set the value here
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select number of guests" />
