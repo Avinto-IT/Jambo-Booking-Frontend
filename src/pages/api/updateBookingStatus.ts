@@ -128,7 +128,7 @@ async function updateBookingStatusHandler(
           <div style="border: 1px solid #ddd; padding: 10px; margin-bottom: 10px;">
             <p><strong>Room Type:</strong> ${room.roomType}</p>
             <p><strong>Number of Rooms:</strong> ${room.rooms}</p>
-            <p><strong>Total Price:</strong> $${room.totalPrice}</p>
+            <p><strong>Total Price:</strong> $${room.totalRoomPrice}</p>
             <p><strong>Beds:</strong></p>
             <ul>
               ${room.beds

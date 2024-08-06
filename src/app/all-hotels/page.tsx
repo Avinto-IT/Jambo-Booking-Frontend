@@ -14,6 +14,7 @@ import Layout from "@/components/Layout/Layout";
 import Hero from "@/components/HotelHero/Hero";
 import { Button } from "@/components/ui/button";
 import FacilityIcon from "@/utils/facilityIcon";
+import ListSkeleton from "@/components/AllSkeletons/ListSkeleton";
 
 export default function Page() {
   return (
@@ -78,7 +79,7 @@ function AllHotels() {
         <MaxWidthWrapper>
           {loading ? (
             <div className="py-10">
-              <SkeletonCard />
+              <ListSkeleton />
             </div>
           ) : (
             <div className="py-10">
@@ -87,7 +88,9 @@ function AllHotels() {
                   <div className="flex text-2xl font-semibold tracking-tight leading-10">
                     {" "}
                     <p className="">{locationId}: </p>
-                    <p className=" ">{filteredHotels.length} hotels found</p>
+                    <p className=" ">
+                      &nbsp;{filteredHotels.length} hotels found
+                    </p>
                   </div>
                 ) : (
                   <p className=" text-3xl font-semibold tracking-tight leading-10">
@@ -115,7 +118,7 @@ function AllHotels() {
                   return (
                     <div
                       key={index}
-                      className="flex flex-col mb-2 border pb-5 border-gray-200 rounded-lg"
+                      className="flex flex-col mb-2 border pb-5 border-gray-200 rounded-lg hover:cursor-pointer"
                       onClick={() => {
                         handleViewClick(hotel.hotelID);
                       }}
@@ -183,20 +186,20 @@ function AllHotels() {
   );
 }
 
-function SkeletonCard() {
-  return (
-    <div className="space-y-5 w-full">
-      <Skeleton className="h-6 w-52" />
-      <Skeleton className="h-4 w-80" />
-      <div className=" flex justify-end w-full">
-        <Skeleton className="h-6 w-32" />
-      </div>
-      <div className="flex flex-row justify-between space-x-7 w-full h-72">
-        <Skeleton className=" w-1/3" />
+// function SkeletonCard() {
+//   return (
+//     <div className="space-y-5 w-full">
+//       <Skeleton className="h-6 w-52" />
+//       <Skeleton className="h-4 w-80" />
+//       <div className=" flex justify-end w-full">
+//         <Skeleton className="h-6 w-32" />
+//       </div>
+//       <div className="flex flex-row justify-between space-x-7 w-full h-72">
+//         <Skeleton className=" w-1/3" />
 
-        <Skeleton className=" w-1/3" />
-        <Skeleton className=" w-1/3" />
-      </div>
-    </div>
-  );
-}
+//         <Skeleton className=" w-1/3" />
+//         <Skeleton className=" w-1/3" />
+//       </div>
+//     </div>
+//   );
+// }

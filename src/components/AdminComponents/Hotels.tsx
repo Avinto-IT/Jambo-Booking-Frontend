@@ -249,9 +249,7 @@ export default function HotelsDashboard({}: {}) {
                       Recent bookings in Jambo Hotels.
                     </CardDescription>
                   </CardHeader>
-                  <button className=" py-2 px-6 bg-blue-400 h-10">
-                    View All
-                  </button>
+                  <Button className=" py-2 px-6  h-10">View All</Button>
                 </div>
                 <CardContent>
                   <Table>

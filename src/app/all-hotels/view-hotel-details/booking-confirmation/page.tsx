@@ -195,9 +195,7 @@ function BookingConfirmation() {
                 </CardContent>
                 <CardFooter className="flex justify-end space-x-2">
                   <Button variant="outline">Cancel</Button>
-                  <Button className="bg-[#2563EB] text-[white]">
-                    Confirm Booking
-                  </Button>
+                  <Button>Confirm Booking</Button>
                 </CardFooter>
               </Card>
             </div>

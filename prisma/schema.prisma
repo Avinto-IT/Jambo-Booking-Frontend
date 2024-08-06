@@ -22,9 +22,11 @@ model Hotel {
   discount         Float
   contactDetails   Json
   addedDate        DateTime
+  isApproved       String
   location         Location  @relation(fields: [locationID], references: [locationID])
   bookings         Booking[]
-  User             User[]
+  userID           String    @db.ObjectId
+  user             User      @relation(fields: [userID], references: [userID])
 }
 
 model Blog {
@@ -43,7 +45,7 @@ model Grade {
   gradeName     String
   priceModifier String
 
-  User User[]
+  user User[]
 }
 
 model User {
@@ -59,12 +61,12 @@ model User {
   dateOfBirth      DateTime
   address          String
   toursCompleted   Int?
+  hasMultipleHotel Boolean?
   bookings         Booking[]
   bookingHistories BookingHistory[]
   gradeID          String?          @db.ObjectId
   grade            Grade?           @relation(fields: [gradeID], references: [gradeID])
-  hotelID          String?          @db.ObjectId
-  hotel            Hotel?           @relation(fields: [hotelID], references: [hotelID])
+  hotel            Hotel[]
 }
 
 model Location {
@@ -77,20 +79,21 @@ model Location {
 }
 
 model Booking {
-  bookingID        String           @id @default(auto()) @map("_id") @db.ObjectId
-  userID           String           @db.ObjectId
-  hotelID          String           @db.ObjectId
-  bookingStartDate DateTime
-  bookingEndDate   DateTime
-  requestedDate    DateTime
-  status           String
-  guests           Int
-  bookingInfo      Json
-  bookingRemarks   String?
-  specialRequest   String
-  user             User             @relation(fields: [userID], references: [userID])
-  hotel            Hotel            @relation(fields: [hotelID], references: [hotelID])
-  bookingHistory   BookingHistory[]
+  bookingID         String           @id @default(auto()) @map("_id") @db.ObjectId
+  userID            String           @db.ObjectId
+  hotelID           String           @db.ObjectId
+  bookingStartDate  DateTime
+  bookingEndDate    DateTime
+  requestedDate     DateTime
+  status            String
+  guests            Int
+  bookingInfo       Json
+  totalBookingPrice Int
+  bookingRemarks    String?
+  specialRequest    String
+  user              User             @relation(fields: [userID], references: [userID])
+  hotel             Hotel            @relation(fields: [hotelID], references: [hotelID])
+  bookingHistory    BookingHistory[]
 }
 
 model BookingHistory {

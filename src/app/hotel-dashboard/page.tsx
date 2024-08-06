@@ -2,9 +2,10 @@
 
 import React, { useEffect, useState } from "react";
 import { Agent, Booking, Hotel, UserDetails } from "@/utils/types";
-
+import Cookies from "js-cookie";
 import withAuth from "@/lib/loginAuth";
 import HotelDashboard from "@/components/dashboard/HotelDashboard";
+import HotelLayout from "@/components/Layout/HotelLayout";
 
 const Dashboard: React.FC = ({}) => {
   const [hotels, setHotels] = useState<Hotel[]>([]);
@@ -27,19 +28,41 @@ const Dashboard: React.FC = ({}) => {
     fetchHotels();
   }, []);
   useEffect(() => {
-    const fetchBookings = async () => {
-      try {
-        const response = await fetch("/api/getAllBookings");
-        const data = await response.json();
-        console.log(data, "1123123");
-        setBookings(data.bookings);
-      } catch (error) {
-        console.log("Error fetching bookings:", error);
-      } finally {
-        setLoading(false);
+    const getUserDetails = () => {
+      const userDetails = Cookies.get("userDetails");
+      if (userDetails) {
+        try {
+          const parsedUserDetails = JSON.parse(userDetails);
+          return parsedUserDetails.userID;
+        } catch (error) {
+          console.error("Error parsing user details from cookie:", error);
+          return null;
+        }
+      } else {
+        console.warn("User details not found in cookie");
+        return null;
       }
     };
-    fetchBookings();
+
+    const userID = getUserDetails();
+
+    if (userID) {
+      const fetchBookings = async () => {
+        try {
+          const response = await fetch(
+            `/api/getBookingByHotelUser?userID=${userID}`
+          );
+          const data = await response.json();
+          // console.log(data, "1123123");
+          setBookings(data.bookings);
+        } catch (error) {
+          console.log("Error fetching bookings:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchBookings();
+    }
   }, []);
   useEffect(() => {
     const fetchAgents = async () => {
@@ -56,7 +79,11 @@ const Dashboard: React.FC = ({}) => {
     fetchAgents();
   }, []);
 
-  return <HotelDashboard hotels={hotels} agents={agents} bookings={bookings} />;
+  return (
+    <HotelLayout>
+      <HotelDashboard hotels={hotels} agents={agents} bookings={bookings} />
+    </HotelLayout>
+  );
 };
 
 export default withAuth(Dashboard);
