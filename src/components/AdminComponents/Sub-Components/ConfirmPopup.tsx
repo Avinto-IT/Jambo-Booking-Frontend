@@ -42,7 +42,6 @@ export default function ConfirmPopup({
               handleClick();
               setIsOpen(false);
             }}
-            className="bg-blue-600 hover:bg-blue-800 "
           >
             Confirm
           </Button>

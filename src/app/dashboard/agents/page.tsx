@@ -133,7 +133,7 @@ export default function AgentDashboard({}: {}) {
                         </div>
                       </div>
                       <div className="flex justify-end w-full mt-3">
-                        <Button className=" bg-blue-700">Save Changes</Button>
+                        <Button>Save Changes</Button>
                       </div>
                     </DialogContent>
                   </Dialog>
@@ -176,7 +176,7 @@ export default function AgentDashboard({}: {}) {
                         </div>
                       </div>
                       <div className="flex justify-end w-full mt-3">
-                        <Button className=" bg-blue-700">Save Changes</Button>
+                        <Button>Save Changes</Button>
                       </div>
                     </DialogContent>
                   </Dialog>
@@ -219,7 +219,7 @@ export default function AgentDashboard({}: {}) {
                         </div>
                       </div>
                       <div className="flex justify-end w-full mt-3">
-                        <Button className=" bg-blue-700">Save Changes</Button>
+                        <Button>Save Changes</Button>
                       </div>
                     </DialogContent>
                   </Dialog>
@@ -261,7 +261,7 @@ export default function AgentDashboard({}: {}) {
                 </TabsList>
               </Tabs>
               <div className="buttons gap-2 h-8 w-50  ">
-                <Button asChild className="bg-blue-600 hover:bg-blue-800  h-8">
+                <Button asChild className="  h-8">
                   <Link href="/dashboard/agents/add-agent">
                     <CirclePlus className="size-4 mr-1" />
                     Add Agents

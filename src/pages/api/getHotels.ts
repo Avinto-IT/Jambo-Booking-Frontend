@@ -12,7 +12,11 @@ export default async function handler(
   }
 
   try {
-    const hotels = await prisma.hotel.findMany({});
+    const hotels = await prisma.hotel.findMany({
+      include: {
+        user: true,
+      },
+    });
     res.status(200).json({ hotels });
   } catch (error) {
     console.log("Error fetching hotels", error);

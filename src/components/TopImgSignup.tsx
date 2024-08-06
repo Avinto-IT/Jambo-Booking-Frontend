@@ -6,13 +6,13 @@ import { Button } from "./ui/button";
 interface TopImgProp {
   title: string;
   description: string;
-  buttonName: string;
+  // buttonName: string;
   topimg: string;
 }
 const TopImgSignUp: React.FC<TopImgProp> = ({
   title,
   description,
-  buttonName,
+  // buttonName,
   topimg,
 }) => {
   return (
@@ -31,9 +31,9 @@ const TopImgSignUp: React.FC<TopImgProp> = ({
           <br />
           <p className="leading-7 mt-2">{description}</p>
           <br />
-          <Button className="  w-40 h-12 bg-blue-600 hover:bg-blue-800">
+          {/* <Button className="  w-40 h-12 bg-blue-600 hover:bg-blue-800">
             Signup as {buttonName}
-          </Button>
+          </Button> */}
         </div>
       </div>
     </div>

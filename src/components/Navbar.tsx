@@ -60,7 +60,7 @@ const hotelItems = [
 ];
 export default function Navbar() {
   return (
-    <NavigationMenu>
+    <NavigationMenu className="z-50">
       <NavigationMenuList className="flex items-center space-x-4">
         <NavigationMenuItem>
           <NavigationMenuLink href="/" className="hover:text-blue-600">

@@ -12,7 +12,7 @@ export default async function getHotelByIdHandler(
   }
   const { id } = req.query;
   if (!id) {
-    return res.status(400).json({ error: "Id not provided in the body" });
+    return res.status(400).json({ error: "Id not provided in the params" });
   }
   const idFromQuery = Array.isArray(id) ? id[0] : id;
 

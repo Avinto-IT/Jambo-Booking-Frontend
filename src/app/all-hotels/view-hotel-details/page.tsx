@@ -166,7 +166,11 @@ function ClientViewHotel() {
     if (showAmenities) {
       setVisibleFacilitiesCount(4); // Show only the first 3 facilities
     } else {
-      setVisibleFacilitiesCount(hotel.facilities.length); // Show all facilities
+      if (hotel) {
+        setVisibleFacilitiesCount(hotel.facilities.length); // Show all facilities if hotel is defined
+      } else {
+        setVisibleFacilitiesCount(0); // Handle the case where hotel is undefined
+      }
     }
     setShowAmentities(!showAmenities);
   };

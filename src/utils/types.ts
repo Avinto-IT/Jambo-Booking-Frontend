@@ -31,6 +31,7 @@ export interface Hotel {
   imageLinks: string[];
   primaryImageLink: string;
   isRunning: boolean;
+  isApproved: string;
   rooms: Room[];
   discount: number;
 }
@@ -48,10 +49,11 @@ export interface Booking {
     roomCapacity: string;
     roomType: string;
     rooms: number;
-    totalPrice: number;
+    totalRoomPrice: number;
     roomPrice: string;
   }[];
   specialRequest: string;
+  totalBookingPrice: number;
 
   hotel: {
     address: string;

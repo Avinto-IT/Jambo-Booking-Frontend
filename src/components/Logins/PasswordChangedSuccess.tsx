@@ -39,7 +39,7 @@ const PasswordChangedSuccess = ({}) => {
             {/* </div> */}
             <CardFooter className="">
               <Button
-                className="w-full bg-blue-600 hover:bg-blue-800"
+                className="w-full "
                 onClick={() => (window.location.href = "/login")}
               >
                 Back to Login

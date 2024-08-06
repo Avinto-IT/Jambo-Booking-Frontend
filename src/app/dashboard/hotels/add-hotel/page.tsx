@@ -1,5 +1,5 @@
 "use client";
-
+import Cookies from "js-cookie";
 import Link from "next/link";
 import { useState, useEffect, Key } from "react";
 import { useRouter } from "next/navigation";
@@ -439,6 +439,23 @@ export default function AddHotel() {
     const storedToken = localStorage.getItem("token");
     setToken(storedToken);
   }, []);
+  const getUserIDFromCookie = () => {
+    const userDetails = Cookies.get("userDetails");
+
+    if (userDetails) {
+      try {
+        const parsedUserDetails = JSON.parse(userDetails);
+        return parsedUserDetails.userID;
+      } catch (error) {
+        console.error("Error parsing user details from cookie:", error);
+        return null;
+      }
+    } else {
+      console.warn("User details not found in cookie");
+      return null;
+    }
+  };
+  const userID = getUserIDFromCookie();
 
   const onSubmit = async (data: FormData) => {
     setIsSubmitClicked(true);
@@ -467,6 +484,7 @@ export default function AddHotel() {
 
     const payload = {
       ...data.basicInfo,
+      userID,
       address: data.basicInfo.location.label,
       locationID: data.basicInfo.location.value,
       facilities: data.facilities.map((facility) => ({
@@ -500,7 +518,7 @@ export default function AddHotel() {
       isRunning: data.isRunning,
     };
     try {
-      const response = await fetch("/api/setHotels", {
+      const response = await fetch("/api/addUserHotel", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -2341,20 +2359,20 @@ export default function AddHotel() {
                 <div className="flex gap-1.5">
                   {currentStep > 0 ? (
                     <Button
-                      className="bg-white text-black"
+                      className=""
+                      variant="outline"
                       type="button"
                       onClick={handleBack}
                     >
                       Back
                     </Button>
                   ) : (
-                    <Button className="bg-white text-black" type="button">
+                    <Button variant="outline" type="button">
                       <Link href="/dashboard/hotels">Discard</Link>
                     </Button>
                   )}
                   {currentStep < steps.length - 1 ? (
                     <Button
-                      className="bg-blue-700 hover:bg-blue-900"
                       type="button"
                       onClick={(e) => {
                         e.preventDefault();
@@ -2365,7 +2383,6 @@ export default function AddHotel() {
                     </Button>
                   ) : (
                     <Button
-                      className="bg-blue-700 hover:bg-blue-900"
                       type="submit"
                       disabled={isSubmitClicked ? true : false}
                     >

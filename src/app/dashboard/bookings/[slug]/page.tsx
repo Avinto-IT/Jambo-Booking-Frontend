@@ -33,14 +33,6 @@ interface Bed {
   numberOfBeds: string;
 }
 
-interface RoomBookingInfo {
-  roomType: string;
-  rooms: number;
-  totalPrice: number;
-  beds: Bed[];
-  roomCapacity: string;
-  roomPrice: string;
-}
 export default function BookingDetails({
   params,
 }: {
@@ -65,17 +57,13 @@ export default function BookingDetails({
     };
     fetchBooking();
   }, [params.slug]);
-  const calculateTotalPrice = (bookingInfo: RoomBookingInfo[]) => {
-    return bookingInfo.reduce((total, room) => total + room.totalPrice, 0);
-  };
 
   if (!booking) return <>Loading...</>;
   const daysBooked = calculateDaysBetweenDates(
     booking?.bookingStartDate,
     booking?.bookingEndDate
   );
-  console.log(booking.bookingInfo);
-  const cartTotalPrice = calculateTotalPrice(booking.bookingInfo);
+
   const handleConfirm = async () => {
     try {
       setIsConfirmButtonClicked(true);
@@ -93,7 +81,7 @@ export default function BookingDetails({
           bookingStartDate: booking?.bookingStartDate,
           bookingEndDate: booking?.bookingEndDate,
           bookingInformation: booking?.bookingInfo,
-          totalAmount: cartTotalPrice,
+          totalAmount: booking.totalBookingPrice,
           hotelName: booking.hotel.name,
         }),
       });
@@ -160,6 +148,7 @@ export default function BookingDetails({
                   </div>
                 </div>
                 {booking.bookingInfo.map((bookInfo, index: number) => {
+                  console.log(bookInfo);
                   return (
                     <Card key={index} className="shadow-none rounded-md">
                       <CardHeader>
@@ -167,8 +156,8 @@ export default function BookingDetails({
                           {bookInfo.roomType}
                         </CardTitle>
                       </CardHeader>
-                      <CardContent className="flex justify-between">
-                        <div>
+                      <CardContent className="grid grid-cols-4">
+                        <div className="col-span-3">
                           <div className="flex items-center gap-8">
                             {bookInfo.beds.map((bedInfo, index: number) => {
                               return (
@@ -186,7 +175,22 @@ export default function BookingDetails({
                             </div>
                           </div>
                         </div>
-                        <div> Room and price</div>
+                        <div className="flex flex-col justify-end text-end text-sm col-span-1">
+                          <div>
+                            <div>Selected Room</div>
+                            <div className="text-base font-medium">
+                              {bookInfo.rooms}
+                            </div>
+                          </div>
+                          <div>
+                            <div className="text-muted-foreground text-xs">
+                              Includes taxes and fees
+                            </div>
+                            <div className="text-xl font-semibold">
+                              ${bookInfo.roomPrice}
+                            </div>
+                          </div>
+                        </div>
                       </CardContent>
                     </Card>
                   );
@@ -248,9 +252,20 @@ export default function BookingDetails({
                           className="flex items-center justify-between"
                         >
                           <div>
-                            {`$${bookInfo.roomPrice} * ${daysBooked} Nights`}
+                            $
+                            <span className="font-semibold">
+                              {bookInfo.roomPrice}
+                            </span>{" "}
+                            x{" "}
+                            <span className="font-semibold">{daysBooked}</span>{" "}
+                            Nights x{" "}
+                            <span className="font-semibold">
+                              {bookInfo.rooms}
+                            </span>{" "}
+                            rooms
                           </div>
-                          <div>${bookInfo.totalPrice}</div>
+
+                          <div>${bookInfo.totalRoomPrice}</div>
                         </div>
                       );
                     })}
@@ -258,7 +273,7 @@ export default function BookingDetails({
                   <div className="border" />
                   <div className="text-2xl font-semibold flex justify-between">
                     <div>Total</div>
-                    <div>${cartTotalPrice}</div>
+                    <div>${booking.totalBookingPrice}</div>
                   </div>
                 </CardContent>
               </Card>
@@ -277,7 +292,7 @@ export default function BookingDetails({
                             : "Select booking status"}
                         </DropdownMenuTrigger>
                         <div>
-                          <DropdownMenuContent className="md:w-[500px]">
+                          <DropdownMenuContent className="md:w-[30rem]">
                             {/* <DropdownMenuLabel>My Account</DropdownMenuLabel> */}
                             {/* <DropdownMenuSeparator /> */}
                             <DropdownMenuItem

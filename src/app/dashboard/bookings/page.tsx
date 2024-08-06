@@ -259,7 +259,9 @@ export default function AdminBookingDashboard({}: {}) {
                           <TableHead>Agent Name</TableHead>
                           <TableHead>Check In</TableHead>
                           <TableHead>Check Out</TableHead>
-                          <TableHead className="text-center">Actions</TableHead>
+                          <TableHead>
+                            <span className="sr-only">Actions</span>
+                          </TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -269,7 +271,7 @@ export default function AdminBookingDashboard({}: {}) {
                               <TableCell>{booking.hotelID} </TableCell>
 
                               <TableCell>{booking.hotel.name} </TableCell>
-                              <TableCell className="">
+                              <TableCell>
                                 <Badge
                                   variant={
                                     booking.status === "requested"
@@ -295,13 +297,35 @@ export default function AdminBookingDashboard({}: {}) {
                               <TableCell>
                                 {dateFormatter(booking.bookingEndDate)}
                               </TableCell>
-                              <TableCell className="flex items-center justify-center ">
-                                <Eye
-                                  className="rounded hover:bg-slate-200"
-                                  onClick={() =>
-                                    router.push(`bookings/${booking.bookingID}`)
-                                  }
-                                />
+                              <TableCell>
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger asChild>
+                                    <Button
+                                      aria-haspopup="true"
+                                      size="icon"
+                                      variant="ghost"
+                                    >
+                                      <MoreHorizontal className="h-4 w-4" />
+                                      <span className="sr-only">
+                                        Toggle menu
+                                      </span>
+                                    </Button>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent align="end">
+                                    <DropdownMenuLabel>
+                                      Actions
+                                    </DropdownMenuLabel>
+                                    <DropdownMenuItem
+                                      onClick={() =>
+                                        router.push(
+                                          `bookings/${booking.bookingID}`
+                                        )
+                                      }
+                                    >
+                                      View
+                                    </DropdownMenuItem>
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
                               </TableCell>
                             </TableRow>
                           );

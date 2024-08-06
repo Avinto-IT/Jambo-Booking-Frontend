@@ -35,7 +35,7 @@ export default function Page() {
             </div>
 
             <Button
-              className="w-2/5 bg-blue-700 hover:bg-blue-900 mt-10 py-4"
+              className="w-2/5 mt-10 py-4"
               onClick={() => (window.location.href = "/")}
             >
               Go to Dashboard
