@@ -86,12 +86,9 @@ export default function App() {
 
                     <div className="buttons gap-2 h-8 w-50  ">
                       {/* <Button className="bg-white text-black mr-2 h-8 shadow-sm hover:bg-white hover:shadow-lg"> <Image src={userImg} alt="user" className="mr-2" />Fliter</Button> */}
-                      <Button
-                        asChild
-                        className="bg-blue-600 hover:bg-blue-800  h-8"
-                      >
+                      <Button asChild className=" h-8">
                         <Link href="/add-blogs">
-                          <Image src={circle} alt="user" className="" />
+                          <Image src={circle} alt="user" className="mr-1" />
                           Add Blog
                         </Link>
                       </Button>

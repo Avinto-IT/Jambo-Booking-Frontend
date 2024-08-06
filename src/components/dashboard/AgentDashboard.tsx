@@ -1,17 +1,3 @@
-// import React from "react";
-// import { UserDetails } from "@/utils/types";
-
-// export default function AgentDashboard({ user }: { user: UserDetails }) {
-//   return (
-//     <div>
-//       <h1 className="text-2xl font-bold">This is Agent Dashboard</h1>
-//       <p>Welcome, {user?.firstName}!</p>
-//       <p>Email: {user?.email}</p>
-//       <p>Role: {user?.role}</p>
-//       <p>Contact: {user?.contactNumber}</p>
-//     </div>
-//   );
-// }
 import React, { useEffect, useState } from "react";
 
 import { ArrowUpRight, User } from "lucide-react";
@@ -36,17 +22,66 @@ import {
 import { Tabs } from "@/components/ui/tabs";
 import DateRangePicker from "../AdminComponents/Sub-Components/DateRangePicker";
 
-import { Agent, Booking, Hotel } from "@/utils/types";
 import AgentLayout from "../Layout/AgentLayout";
-export default function AgentDashboard({
-  hotels,
-  bookings,
-  agents,
-}: {
-  hotels: Hotel[];
+import Link from "next/link";
+
+interface User {
+  userID: string;
+  agencyName: string;
+  firstName: string;
+  lastName: string;
+  password: string;
+  email: string;
+  affiliatedHotel: string | null;
+  contactNumber: string;
+  role: string;
+  dateOfBirth: string;
+  address: string;
+  toursCompleted: number;
+  gradeID: string | null;
+  hotelID: string | null;
   bookings: Booking[];
-  agents: Agent[];
-}) {
+}
+
+interface Booking {
+  bookingID: string;
+  userID: string;
+  hotelID: string;
+  bookingStartDate: string;
+  bookingEndDate: string;
+  status: string;
+  guests: number;
+  bookingInfo: BookingInfo[];
+  hotel: Hotel;
+  totalBookingPrice: number;
+}
+
+interface BookingInfo {
+  roomType: string;
+  rooms: number;
+  totalPrice: number;
+  beds: Bed[];
+  roomCapacity: string;
+  totalRoomPrice: string;
+  roomPrice?: string; // Optional, present only in some cases
+}
+
+interface Bed {
+  bedType: string;
+  numberOfBeds: string;
+}
+
+interface Hotel {
+  name: string;
+  address: string;
+}
+interface AgentDashboardProps {
+  agent: User;
+}
+
+export default function AgentDashboard({ agent }: AgentDashboardProps) {
+  console.log(agent, "agentssad");
+
   return (
     <AgentLayout>
       <div className="flex flex-col sm:gap-4 ">
@@ -118,7 +153,12 @@ export default function AgentDashboard({
                         Recent bookings in Jambo Hotels.
                       </CardDescription>
                     </CardHeader>
-                    <button className=" flex gap-x-1 py-2 px-6 bg-blue-600 h-10 rounded-md text-[#F8FAFC]">
+                    <button
+                      onClick={() =>
+                        (window.location.href = "/agent-dashboard/booking")
+                      }
+                      className=" flex gap-x-1 py-2 px-6 bg-blue-600 h-10 rounded-md text-[#F8FAFC]"
+                    >
                       View All
                       <ArrowUpRight className="h-5 w-5" />
                     </button>
@@ -132,7 +172,20 @@ export default function AgentDashboard({
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {hotels?.slice(0, 5).map((hotel, index) => {
+                        {agent?.bookings?.map((booking, index: number) => (
+                          <TableRow key={index} className="">
+                            <TableCell className="leading-7">
+                              <div className="">{booking.hotel?.name}</div>
+                              <div className="text-[#64748B] font-normal">
+                                {booking.hotel?.address}
+                              </div>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <strong>${booking.totalBookingPrice}</strong>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                        {/* {hotels?.map((hotel, index) => {
                           return (
                             <TableRow key={index} className="">
                               <TableCell className="leading-7">
@@ -141,13 +194,39 @@ export default function AgentDashboard({
                                   {hotel.address}
                                 </div>
                               </TableCell>
-                              <TableCell className="text-right">
-                                {/* {`${booking.user.firstName} ${booking.user.lastName}`} */}
-                                USD {hotel.rooms[0].price}
+                              
+
+                              <TableCell>
+                                {renderTotalPrices(bookings)}
                               </TableCell>
                             </TableRow>
                           );
-                        })}
+                        })} */}
+                        {/* {bookings.map((booking, index) => {
+                                const totalPrices = booking.bookingInfo.reduce(
+                                  (sum, room) => sum + room.totalPrice,
+                                  0
+                                );
+
+                                return (
+                                  <TableCell className="text-right" key={index}>
+                                    USD {totalPrices}
+                                  </TableCell>
+                                );
+                              })} */}
+                        {/* {agent.user.booking.map((agent, index) => (
+                          <TableRow key={index}>
+                            <TableCell className="leading-7">
+                              <div>{agent.name}</div>
+                              <div className="text-[#64748B] font-normal">
+                                {hotel.address}
+                              </div>
+                            </TableCell>
+                            <TableCell className="text-right">
+                            
+                            </TableCell>
+                          </TableRow>
+                        ))} */}
                       </TableBody>
                     </Table>
                   </CardContent>

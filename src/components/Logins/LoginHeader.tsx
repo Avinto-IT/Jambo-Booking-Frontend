@@ -34,7 +34,10 @@ const LoginHeader: React.FC<LoginHeaderprops> = ({ handleBack }) => {
               Go to Homepage
             </BreadcrumbLink>
           ) : (
-            <BreadcrumbLink onClick={handleBack} className="flex items-center">
+            <BreadcrumbLink
+              onClick={handleBack}
+              className="flex items-center hover:cursor-pointer"
+            >
               {" "}
               <ChevronLeft className="mr-1" />
               Back

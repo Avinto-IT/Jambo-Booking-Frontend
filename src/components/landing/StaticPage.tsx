@@ -24,9 +24,7 @@ function StaticPage() {
               </p>
             </div>
             <br />
-            <Button className="w-32 h-14 gap-10 bg-[#2563EB] ">
-              Search Hotels
-            </Button>
+            <Button className="w-32 h-14 gap-10  ">Search Hotels</Button>
           </div>
 
           <div className="  w-1/2 h-72 flex justify-center items-center align-middle relative -top-1">

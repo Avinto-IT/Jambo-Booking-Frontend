@@ -145,16 +145,10 @@ const BlogEditor = () => {
                   </div>
                 </div>
                 <div className="flex justify-end items-end h-10 mr-5 ">
-                  <Button
-                    className="bg-blue-600 text-white  hover:bg-blue-800 hover:text-white ml-3"
-                    onClick={handleOnsave}
-                  >
+                  <Button className="ml-3" onClick={handleOnsave}>
                     Save Changes
                   </Button>
-                  <Button
-                    className="ml-12 bg-blue-600 text-white  hover:bg-blue-800 hover:text-white"
-                    onClick={handleOnclear}
-                  >
+                  <Button className="ml-12 " onClick={handleOnclear}>
                     Clear
                   </Button>
                 </div>

@@ -279,13 +279,13 @@ function AdminViewHotel() {
                           </div>
                         </div>
                         <Button
-                          className="absolute top-1/2 right-1 text-white bg-gray-50 bg-opacity-40 rounded-full"
+                          className="absolute top-1/2 right-1 text-white bg-gray-50 hover:bg-gray-500 bg-opacity-40 rounded-full"
                           onClick={() => handleNextClick()}
                         >
                           &gt;
                         </Button>
                         <Button
-                          className="absolute top-1/2 left-1 text-white bg-gray-50 bg-opacity-40 rounded-full"
+                          className="absolute top-1/2 left-1 text-white bg-gray-50 bg-opacity-40 rounded-full hover:bg-gray-500"
                           onClick={() => handlePrevClick()}
                         >
                           &lt;
@@ -482,13 +482,13 @@ function AdminViewHotel() {
                                   </div>
                                 </div>
                                 <Button
-                                  className="absolute top-56 right-0 text-white bg-gray-100 bg-opacity-40 rounded-full hover:text-white"
+                                  className="absolute top-56 right-0 text-white bg-gray-100 bg-opacity-40 rounded-full hover:text-white hover:bg-gray-500"
                                   onClick={() => handleRoomNextClick()}
                                 >
                                   &gt;
                                 </Button>
                                 <Button
-                                  className="absolute top-56 left-0 text-white bg-gray-100 bg-opacity-40 rounded-full hover:text-white"
+                                  className="absolute top-56 left-0 text-white bg-gray-100 bg-opacity-40 rounded-full hover:text-white hover:bg-gray-500"
                                   onClick={() => handleRoomPrevClick()}
                                 >
                                   &lt;
@@ -634,7 +634,7 @@ function AdminViewHotel() {
                   {hotel.facilities.length > 4 && (
                     <Button variant={"outline"} onClick={toggleShowAmenities}>
                       {!showAmenities
-                        ? `Show all ${hotel.facilities.length} amenities`
+                        ? `Show all ${hotel.facilities.length} facilities`
                         : "Show Less"}
                     </Button>
                   )}
