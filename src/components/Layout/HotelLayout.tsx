@@ -78,14 +78,31 @@ const HotelLayout: React.FC<LayoutProps> = ({ children }) => {
             <Home className="h-4 w-4 transition-all group-hover:scale-110" />
             <span className="sr-only">Dashboard</span>
           </Link>
-
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href="/hotel-dashboard/hotels"
+                  className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors md:h-8 md:w-8 ${
+                    pathname === "/hotel-dashboard/hotels"
+                      ? "bg-[#F1F5F9]"
+                      : "text-primary"
+                  }`}
+                >
+                  <Bed className="h-5 w-5" />
+                  <span className="sr-only">Hotels</span>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent side="right">Hotels</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
                   href="/hotel-dashboard/requests"
                   className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors md:h-8 md:w-8 ${
-                    pathname === "/agent-dashboard/requests"
+                    pathname === "/hotel-dashboard/requests"
                       ? "bg-[#F1F5F9]"
                       : "text-primary"
                   }`}
@@ -103,7 +120,7 @@ const HotelLayout: React.FC<LayoutProps> = ({ children }) => {
                 <Link
                   href="/hotel-dashboard/bookings"
                   className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors md:h-8 md:w-8 ${
-                    pathname === "/agent-dashboard/bookings"
+                    pathname === "/hotel-dashboard/bookings"
                       ? "bg-[#F1F5F9]"
                       : "text-primary"
                   }`}

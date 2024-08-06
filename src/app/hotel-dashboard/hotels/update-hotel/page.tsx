@@ -1,17 +1,16 @@
 "use client";
-import Cookies from "js-cookie";
 import Link from "next/link";
-import { useState, useEffect, Key } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Key, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { number, z } from "zod";
 import {
   useForm,
   useFieldArray,
   FormProvider,
+  useFormContext,
   Controller,
   FieldError,
-  useFormContext,
 } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import AdminLayout from "@/components/Layout/AdminLayout";
@@ -73,6 +72,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { InputNumber } from "@/components/ui/numberInput";
+import HotelLayout from "@/components/Layout/HotelLayout";
 interface OptionType {
   value: string;
   label: string;
@@ -123,6 +123,7 @@ interface ContactDetails {
 
 interface FormData {
   basicInfo: {
+    hotelID: string;
     name: string;
     location: { value: string; label: string };
     description: string;
@@ -135,7 +136,6 @@ interface FormData {
   primaryImage: File | null;
   imageLinks: File[];
 }
-
 interface AmenityError {
   name?: {
     message?: string;
@@ -148,7 +148,6 @@ interface CollapsedSectionsState {
   houseRules: boolean;
   contactDetails: boolean;
 }
-
 const basicInfoSchema = z.object({
   name: z.string().min(1, "Hotel name is required"),
   location: z.object({
@@ -156,6 +155,7 @@ const basicInfoSchema = z.object({
   }),
   description: z.string().min(1, "Description is required"),
 });
+
 const facilitySchema = z.object({
   name: z.object({
     label: z.string().min(1, "Facility Category is required"),
@@ -229,27 +229,18 @@ const formSchemas = [
   }),
   z.object({ contactForm: contactDetailsSchema }),
 ];
-
-export default function AddHotel() {
-  const [locations, setLocations] = useState<Location[]>([]);
+export default function AdminUpdateHotel() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AdminUpdateHotelContent />
+    </Suspense>
+  );
+}
+const AdminUpdateHotelContent = () => {
   const [facilities, setFacilities] = useState<FacilitiesInterface[]>([]);
   const [subFacilitiesMap, setSubFacilitiesMap] = useState<{
     [key: string]: string[];
   }>({});
-  const [houseRules, setHouseRules] = useState<HouseRuleInterface[]>([]);
-  const [currentStep, setCurrentStep] = useState(0);
-  useEffect(() => {
-    const fetchLocations = async () => {
-      try {
-        const response = await fetch("/api/getLocation");
-        const data: Location[] = await response.json();
-        setLocations(data);
-      } catch (error) {
-        console.error("Error fetching locations:", error);
-      }
-    };
-    fetchLocations();
-  }, []);
   useEffect(() => {
     const fetchFacilities = async () => {
       try {
@@ -269,26 +260,6 @@ export default function AddHotel() {
     };
     fetchFacilities();
   }, []);
-  useEffect(() => {
-    const fetchHouseRules = async () => {
-      try {
-        const response = await fetch("/api/getHouseRules");
-        const data: HouseRuleInterface[] = await response.json();
-        setHouseRules(data);
-      } catch (error) {
-        console.error("Error fetching house rules:", error);
-      }
-    };
-    fetchHouseRules();
-  }, []);
-  const [collapsedSections, setCollapsedSections] =
-    useState<CollapsedSectionsState>({
-      basicInformation: false,
-      facilities: true,
-      room: true,
-      houseRules: true,
-      contactDetails: true,
-    });
   const steps = [
     { component: BasicInformation, label: "Hotel Information" },
     { component: Facilities, label: "Facilities" },
@@ -298,7 +269,28 @@ export default function AddHotel() {
     { component: Review, label: "Review" },
   ];
 
+  const searchParams = useSearchParams();
+  const id = searchParams?.get("id");
+  const [hotel, setHotel] = useState(null);
+  const [collapsedSections, setCollapsedSections] =
+    useState<CollapsedSectionsState>({
+      basicInformation: false,
+      facilities: false,
+      room: false,
+      houseRules: false,
+      contactDetails: false,
+    });
+  const [currentStep, setCurrentStep] = useState(0);
   const CurrentComponent = steps[currentStep].component;
+  const [token, setToken] = useState<string | null>(null);
+  const [locations, setLocations] = useState<Location[]>([]);
+  const router = useRouter();
+  const [isSubmitClicked, setIsSubmitClicked] = useState(false);
+  const [previewPrimaryImage, setPreviewPrimaryImage] = useState<string | null>(
+    null
+  );
+  const [previewImageLinks, setPreviewImageLinks] = useState<string[]>([]);
+
   const methods = useForm<FormData>({
     resolver:
       currentStep < formSchemas.length
@@ -307,7 +299,10 @@ export default function AddHotel() {
     defaultValues: {
       basicInfo: {
         name: "",
-        location: { value: "", label: "" },
+        location: {
+          value: "",
+          label: "",
+        },
         description: "",
       },
       facilities: [
@@ -359,10 +354,153 @@ export default function AddHotel() {
       ],
       isRunning: false,
       primaryImage: null,
-      imageLinks: [], // Updated default value
+      imageLinks: [],
     },
   });
+  const { reset } = methods;
+  useEffect(() => {
+    if (id) {
+      const fetchHotel = async () => {
+        try {
+          const response = await fetch(`/api/getHotelById?id=${id}`);
+          const data = await response.json();
+          setHotel(data.hotel);
+          setPreviewPrimaryImage(data.hotel.primaryImageLink);
+          setPreviewImageLinks(data.hotel.imageLinks);
 
+          if (data.hotel) {
+            // Create a temporary array to hold all room images
+
+            const tempRoomImageLinks: string[] = [];
+            data.hotel.rooms.forEach((room: Room) => {
+              room.roomImageLinks.forEach((link) => {
+                if (typeof link === "string") {
+                  tempRoomImageLinks.push(link);
+                } else {
+                  tempRoomImageLinks.push(URL.createObjectURL(link));
+                }
+              });
+            });
+            setRoomImageLinks(tempRoomImageLinks);
+            reset({
+              basicInfo: {
+                hotelID: id,
+                name: data.hotel.name,
+                location: {
+                  value: data.hotel.locationID,
+                  label: data.hotel.address,
+                },
+                description: data.hotel.description,
+              },
+              facilities: data.hotel.facilities.map(
+                (facility: Facility, index: Key) => ({
+                  id: index,
+                  name: {
+                    label: facility.name,
+                    value: facility.name,
+                  },
+                  // description: facility.description,
+                  subFacilities: facility.subFacilities.map(
+                    (subFacility, subIndex) => ({
+                      id: subIndex,
+                      name: {
+                        value: subFacility.name,
+                        label: subFacility.name,
+                      },
+                    })
+                  ),
+                })
+              ),
+              rooms: data.hotel.rooms.map((room: Room, index: Key) => ({
+                id: index,
+                type: room.type,
+                numberOfRooms: room.numberOfRooms,
+                price: room.price,
+                capacity: room.capacity,
+                beds: room.beds.map((bed, bedIndex) => ({
+                  bedType: {
+                    value: bed.bedType.value,
+                    label: bed.bedType.label,
+                  },
+                  numberOfBeds: bed.numberOfBeds,
+                })),
+                roomImageLinks: room.roomImageLinks,
+                amenities: room.amenities.map((amenity, amenityIndex) => ({
+                  id: amenityIndex,
+                  name: amenity.name,
+                })),
+              })),
+              contactForm: {
+                name: data.hotel.contactDetails.name,
+                position: data.hotel.contactDetails.position,
+                email: data.hotel.contactDetails.email,
+                number: data.hotel.contactDetails.number,
+                facebook: data.hotel.contactDetails.facebook,
+                instagram: data.hotel.contactDetails.instagram,
+                linkedin: data.hotel.contactDetails.linkedin,
+              },
+              houseRules: data.hotel.houseRules.map(
+                (houseRule: HouseRule, index: Key) => ({
+                  id: index,
+                  type: {
+                    label: houseRule.type,
+                    value: houseRule.type,
+                  },
+                  details: houseRule.details,
+                })
+              ),
+              isRunning: data.hotel.isRunning,
+              primaryImage: data.hotel.primaryImageLink,
+              imageLinks: data.hotel.imageLinks.map((link: File) => link),
+            });
+          }
+        } catch (error) {
+          console.log("Error fetching hotel:", error);
+        }
+      };
+      fetchHotel();
+    }
+  }, [id, reset]);
+  const [houseRules, setHouseRules] = useState<HouseRuleInterface[]>([]);
+
+  useEffect(() => {
+    const fetchLocations = async () => {
+      try {
+        const response = await fetch("/api/getLocation");
+        const data = await response.json();
+        setLocations(data);
+      } catch (error) {
+        console.error("Error fetching locations:", error);
+      }
+    };
+
+    fetchLocations();
+  }, []);
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token");
+    setToken(storedToken);
+  }, []);
+  useEffect(() => {
+    const fetchHouseRules = async () => {
+      try {
+        const response = await fetch("/api/getHouseRules");
+        const data: HouseRuleInterface[] = await response.json();
+        setHouseRules(data);
+      } catch (error) {
+        console.error("Error fetching house rules:", error);
+      }
+    };
+    fetchHouseRules();
+  }, []);
+  const locationOptions = locations.map((location) => ({
+    value: location.locationID,
+    label: `${location.address}, ${location.city}, ${location.country}, ${location.zipCode}`,
+  }));
+  const houseRulesOptions = houseRules.map((rule) => ({
+    value: rule.houseRule,
+    label: rule.houseRule,
+  }));
   const {
     fields: facilityFields,
     append: appendFacility,
@@ -389,15 +527,6 @@ export default function AddHotel() {
     control: methods.control,
     name: "houseRules",
   });
-
-  const [token, setToken] = useState<string | null>(null);
-
-  const router = useRouter();
-  const [isSubmitClicked, setIsSubmitClicked] = useState(false);
-  const [previewPrimaryImage, setPreviewPrimaryImage] = useState<string | null>(
-    null
-  );
-  const [previewImageLinks, setPreviewImageLinks] = useState<string[]>([]);
   const [roomImageLinks, setRoomImageLinks] = useState<string[]>([]);
 
   const handlePrimaryImageChange = (
@@ -410,7 +539,6 @@ export default function AddHotel() {
       setPreviewPrimaryImage(URL.createObjectURL(file));
     }
   };
-
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files) {
@@ -426,37 +554,12 @@ export default function AddHotel() {
       ]);
     }
   };
-
-  const locationOptions = locations.map((location) => ({
-    value: location.locationID,
-    label: `${location.address}, ${location.city}, ${location.country}, ${location.zipCode}`,
-  }));
-  const houseRulesOptions = houseRules.map((rule) => ({
-    value: rule.houseRule,
-    label: rule.houseRule,
-  }));
-  useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    setToken(storedToken);
-  }, []);
-  const getUserIDFromCookie = () => {
-    const userDetails = Cookies.get("userDetails");
-
-    if (userDetails) {
-      try {
-        const parsedUserDetails = JSON.parse(userDetails);
-        return parsedUserDetails.userID;
-      } catch (error) {
-        console.error("Error parsing user details from cookie:", error);
-        return null;
-      }
-    } else {
-      console.warn("User details not found in cookie");
-      return null;
-    }
+  const isFile = (file: any): file is File => {
+    return file instanceof File;
   };
-  const userID = getUserIDFromCookie();
-
+  const getImageSrc = (file: any) => {
+    return isFile(file) ? URL.createObjectURL(file) : file;
+  };
   const onSubmit = async (data: FormData) => {
     setIsSubmitClicked(true);
     let primaryImageLink = "";
@@ -481,10 +584,9 @@ export default function AddHotel() {
       }
       roomImageLinksArray.push(roomImageLinks);
     }
-
     const payload = {
       ...data.basicInfo,
-      userID,
+      hotelID: data.basicInfo.hotelID,
       address: data.basicInfo.location.label,
       locationID: data.basicInfo.location.value,
       facilities: data.facilities.map((facility) => ({
@@ -517,9 +619,11 @@ export default function AddHotel() {
       })),
       isRunning: data.isRunning,
     };
+    console.log(payload);
+
     try {
-      const response = await fetch("/api/addUserHotel", {
-        method: "POST",
+      const response = await fetch("/api/updateUserHotel", {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -529,9 +633,9 @@ export default function AddHotel() {
 
       const result = await response.json();
       if (response.ok) {
-        toast.success("Hotel added successfully!");
+        toast.success("Hotel updated successfully!"); // Use toast to show success message
         setTimeout(() => {
-          router.push("/dashboard/hotels");
+          router.push("/hotel-dashboard/hotels");
         }, 1500);
       } else {
         toast.error(`Error: ${result.error}`);
@@ -541,7 +645,7 @@ export default function AddHotel() {
       setIsSubmitClicked(false);
 
       console.log(error);
-      toast.error("Error: Unable to add hotel.");
+      toast.error("Error: Unable to update hotel."); // Use toast to show error message
     }
   };
 
@@ -563,11 +667,11 @@ export default function AddHotel() {
       event.preventDefault();
     }
   };
-
   function BasicInformation() {
     const {
       register,
       setValue,
+
       formState: { errors },
     } = methods;
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -682,6 +786,7 @@ export default function AddHotel() {
             value: result.location.locationID,
             label: `${result.location.address}, ${result.location.city}, ${result.location.country}, ${result.location.zipCode}`,
           };
+
           setLocations((prevLocations) => [...prevLocations, result.location]);
           setValue("basicInfo.location", newLoc);
           closeDialog();
@@ -713,8 +818,7 @@ export default function AddHotel() {
               Hotel Details
             </CardTitle>
             <CardDescription>
-              Add basic hotel details such as name, location. You can always
-              edit your details here
+              Update previously set basic hotel details such as name, location
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -746,7 +850,7 @@ export default function AddHotel() {
                       instanceId="location-select"
                       components={{ MenuList }}
                       options={[...locationOptions]}
-                      placeholder="Kathmandu,Nepal"
+                      placeholder="Select Location"
                     />
                   )}
                 />
@@ -756,6 +860,7 @@ export default function AddHotel() {
                   </span>
                 )}
               </div>
+
               <div className="flex flex-col gap-3">
                 <Label htmlFor="description">Description</Label>
                 <Textarea
@@ -767,7 +872,7 @@ export default function AddHotel() {
                 />
                 {errors?.basicInfo?.description?.message && (
                   <span className="text-red-500">
-                    {errors?.basicInfo?.description.message}
+                    {errors.basicInfo.description.message}
                   </span>
                 )}
               </div>
@@ -775,9 +880,8 @@ export default function AddHotel() {
                 <Label htmlFor="primaryImage" className="text-base">
                   Primary Image
                 </Label>
-                <div className="-mt-2">
-                  This is the main image of your hotel. Click on Choose files to
-                  upload your image
+                <div className="-mt-2 text-sm text-muted-foreground">
+                  Update previously set main image
                 </div>
                 <label
                   htmlFor="primaryImage"
@@ -828,8 +932,7 @@ export default function AddHotel() {
           <CardHeader>
             <CardTitle>Hotel Images</CardTitle>
             <CardDescription>
-              These are the images that will appear along with your primary
-              image. Click on Choose files to upload your image.
+              Update your previously set image list
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -983,6 +1086,8 @@ export default function AddHotel() {
       control,
       formState: { errors },
       watch,
+      getValues,
+      setValue,
     } = methods;
     const facilitiesWatch = watch("facilities");
 
@@ -991,26 +1096,34 @@ export default function AddHotel() {
         id: Date.now(),
         name: { value: "", label: "" },
       };
-      const facilities = methods.getValues("facilities");
+      const facilities = getValues("facilities");
       facilities[facilityIndex].subFacilities.push(newSubFacility);
-      methods.setValue("facilities", facilities);
+      setValue("facilities", facilities);
     };
 
     const removeSubFacility = (
       facilityIndex: number,
       subFacilityIndex: number
     ) => {
-      const facilities = methods.getValues("facilities");
+      const facilities = getValues("facilities");
       facilities[facilityIndex].subFacilities.splice(subFacilityIndex, 1);
-      methods.setValue("facilities", facilities);
+      setValue("facilities", facilities);
     };
-    console.log(errors.facilities);
+
     return (
       <div className="p-6 space-y-6">
-        {facilityFields.map((facility, facilityIndex: number) => {
+        {facilityFields.map((facility, facilityIndex) => {
           const selectedFacilityCategory =
             facilitiesWatch[facilityIndex]?.name?.label;
-          const subFacilityOptions = selectedFacilityCategory
+
+          // Log the selected facility category and subFacilitiesMap for debugging
+          console.log("Selected Facility Category:", selectedFacilityCategory);
+          console.log("SubFacilitiesMap:", subFacilitiesMap);
+
+          const subFacilityOptions: OptionsOrGroups<
+            OptionType,
+            GroupBase<OptionType>
+          > = selectedFacilityCategory
             ? (subFacilitiesMap[selectedFacilityCategory] || []).map(
                 (subFacilityName) => ({
                   value: subFacilityName,
@@ -1050,7 +1163,7 @@ export default function AddHotel() {
                       <Select
                         {...field}
                         options={facilities.map((facility) => ({
-                          value: facility.facilityId,
+                          value: facility.facilityCategory,
                           label: facility.facilityCategory,
                         }))}
                         placeholder="Select Facility Category"
@@ -1096,23 +1209,24 @@ export default function AddHotel() {
                                   <Controller
                                     name={`facilities.${facilityIndex}.subFacilities.${subIndex}.name`}
                                     control={control}
-                                    render={({ field }) => (
-                                      <Select
-                                        {...field}
-                                        options={subFacilityOptions}
-                                        placeholder="Select Sub Facility"
-                                        value={field.value as OptionType} // Ensure value is an object
-                                        // menuPortalTarget={document.body} // Render menu in a portal
-                                        className="w-96"
-                                        menuPosition="fixed" // Prevents the menu from shifting the content
-                                        styles={{
-                                          menuPortal: (base) => ({
-                                            ...base,
-                                            zIndex: 9999,
-                                          }),
-                                        }}
-                                      />
-                                    )}
+                                    render={({ field }) => {
+                                      console.log("SubFacility Field:", field);
+                                      return (
+                                        <Select
+                                          {...field}
+                                          options={subFacilityOptions}
+                                          placeholder="Select Sub Facility"
+                                          className="w-96"
+                                          menuPosition="fixed" // Prevents the menu from shifting the content
+                                          styles={{
+                                            menuPortal: (base) => ({
+                                              ...base,
+                                              zIndex: 9999,
+                                            }),
+                                          }}
+                                        />
+                                      );
+                                    }}
                                   />
                                 </TableCell>
                                 <TableCell>
@@ -1166,7 +1280,6 @@ export default function AddHotel() {
                             )}
                           </div>
                         ))}
-
                       {errors?.facilities?.[facilityIndex]?.subFacilities?.root
                         ?.message && (
                         <span className="text-red-500">
@@ -1220,33 +1333,31 @@ export default function AddHotel() {
 
     const addAmenity = (roomIndex: number) => {
       const newAmenity = { id: Date.now(), name: "" };
-      const rooms = getValues("rooms");
+      const rooms = methods.getValues("rooms");
       rooms[roomIndex].amenities.push(newAmenity);
-      setValue("rooms", rooms);
+      methods.setValue("rooms", rooms);
     };
 
     const removeAmenity = (roomIndex: number, amenityIndex: number) => {
-      const rooms = getValues("rooms");
+      const rooms = methods.getValues("rooms");
       rooms[roomIndex].amenities.splice(amenityIndex, 1);
-      setValue("rooms", rooms);
+      methods.setValue("rooms", rooms);
     };
-
     const addBed = (roomIndex: number) => {
       const newBed = {
         bedType: { label: "", value: "" },
         numberOfBeds: "",
       };
-      const rooms = getValues("rooms");
+      const rooms = methods.getValues("rooms");
       rooms[roomIndex].beds.push(newBed);
-      setValue("rooms", rooms);
+      methods.setValue("rooms", rooms);
     };
 
     const removeBed = (roomIndex: number, bedIndex: number) => {
-      const rooms = getValues("rooms");
+      const rooms = methods.getValues("rooms");
       rooms[roomIndex].beds.splice(bedIndex, 1);
-      setValue("rooms", rooms);
+      methods.setValue("rooms", rooms);
     };
-
     const handleRoomImageChange = (
       event: React.ChangeEvent<HTMLInputElement>,
       roomIndex: number
@@ -1295,16 +1406,15 @@ export default function AddHotel() {
       "Four Poster Bed",
       "Hammock",
     ];
-
     return (
       <div className="p-6 space-y-6">
         {roomFields.map((room, roomIndex) => (
           <Card key={room.id} className="overflow-hidden flex flex-col">
-            <CardHeader className="flex flex-row justify-between">
+            <CardHeader className="flex flex-row justify-between ">
               <div className="flex flex-col gap-1">
                 <CardTitle>Room Type {roomIndex + 1}</CardTitle>
                 <CardDescription>
-                  Add the different types of rooms available at your hotel,
+                  Update the different types of rooms available at your hotel,
                   including their details.
                 </CardDescription>
               </div>
@@ -1339,7 +1449,10 @@ export default function AddHotel() {
                 />
                 {errors?.rooms?.[roomIndex]?.numberOfRooms?.message && (
                   <span className="text-red-500">
-                    {errors?.rooms?.[roomIndex]?.numberOfRooms?.message}
+                    {
+                      (errors?.rooms?.[roomIndex]?.numberOfRooms as FieldError)
+                        ?.message
+                    }
                   </span>
                 )}
                 <Label htmlFor={`price-${room.id}`}>Price</Label>
@@ -1353,7 +1466,7 @@ export default function AddHotel() {
                 />
                 {errors?.rooms?.[roomIndex]?.price?.message && (
                   <span className="text-red-500">
-                    {errors?.rooms?.[roomIndex]?.price?.message}
+                    {(errors.rooms[roomIndex]?.price as FieldError)?.message}
                   </span>
                 )}
                 <Label htmlFor={`capacity-${room.id}`}>Max Occupants</Label>
@@ -1366,7 +1479,7 @@ export default function AddHotel() {
                 />
                 {errors?.rooms?.[roomIndex]?.capacity?.message && (
                   <span className="text-red-500">
-                    {errors?.rooms?.[roomIndex]?.capacity?.message}
+                    {(errors.rooms[roomIndex]?.capacity as FieldError)?.message}
                   </span>
                 )}
                 <Label>Bed Types</Label>
@@ -1391,8 +1504,10 @@ export default function AddHotel() {
                         ?.value?.message && (
                         <span className="text-red-500">
                           {
-                            errors?.rooms?.[roomIndex]?.beds?.[bedIndex]
-                              ?.bedType?.value?.message
+                            (
+                              errors?.rooms?.[roomIndex]?.beds?.[bedIndex]
+                                ?.bedType?.value as FieldError
+                            )?.message
                           }
                         </span>
                       )}
@@ -1411,8 +1526,10 @@ export default function AddHotel() {
                         ?.numberOfBeds && (
                         <span className="text-red-500">
                           {
-                            errors?.rooms?.[roomIndex]?.beds?.[bedIndex]
-                              ?.numberOfBeds?.message
+                            (
+                              errors?.rooms?.[roomIndex]?.beds?.[bedIndex]
+                                ?.numberOfBeds as FieldError
+                            )?.message
                           }
                         </span>
                       )}
@@ -1462,7 +1579,7 @@ export default function AddHotel() {
                               render={({ field }) => (
                                 <Input
                                   {...field}
-                                  placeholder="Wi-Fi Access"
+                                  placeholder="Mini Bar"
                                   className="flex-1"
                                   onKeyDown={handleKeyDown}
                                 />
@@ -1536,14 +1653,12 @@ export default function AddHotel() {
                     getValues(`rooms.${roomIndex}.roomImageLinks`).map(
                       (link, index) => (
                         <div key={index} className="relative rounded-md w-full">
-                          <DialogBox
-                            previewPrimaryImage={URL.createObjectURL(link)}
-                          >
+                          <DialogBox previewPrimaryImage={getImageSrc(link)}>
                             <Image
                               alt={`Image ${index + 1}`}
                               className="w-full rounded-md "
                               style={{ height: "200px", objectFit: "cover" }}
-                              src={URL.createObjectURL(link)}
+                              src={getImageSrc(link)}
                               width={200}
                               height={100}
                             />
@@ -1702,8 +1817,8 @@ export default function AddHotel() {
               <div className="flex flex-col gap-1">
                 <CardTitle>House Rule {index + 1}</CardTitle>
                 <CardDescription>
-                  List the different types of house rules for your hotel, along
-                  with their details.
+                  Update the list of the different types of house rules for your
+                  hotel, along with their details.
                 </CardDescription>
               </div>
               <Button variant="outline" onClick={() => removeHouseRule(index)}>
@@ -1740,9 +1855,7 @@ export default function AddHotel() {
                   id={`house-rule-details-${houseRule.id}`}
                   {...register(`houseRules.${index}.details`)}
                   placeholder="Lorem Ipsum"
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") e.preventDefault();
-                  }}
+                  onKeyDown={handleKeyDown}
                 />
                 {(errors?.houseRules?.[index]?.details as FieldError)
                   ?.message && (
@@ -1822,7 +1935,7 @@ export default function AddHotel() {
           <CardHeader>
             <CardTitle>Contact Details</CardTitle>
             <CardDescription>
-              Add the details of the hotel representative.
+              Update the details of the hotel representative.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -1896,9 +2009,9 @@ export default function AddHotel() {
                 placeholder="www.facebook.com"
                 onKeyDown={handleKeyDown}
               />
-              {errors?.contactForm?.facebook?.message && (
+              {errors.contactForm?.facebook?.message && (
                 <span className="text-red-500">
-                  {errors?.contactForm?.facebook.message}
+                  {errors.contactForm.facebook.message}
                 </span>
               )}
               <Label htmlFor="instagram">Instagram</Label>
@@ -1908,9 +2021,9 @@ export default function AddHotel() {
                 placeholder="www.instagram.com"
                 onKeyDown={handleKeyDown}
               />
-              {errors?.contactForm?.instagram?.message && (
+              {errors.contactForm?.instagram?.message && (
                 <span className="text-red-500">
-                  {errors?.contactForm?.instagram.message}
+                  {errors.contactForm.instagram.message}
                 </span>
               )}
               <Label htmlFor="linkedin">LinkedIn</Label>
@@ -1920,9 +2033,9 @@ export default function AddHotel() {
                 placeholder="www.linkedin.com"
                 onKeyDown={handleKeyDown}
               />
-              {errors?.contactForm?.linkedin?.message && (
+              {errors.contactForm?.linkedin?.message && (
                 <span className="text-red-500">
-                  {errors?.contactForm?.linkedin.message}
+                  {errors.contactForm.linkedin.message}
                 </span>
               )}
             </div>
@@ -2007,7 +2120,7 @@ export default function AddHotel() {
                       alt="Primary image"
                       className="w-full rounded-md object-cover"
                       height={100}
-                      src={URL.createObjectURL(formData.primaryImage)}
+                      src={getImageSrc(formData.primaryImage)}
                       width={100}
                     />
                   )}
@@ -2018,7 +2131,7 @@ export default function AddHotel() {
                         alt={`Image ${index + 1}`}
                         className="w-full rounded-md object-cover"
                         height={100}
-                        src={URL.createObjectURL(file)}
+                        src={getImageSrc(file)}
                         width={100}
                       />
                     ))}
@@ -2066,7 +2179,7 @@ export default function AddHotel() {
                   </Label>
                   <div className="flex items-center justify-between">
                     <Title>Category</Title>
-                    <Value className="font-medium">{facility.name.label}</Value>
+                    <Value className="font-medium">{facility.name.value}</Value>
                   </div>
                   {/* <div>
                     <Title>Description </Title>
@@ -2077,7 +2190,7 @@ export default function AddHotel() {
                     <Title>Sub Facilities</Title>
                     <ul className="list-disc pl-5">
                       {facility.subFacilities.map((subFacility, subIndex) => (
-                        <li key={subIndex}>{subFacility.name.label}</li>
+                        <li key={subIndex}>{subFacility.name.value}</li>
                       ))}
                     </ul>
                   </div>
@@ -2133,7 +2246,6 @@ export default function AddHotel() {
                     <Title>Price(USD)</Title>
                     <Value> {room.price}</Value>
                   </div>
-
                   <div className="flex items-center justify-between">
                     <Title>Max Occupants</Title>
                     <Value> {room.capacity}</Value>
@@ -2157,7 +2269,6 @@ export default function AddHotel() {
                       </div>
                     ))}
                   </div>
-
                   <div>
                     <Title className="text-base font-semibold">Amenities</Title>
                     <ul className="list-disc pl-5">
@@ -2175,7 +2286,7 @@ export default function AddHotel() {
                           alt={`Image ${index + 1}`}
                           className="w-full rounded-md object-cover"
                           height={100}
-                          src={URL.createObjectURL(file)}
+                          src={getImageSrc(file)}
                           width={100}
                         />
                       ))}
@@ -2323,13 +2434,13 @@ export default function AddHotel() {
       </div>
     );
   }
-
+  if (!hotel) return <>Loading...</>;
   return (
-    <AdminLayout>
+    <HotelLayout>
       <FormProvider {...methods}>
         <div className="border-2 rounded-md bg-white flex flex-col gap">
           <div className="p-6 grid w-full max-w-6xl gap-2">
-            <h1 className="text-2xl font-semibold">Add Hotel</h1>
+            <h1 className="text-2xl font-semibold">Update Hotel</h1>
             <div>Manage your hotel and view their overall details.</div>
           </div>
           <form onSubmit={methods.handleSubmit(onSubmit)}>
@@ -2397,6 +2508,6 @@ export default function AddHotel() {
           <Toaster />
         </div>
       </FormProvider>
-    </AdminLayout>
+    </HotelLayout>
   );
-}
+};

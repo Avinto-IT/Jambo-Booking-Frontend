@@ -73,6 +73,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { InputNumber } from "@/components/ui/numberInput";
+import HotelLayout from "@/components/Layout/HotelLayout";
 interface OptionType {
   value: string;
   label: string;
@@ -456,7 +457,6 @@ export default function AddHotel() {
     }
   };
   const userID = getUserIDFromCookie();
-
   const onSubmit = async (data: FormData) => {
     setIsSubmitClicked(true);
     let primaryImageLink = "";
@@ -531,7 +531,7 @@ export default function AddHotel() {
       if (response.ok) {
         toast.success("Hotel added successfully!");
         setTimeout(() => {
-          router.push("/dashboard/hotels");
+          router.push("/hotel-dashboard");
         }, 1500);
       } else {
         toast.error(`Error: ${result.error}`);
@@ -2325,7 +2325,7 @@ export default function AddHotel() {
   }
 
   return (
-    <AdminLayout>
+    <HotelLayout>
       <FormProvider {...methods}>
         <div className="border-2 rounded-md bg-white flex flex-col gap">
           <div className="p-6 grid w-full max-w-6xl gap-2">
@@ -2397,6 +2397,6 @@ export default function AddHotel() {
           <Toaster />
         </div>
       </FormProvider>
-    </AdminLayout>
+    </HotelLayout>
   );
 }

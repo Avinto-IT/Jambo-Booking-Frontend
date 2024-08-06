@@ -1,16 +1,19 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
-import { verifyToken } from "@/lib/middleware";
+import jwt from "jsonwebtoken";
 
 const prisma = new PrismaClient();
-
-async function addHotelHandler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== "POST") {
+const SECRET_KEY = process.env.SECRET_KEY;
+async function UpdateBookingStatusHandler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  if (req.method !== "PUT") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
   let {
-    userID,
+    hotelID,
     name,
     address,
     locationID,
@@ -24,8 +27,9 @@ async function addHotelHandler(req: NextApiRequest, res: NextApiResponse) {
     discount,
     contactDetails,
   } = req.body;
-  if (!userID) {
-    return res.status(400).json({ error: "User Id is not provided" });
+
+  if (!hotelID) {
+    return res.status(400).json({ error: "Missing hotel id" });
   }
   if (!name) {
     return res.status(400).json({ error: "Missing or incorrect field: name" });
@@ -98,43 +102,68 @@ async function addHotelHandler(req: NextApiRequest, res: NextApiResponse) {
   }
 
   try {
-    const hotel = await prisma.hotel.create({
+    // Validate admin email
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res
+        .status(401)
+        .json({ error: "You are not authorized to perform this action" });
+    }
+
+    const token = authHeader.split(" ")[1];
+    if (!SECRET_KEY) {
+      return res
+        .status(500)
+        .json({ error: "Internal server error: SECRET_KEY is not set" });
+    }
+    const decoded = jwt.verify(token, SECRET_KEY) as {
+      role: string;
+      userID: string;
+    };
+
+    const hotel = await prisma.hotel.findUnique({
+      where: { hotelID },
+      select: { userID: true },
+    });
+    if (!hotel) {
+      return res.status(404).json({ error: "Hotel not found" });
+    }
+    if (hotel.userID !== decoded.userID) {
+      return res.status(403).json({ error: "You do not own this hotel" });
+    }
+    if (hotel.userID !== decoded.userID) {
+      return res
+        .status(403)
+        .json({ error: "You do not have permission to perform this action" });
+    }
+
+    const updatedBooking = await prisma.hotel.update({
+      where: { hotelID },
       data: {
-        name,
-        address,
-        location: {
-          connect: { locationID: locationID },
-        },
-        addedDate: new Date(),
-        facilities,
-        description,
-        houseRules,
-        imageLinks,
-        primaryImageLink,
-        isRunning,
-        rooms,
-        discount,
-        contactDetails,
-        isApproved: "accepted",
-        user: {
-          connect: {
-            userID: userID,
-          },
-        },
+        name: name,
+        address: address,
+        locationID: locationID,
+        facilities: facilities,
+        description: description,
+        houseRules: houseRules,
+        imageLinks: imageLinks,
+        primaryImageLink: primaryImageLink,
+        isRunning: isRunning,
+        rooms: rooms,
+        discount: discount,
+        contactDetails: contactDetails,
       },
     });
-    res.status(201).json(hotel);
+
+    return res
+      .status(200)
+      .json({ message: "Booking status updated successfully", updatedBooking });
   } catch (error) {
-    console.error("Error creating hotel:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Error updating Hotel:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
   } finally {
     await prisma.$disconnect();
   }
 }
 
-export default function authenticationHandler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  verifyToken(req, res, () => addHotelHandler(req, res));
-}
+export default UpdateBookingStatusHandler;

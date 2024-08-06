@@ -31,6 +31,7 @@ export interface Hotel {
   imageLinks: string[];
   primaryImageLink: string;
   isRunning: boolean;
+  isApproved: string;
   rooms: Room[];
   discount: number;
 }

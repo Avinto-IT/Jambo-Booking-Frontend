@@ -25,7 +25,7 @@ async function addHotelHandler(req: NextApiRequest, res: NextApiResponse) {
     contactDetails,
   } = req.body;
   if (!userID) {
-    return res.status(400).json({ error: "User Id is not provided" });
+    return res.status(400).json({ error: "User ID is not provided" });
   }
   if (!name) {
     return res.status(400).json({ error: "Missing or incorrect field: name" });
@@ -105,6 +105,7 @@ async function addHotelHandler(req: NextApiRequest, res: NextApiResponse) {
         location: {
           connect: { locationID: locationID },
         },
+        // locationID,
         addedDate: new Date(),
         facilities,
         description,
@@ -115,7 +116,7 @@ async function addHotelHandler(req: NextApiRequest, res: NextApiResponse) {
         rooms,
         discount,
         contactDetails,
-        isApproved: "accepted",
+        isApproved: "requested",
         user: {
           connect: {
             userID: userID,
@@ -123,7 +124,11 @@ async function addHotelHandler(req: NextApiRequest, res: NextApiResponse) {
         },
       },
     });
-    res.status(201).json(hotel);
+    res.status(201).json({
+      hotel,
+      message:
+        "Your request for adding the hotel has been added to the queue you will get an notification about its status after our administrator looks into it.",
+    });
   } catch (error) {
     console.error("Error creating hotel:", error);
     res.status(500).json({ error: "Internal server error" });
