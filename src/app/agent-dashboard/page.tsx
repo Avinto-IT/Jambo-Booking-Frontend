@@ -35,6 +35,7 @@ interface Booking {
   guests: number;
   bookingInfo: BookingInfo[];
   hotel: Hotel;
+  totalBookingPrice: number;
 }
 
 interface BookingInfo {

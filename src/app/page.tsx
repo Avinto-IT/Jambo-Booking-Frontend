@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import DiscoverHistory from "@/components/landing/DiscoverHistory";
 import Lottie from "lottie-react";
 import loadingData from "../../animation/Hotel Loading.json";
+import LandingSkeleton from "@/components/AllSkeletons/LandingSkeleton";
 
 interface Hotel {
   hotelID: string;
@@ -64,7 +65,7 @@ export default function Home() {
       } catch (error) {
         console.log("Error fetching hotels:", error);
       } finally {
-        <Lottie animationData={loadingData} loop={true} />;
+        setLoading(false);
       }
     };
     fetchHotels();
