@@ -43,7 +43,14 @@ export default function BookingReviewPage() {
   const [request, setRequest] = useState<string>("");
 
   const handleChangeSelection = () => {
-    router.back(); // Navigate back in history
+    if (bookingData) {
+      const params = new URLSearchParams({
+        id: bookingData.hotelID,
+        checkin: format(new Date(bookingData.bookingStartDate), "yyyy-MM-dd"),
+        checkout: format(new Date(bookingData.bookingEndDate), "yyyy-MM-dd"),
+      });
+      router.push(`/all-hotels/view-hotel-details?${params.toString()}`);
+    }
   };
 
   const handleCancel = () => {

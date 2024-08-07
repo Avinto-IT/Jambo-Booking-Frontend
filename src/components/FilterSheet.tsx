@@ -1,7 +1,4 @@
-"use client";
-
-import * as React from "react";
-
+import React from "react";
 import { Filter } from "lucide-react";
 import {
   Sheet,
@@ -34,11 +31,13 @@ export interface FilterValues {
 interface FilterSheetProps {
   onFilterChange: (filterValues: FilterValues) => void;
   facilities: Record<string, string[]>;
+  filterValues: FilterValues;
 }
 
 const FilterSheet: React.FC<FilterSheetProps> = ({
   onFilterChange,
   facilities,
+  filterValues,
 }) => {
   const initialFilterValues: FilterValues = {
     propertyType: null,
@@ -49,26 +48,17 @@ const FilterSheet: React.FC<FilterSheetProps> = ({
     facilities: [],
   };
 
-  const [filterValues, setFilterValues] =
-    React.useState<FilterValues>(initialFilterValues);
-
   const handleFilterChange = (key: keyof FilterValues, value: any) => {
     const updatedFilterValues = {
       ...filterValues,
       [key]: value,
     };
-    setFilterValues(updatedFilterValues);
     onFilterChange(updatedFilterValues);
   };
 
   const handleClearFilters = () => {
-    setFilterValues(initialFilterValues);
     onFilterChange(initialFilterValues);
   };
-
-  React.useEffect(() => {
-    onFilterChange(filterValues);
-  }, []);
 
   return (
     <Sheet>

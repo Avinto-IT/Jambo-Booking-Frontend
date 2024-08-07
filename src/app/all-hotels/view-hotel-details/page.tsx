@@ -9,7 +9,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
 
-import { addDays } from "date-fns";
+import { addDays, differenceInCalendarDays } from "date-fns";
 import { toast } from "sonner";
 import * as Icons from "lucide-react";
 import { DateRange } from "react-day-picker";
@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/select";
 import { CustomIcons } from "@/utils/icons";
 import Cookies from "js-cookie";
+import Bed from "@/components/Icons/Bed";
 
 export interface Room {
   type: string;
@@ -72,18 +73,22 @@ export default function Page() {
 const cleanFacilityName = (name: string) => name.replace(/[^a-zA-Z0-9]/g, "");
 
 function ClientViewHotel() {
+  // const startDate = addDays(new Date(), 10);
+  // const endDate = addDays(startDate, 4);
   const [showMore, setShowMore] = useState(false);
   const [showAmenities, setShowAmentities] = useState(false);
   const [visibleFacilitiesCount, setVisibleFacilitiesCount] = useState(4);
 
   const searchParams = useSearchParams();
   const id = searchParams?.get("id");
+  const urlStartDate = searchParams?.get("checkin");
+  const urlEndDate = searchParams?.get("checkout");
 
   const [hotel, setHotel] = useState<Hotel>();
   // const [token, setToken] = useState<string | null>(null);
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
-    from: new Date(2022, 0, 20),
-    to: addDays(new Date(2022, 0, 20), 10),
+    from: urlStartDate ? new Date(urlStartDate) : addDays(new Date(), 10),
+    to: urlEndDate ? new Date(urlEndDate) : addDays(new Date(), 14),
   });
 
   const [isCarouselOpen, setIsCarouselOpen] = useState(false);
@@ -128,12 +133,14 @@ function ClientViewHotel() {
     const storedBookingData = Cookies.get("bookingData");
     if (storedBookingData) {
       const parsedBookingData = JSON.parse(storedBookingData);
-      setDateRange({
-        from: new Date(parsedBookingData.bookingStartDate),
-        to: new Date(parsedBookingData.bookingEndDate),
-      });
+      if (!urlStartDate && !urlEndDate) {
+        setDateRange({
+          from: new Date(parsedBookingData.bookingStartDate),
+          to: new Date(parsedBookingData.bookingEndDate),
+        });
+      }
       setGuests(parsedBookingData.guests);
-      console.log(parsedBookingData.guests, "lol");
+      // console.log(parsedBookingData.guests, "lol");
       setCount(
         hotel?.rooms.map((room) => {
           const userChoice = parsedBookingData.userChoices.find(
@@ -143,7 +150,7 @@ function ClientViewHotel() {
         }) || []
       );
     }
-  }, [hotel]);
+  }, [hotel, urlStartDate, urlEndDate]);
 
   useEffect(() => {
     const newChoices =
@@ -253,13 +260,12 @@ function ClientViewHotel() {
 
   const numberOfDays =
     dateRange && dateRange.from && dateRange.to
-      ? (dateRange.to.getTime() - dateRange.from.getTime()) /
-        (1000 * 60 * 60 * 24)
+      ? differenceInCalendarDays(dateRange.to, dateRange.from) + 1
       : 0;
 
   const totalPrice = userChoices.reduce((sum, choice) => {
     const price = parseFloat(choice.room.price);
-    return sum + price * choice.count * numberOfDays;
+    return sum + price * choice.count;
   }, 0);
 
   const finalPriceBeforeDiscount = totalPrice * numberOfDays;
@@ -324,8 +330,13 @@ function ClientViewHotel() {
   };
 
   return (
-    <Layout>
-      <Hero title={hotel.name} />
+    <div>
+      <Hero
+        title={hotel.name}
+        startDate={dateRange?.from}
+        endDate={dateRange?.to}
+      />
+
       <Toaster />
       <Card className="w-full">
         <div className="flex justify-center py-12">
@@ -414,13 +425,13 @@ function ClientViewHotel() {
                           </div>
                         </div>
                         <Button
-                          className="absolute top-1/2 right-4 text-white bg-gray-50 bg-opacity-40 rounded-full"
+                          className="absolute top-1/2 right-8 text-white bg-gray-50 bg-opacity-40 rounded-full"
                           onClick={() => handleNextClick()}
                         >
                           &gt;
                         </Button>
                         <Button
-                          className="absolute top-1/2 left-4 text-white bg-gray-50 bg-opacity-40 rounded-full"
+                          className="absolute top-1/2 left-8 text-white bg-gray-50 bg-opacity-40 rounded-full"
                           onClick={() => handlePrevClick()}
                         >
                           &lt;
@@ -506,8 +517,8 @@ function ClientViewHotel() {
                                         className="flex gap-4"
                                         key={bedIndex}
                                       >
-                                        <div className="flex gap-4">
-                                          <BedIcon />
+                                        <div className="flex gap-4 items-center">
+                                          <Bed />
                                           <span className="font-normal">
                                             {bed.numberOfBeds} {bed.bedType}{" "}
                                             <span> bed(s)</span>
@@ -590,10 +601,10 @@ function ClientViewHotel() {
                           onOpenChange={setIsDialogOpen}
                         >
                           <div className="">
-                            <DialogContent className="flex items-center justify-center p-5 min-w-fit max-h-fit border-none">
+                            <DialogContent className="flex items-center justify-center p-6 min-w-fit max-h-fit border-none">
                               <div className="w-[1200px] flex gap-10">
-                                <div className="flex flex-col gap-3 w-7/12 relative">
-                                  <div className="overflow-hidden w-full h-[30rem]">
+                                <div className="flex flex-col gap-3 w-7/12">
+                                  <div className="relative overflow-hidden w-full h-[30rem]">
                                     <div
                                       className="flex transition-transform duration-500 ease-in-out"
                                       style={{
@@ -619,19 +630,20 @@ function ClientViewHotel() {
                                           )
                                         )}
                                     </div>
+                                    <Button
+                                      className="absolute top-1/2 right-8 text-white bg-gray-100 bg-opacity-40 rounded-full hover:text-white"
+                                      onClick={() => handleRoomNextClick()}
+                                    >
+                                      &gt;
+                                    </Button>
+                                    <Button
+                                      className="absolute top-1/2 left-8 text-white bg-gray-100 bg-opacity-40 rounded-full hover:text-white"
+                                      onClick={() => handleRoomPrevClick()}
+                                    >
+                                      &lt;
+                                    </Button>
                                   </div>
-                                  <Button
-                                    className="absolute top-56 right-0 text-white bg-gray-100 bg-opacity-40 rounded-full hover:text-white"
-                                    onClick={() => handleRoomNextClick()}
-                                  >
-                                    &gt;
-                                  </Button>
-                                  <Button
-                                    className="absolute top-56 left-0 text-white bg-gray-100 bg-opacity-40 rounded-full hover:text-white"
-                                    onClick={() => handleRoomPrevClick()}
-                                  >
-                                    &lt;
-                                  </Button>
+
                                   <div className="flex gap-2 overflow-x-scroll">
                                     {selectedRoom.roomImageLinks &&
                                       selectedRoom.roomImageLinks.map(
@@ -884,6 +896,6 @@ function ClientViewHotel() {
           </MaxWidthWrapper>
         </div>
       </Card>
-    </Layout>
+    </div>
   );
 }

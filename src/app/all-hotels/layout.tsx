@@ -1,13 +1,15 @@
 import React, { ReactNode } from "react";
 
-import Jambologo from "../../../public/images/footer/Vector2.svg";
+// import Jambologo from "../../../public/images/footer/Vector2.svg";
 import facebook from "../../../public/images/footer/Facebook.svg";
 import twitter from "../../../public/images/footer/Twitter.svg";
 import instagram from "../../../public/images/footer/Instagram.svg";
+import { InstagramLogo, XLogo, FacebookLogo } from "@phosphor-icons/react";
 
 import Image from "next/image";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
+import { JamboIcon, JamboIconBlue } from "@/components/Icons/AdminIcons";
 
 const Layout = ({ children }: { children: ReactNode }) => {
   return (
@@ -15,12 +17,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
       <header className="p-4">
         <nav className="px-16 py-6 flex justify-between items-center h-[88px]">
           <Link href="/">
-            <Image
-              src="/images/logo.svg"
-              alt="Jambo Hotel Logo"
-              width={256}
-              height={40}
-            />
+            <JamboIconBlue />
           </Link>
           <Navbar />
           <div className="flex space-x-4">
@@ -45,29 +42,19 @@ const Layout = ({ children }: { children: ReactNode }) => {
           </div>
         </nav>
       </header>
-      <div
-        className="relative bg-cover bg-blue-400 bg-center h-80"
-        style={{ backgroundImage: "url('/images/hero.png')" }}
-      >
-        <div className="absolute inset-0 bg-black opacity-85"></div>
-        <div className="relative z-10 flex flex-col items-center justify-center h-full text-center text-white px-6">
-          <h1 className="text-4xl md:text-5xl font-bold mb-8">
-            Booking Confirmation
-          </h1>
-        </div>
-      </div>
       <main className="flex-grow max-w-[1920px]">{children}</main>
 
       <footer className="bg-[#1E3A8A] text-white pb-16">
         <div className="h-full flex flex-col justify-center items-center">
           <div className=" h-11/12 flex justify-between  items-center w-full px-16 mt-6">
             <Link href="/" className="w-1/3">
-              <Image
+              {/* <Image
                 src={Jambologo}
                 alt="Jambo Hotel Logo"
                 width={256}
                 height={40}
-              />
+              /> */}
+              <JamboIcon />
             </Link>
             <div className="flex justify-between w-2/3 pr-20 mt-16 font-extralight ">
               <div className="flex flex-col gap-y-4 items-center ">
@@ -112,10 +99,13 @@ const Layout = ({ children }: { children: ReactNode }) => {
                   Lorem ipsum dolor sitamet, consectetur adipiscing elit. Lorem
                   ipsum dolor sit amet, consectetur adipiscing elit.
                 </p>
-                <div className="flex mt-5   gap-x-2">
+                <div className="flex mt-5 gap-x-2">
                   <Image src={instagram} alt="instagram" />
                   <Image src={facebook} alt="facebook" />
                   <Image src={twitter} alt="twitter" />
+                  {/* <InstagramLogo height={24} width={24} weight="light" />
+                  <FacebookLogo height={24} width={24} weight="light" />
+                  <XLogo height={24} width={24} weight="light" /> */}
                 </div>
               </div>
             </div>

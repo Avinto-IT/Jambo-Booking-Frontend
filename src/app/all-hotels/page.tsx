@@ -1,18 +1,15 @@
 "use client";
-import Image from "next/image";
-import { Dot, Filter } from "lucide-react";
-
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import React, { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Dot } from "lucide-react";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { Hotel, Room } from "@/utils/types";
-import { Suspense, useEffect, useState } from "react";
-
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
-import Layout from "@/components/Layout/Layout";
-import Hero from "@/components/landing/Hero";
-import randomImg from "../../../public/images/an_image_for_hotel_booking.svg";
+
 import FilterSheet, { FilterValues } from "@/components/FilterSheet";
+import FilterChips from "@/components/FilterChips";
+import Hero from "@/components/HotelHero/Hero";
 
 type Facility = {
   facilityId: string;
@@ -41,6 +38,10 @@ function AllHotels() {
   });
 
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const locationId = searchParams?.get("location");
+  const startDate = searchParams?.get("checkin");
+  const endDate = searchParams?.get("checkout");
 
   useEffect(() => {
     const fetchFacilities = async () => {
@@ -48,17 +49,13 @@ function AllHotels() {
         const response = await fetch("/api/getFacilities");
         const data: Facility[] = await response.json();
 
-        // Transform the data into an object where each key is a facilityCategory
         const facilitiesByCategory: Record<string, string[]> = {};
         data.forEach((facility) => {
           facilitiesByCategory[facility.facilityCategory] =
             facility.subFacilities;
         });
 
-        // Set the transformed data to the state variable
         setFacilities(facilitiesByCategory);
-
-        console.log("Facilities fetched successfully", facilitiesByCategory);
       } catch (error) {
         console.log("Error fetching facilities:", error);
       }
@@ -67,21 +64,14 @@ function AllHotels() {
     fetchFacilities();
   }, []);
 
-  const searchParams = useSearchParams();
-
-  const locationId = searchParams?.get("id");
-
   useEffect(() => {
     const fetchHotels = async () => {
       try {
         const response = await fetch("/api/getHotels");
         const data = await response.json();
-        setHotels(data.hotels); // Corrected this line
-        console.log(data.hotels, "hotels");
+        setHotels(data.hotels);
       } catch (error) {
         console.log("Error fetching hotels:", error);
-      } finally {
-        // setLoading(false);
       }
     };
     fetchHotels();
@@ -96,7 +86,12 @@ function AllHotels() {
   };
 
   const handleViewClick = (hotelId: string) => {
-    router.push(`/all-hotels/view-hotel-details?id=${hotelId}`);
+    const params = new URLSearchParams({
+      id: hotelId,
+      ...(startDate && { checkin: startDate }),
+      ...(endDate && { checkout: endDate }),
+    });
+    router.push(`/all-hotels/view-hotel-details?${params.toString()}`);
   };
 
   const hasRequiredFacilities = (
@@ -104,17 +99,14 @@ function AllHotels() {
     requiredFacilities: string[]
   ) => {
     const flattenedFacilities = hotelFacilities.flatMap((facility) =>
-      facility.subFacilities.map((sub: { name: string }) => {
-        // console.log(sub, "sub");
-        return sub.name;
-      })
+      facility.subFacilities.map((sub: { name: string }) => sub.name)
     );
     return requiredFacilities.every((facility) =>
       flattenedFacilities.includes(facility)
     );
   };
 
-  const filteredHotels = hotels.filter((hotel) => {
+  const filteredHotels = hotels?.filter((hotel) => {
     const lowestPricedRoom = getLowestPricedRoom(hotel.rooms);
     const price = lowestPricedRoom ? parseInt(lowestPricedRoom.price) : null;
 
@@ -130,118 +122,109 @@ function AllHotels() {
     );
   });
 
-  // console.log(filteredHotels, "after hotel");
+  const handleRemoveFilter = (filterValue: string) => {
+    const updatedFacilities = filterValues.facilities.filter(
+      (f) => f !== filterValue
+    );
+    setFilterValues((prevValues) => ({
+      ...prevValues,
+      facilities: updatedFacilities,
+    }));
+  };
 
   return (
-    <Layout>
-      <Hero title="xd" />
-      {/* {locationId ? <Hero title={locationId} /> : <Hero title="search" />} */}
-      <div className="flex justify-center">
-        <MaxWidthWrapper>
-          <div className="py-10">
-            <div className="flex justify-between w-full">
-              <div className="h-20 gap-2 mb-4">
-                <p className=" text-3xl font-semibold tracking-tight leading-10">
-                  All the Hotels
-                </p>
-                <p className="leading-7 mt-1 tracking-tight ">
-                  These popular hotels have a lot to offer
-                </p>
-              </div>
-              <FilterSheet
-                onFilterChange={setFilterValues}
-                facilities={facilities}
-              />
+    <div className="">
+      <Hero
+        title={locationId ? locationId : ""}
+        startDate={startDate ? new Date(startDate) : null}
+        endDate={endDate ? new Date(endDate) : null}
+      />
+      <MaxWidthWrapper className="mx-auto">
+        <div className="py-10">
+          <div className="flex justify-between w-full">
+            <div className="h-20 gap-2 mb-4">
+              <p className="text-3xl font-semibold tracking-tight leading-10">
+                All the Hotels
+              </p>
+              <p className="leading-7 mt-1 tracking-tight">
+                These popular hotels have a lot to offer
+              </p>
             </div>
-            <div className="grid grid-cols-3 gap-x-5 gap-y-4">
-              {filteredHotels.map((hotel, index) => {
-                const lowestPricedRoom = getLowestPricedRoom(hotel.rooms);
-
-                return (
-                  <div
-                    key={index}
-                    className="flex flex-col mb-2 border pb-5 border-gray-200 rounded-lg"
-                    onClick={() => {
-                      handleViewClick(hotel.hotelID);
-                    }}
-                  >
-                    <div className="relative overflow-hidden rounded-md outline-gray-200 h-72 w-full">
-                      <img
-                        src={hotel.primaryImageLink}
-                        alt="HotelImage"
-                        className="h-72 w-full rounded-md transition-transform duration-500 ease-in-out transform hover:scale-105 hover:brightness-75 hover:rounded-lg object-cover"
-                      />
-                    </div>
-                    <div className="flex justify-between">
-                      <p className=" font-bold my-2  px-4 text-xl">
-                        {hotel.name}
-                      </p>
-                    </div>
-                    <div className="px-4 text-[#64748B] text-sm">
-                      <div className="mb-2">{hotel.address}</div>
-                      <div className="flex">
-                        <div className="flex flex-wrap">
-                          {lowestPricedRoom?.amenities
-                            ?.slice(0, 5)
-                            .map((amenity, amenityIndex) => (
-                              <span
-                                className="text-sm text-[#64748B] flex items-center gap-x-1"
-                                key={amenityIndex}
-                              >
-                                <p className="whitespace-nowrap ">
-                                  {amenity.name}
-                                </p>
-                                <Dot />
-                              </span>
-                            ))}
-
-                          {lowestPricedRoom?.amenities &&
-                            lowestPricedRoom.amenities.length > 5 && (
-                              <div className="text-[#64748B] flex">
-                                <p>
-                                  {lowestPricedRoom.amenities.length - 5}+
-                                  Amenities
-                                </p>
-                              </div>
-                            )}
-                        </div>
+            <FilterSheet
+              onFilterChange={setFilterValues}
+              facilities={facilities}
+              filterValues={filterValues}
+            />
+          </div>
+          <FilterChips
+            filterValues={filterValues}
+            onRemoveFilter={handleRemoveFilter}
+          />
+          <div className="grid grid-cols-3 gap-x-5 gap-y-4">
+            {filteredHotels.map((hotel, index) => {
+              const lowestPricedRoom = getLowestPricedRoom(hotel.rooms);
+              return (
+                <div
+                  key={index}
+                  className="flex flex-col mb-2 border pb-5 border-gray-200 rounded-lg"
+                  onClick={() => {
+                    handleViewClick(hotel.hotelID);
+                  }}
+                >
+                  <div className="relative overflow-hidden rounded-md outline-gray-200 h-72 w-full">
+                    <img
+                      src={hotel.primaryImageLink}
+                      alt="HotelImage"
+                      className="h-72 w-full rounded-md transition-transform duration-500 ease-in-out transform hover:scale-105 hover:brightness-75 hover:rounded-lg object-cover"
+                    />
+                  </div>
+                  <div className="flex justify-between">
+                    <p className="font-bold my-2 px-4 text-xl">{hotel.name}</p>
+                  </div>
+                  <div className="px-4 text-[#64748B] text-sm">
+                    <div className="mb-2 text-pretty">{hotel.address}</div>
+                    <div className="flex">
+                      <div className="flex flex-wrap">
+                        {lowestPricedRoom?.amenities
+                          ?.slice(0, 5)
+                          .map((amenity, amenityIndex) => (
+                            <span
+                              className="text-sm text-[#64748B] flex items-center gap-x-1"
+                              key={amenityIndex}
+                            >
+                              <p className="whitespace-nowrap ">
+                                {amenity.name}
+                              </p>
+                              <Dot />
+                            </span>
+                          ))}
+                        {lowestPricedRoom?.amenities &&
+                          lowestPricedRoom.amenities.length > 5 && (
+                            <div className="text-[#64748B] flex">
+                              <p>
+                                {lowestPricedRoom.amenities.length - 5}+
+                                Amenities
+                              </p>
+                            </div>
+                          )}
                       </div>
-                      <div className="flex mt-2">
-                        Starting from &nbsp;
-                        <div className="text-black flex">
-                          <div className=" font-semibold text-md">
-                            USD {lowestPricedRoom?.price}
-                          </div>{" "}
-                          /night{" "}
-                        </div>
+                    </div>
+                    <div className="flex mt-2">
+                      Starting from &nbsp;
+                      <div className="text-black flex">
+                        <div className="font-semibold text-md">
+                          USD {lowestPricedRoom?.price}
+                        </div>{" "}
+                        /night{" "}
                       </div>
                     </div>
                   </div>
-                );
-              })}
-            </div>
+                </div>
+              );
+            })}
           </div>
-          {/* )} */}
-        </MaxWidthWrapper>
-      </div>
-    </Layout>
+        </div>
+      </MaxWidthWrapper>
+    </div>
   );
 }
-
-// function SkeletonCard() {
-//   return (
-//     <div className="space-y-5 w-full">
-//       <Skeleton className="h-6 w-52" />
-//       <Skeleton className="h-4 w-80" />
-//       <div className=" flex justify-end w-full">
-//         <Skeleton className="h-6 w-32" />
-//       </div>
-//       <div className="flex flex-row justify-between space-x-7 w-full h-72">
-//         <Skeleton className=" w-1/3" />
-
-//         <Skeleton className=" w-1/3" />
-//         <Skeleton className=" w-1/3" />
-//       </div>
-//     </div>
-//   );
-// }

@@ -51,7 +51,7 @@ export default function Login() {
 
       if (response.status === 200) {
         const userDetails = data.user;
-        setMessage(data.message);
+        // setMessage(data.message);
         Cookies.set("userDetails", JSON.stringify(userDetails), {
           expires: 7,
           secure: process.env.NODE_ENV !== "development",
