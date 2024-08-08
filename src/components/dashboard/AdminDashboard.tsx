@@ -1,6 +1,4 @@
-import React, { useEffect, useState } from "react";
-
-import { User } from "lucide-react";
+import { MoveUpRight, User } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -26,6 +24,7 @@ import { Tabs } from "@/components/ui/tabs";
 import DateRangePicker from "../AdminComponents/Sub-Components/DateRangePicker";
 import AdminLayout from "../Layout/AdminLayout";
 import { Agent, Booking, Hotel } from "@/utils/types";
+import Link from "next/link";
 export default function Dashboard({
   hotels,
   bookings,
@@ -36,7 +35,7 @@ export default function Dashboard({
   agents: Agent[];
 }) {
   return (
-    <AdminLayout>
+    <div>
       <div className="flex flex-col sm:gap-4 ">
         <div className="p-6 flex justify-between ">
           <div className="flex flex-col">
@@ -44,66 +43,46 @@ export default function Dashboard({
             <span>Manage your details form the dashboard</span>
           </div>
 
-          <DateRangePicker />
+          {/* <DateRangePicker /> */}
         </div>
         <main className="grid flex-1 items-start gap-4 sm:py-0 md:gap-8 ">
           <div className="grid auto-rows-max items-start gap-4 md:gap-6">
             <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4">
               <Card className="" x-chunk="dashboard-05-chunk-0">
                 <CardHeader className="pb-3">
-                  <CardTitle>Total Revenue</CardTitle>
-                  <CardDescription className="max-w-lg text-balance leading-relaxed">
-                    Introducing Our Dynamic Orders Dashboard for Seamless
-                    Management and Insightful Analysis.
-                  </CardDescription>
+                  <CardTitle className="">Total Revenue</CardTitle>
+                  <CardDescription className="text-4xl font-medium text-black"></CardDescription>
                 </CardHeader>
-                <CardFooter>
-                  <Button>Create New Order</Button>
-                </CardFooter>
+                <CardFooter></CardFooter>
               </Card>
               <Card x-chunk="dashboard-05-chunk-1">
                 <CardHeader className="pb-2">
-                  <CardDescription className="font-medium text-black">
-                    Hotels
+                  <CardTitle className="">Hotels</CardTitle>
+                  <CardDescription className="text-4xl font-medium text-black">
+                    {hotels.length}
                   </CardDescription>
-                  <CardTitle className="text-4xl">{hotels?.length}</CardTitle>
                 </CardHeader>
-                <CardContent></CardContent>
-                <CardFooter>
-                  <Progress value={25} aria-label="25% increase" />
-                </CardFooter>
+                <CardFooter></CardFooter>
               </Card>
               <Card x-chunk="dashboard-05-chunk-2">
                 <CardHeader className="pb-2">
-                  <CardDescription className="font-medium text-black">
-                    Agents
+                  <CardTitle className="">Bookings</CardTitle>
+                  <CardDescription className="text-4xl font-medium text-black">
+                    {bookings.length}
                   </CardDescription>
-                  <CardTitle className="text-4xl">{agents.length}</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="text-xs text-muted-foreground">
-                    +10% from last month
-                  </div>
-                </CardContent>
-                <CardFooter>
-                  <Progress value={12} aria-label="12% increase" />
-                </CardFooter>
+
+                <CardFooter></CardFooter>
               </Card>
               <Card x-chunk="dashboard-05-chunk-2">
                 <CardHeader className="pb-2">
-                  <CardDescription className="font-medium text-black">
-                    Bookings
+                  <CardTitle className="">Agents</CardTitle>
+                  <CardDescription className="text-4xl font-medium text-black">
+                    {agents.length}
                   </CardDescription>
-                  <CardTitle className="text-4xl">{bookings?.length}</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="text-xs text-muted-foreground">
-                    +10% from last month
-                  </div>
-                </CardContent>
-                <CardFooter>
-                  <Progress value={12} aria-label="12% increase" />
-                </CardFooter>
+
+                <CardFooter></CardFooter>
               </Card>
             </div>
             <div className="w-full justify-between flex gap-6">
@@ -118,9 +97,15 @@ export default function Dashboard({
                         Recent bookings in Jambo Hotels.
                       </CardDescription>
                     </CardHeader>
-                    <button className=" py-2 px-6 bg-blue-400 h-10">
-                      View All
-                    </button>
+                    <Button className="bg-blue-600  hover:bg-blue-800">
+                      <Link
+                        href={"/dashboard/bookings"}
+                        className="flex items-center justify-between"
+                      >
+                        View All
+                        <MoveUpRight className="w-4 h-4" />
+                      </Link>
+                    </Button>
                   </div>
                   <CardContent>
                     <Table>
@@ -183,6 +168,6 @@ export default function Dashboard({
           </div>
         </main>
       </div>
-    </AdminLayout>
+    </div>
   );
 }

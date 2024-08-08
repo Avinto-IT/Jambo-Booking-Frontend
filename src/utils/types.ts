@@ -22,14 +22,16 @@ export interface Hotel {
   facilities: {
     name: string;
     comment: string;
-    subFacilities: string[];
+    subFacilities: { id: number; name: { value: string; label: string } }[];
   }[];
   description: string;
   // houseRules: { [key: string]: boolean };
+  addedDate: Date;
   houseRules: string[];
   imageLinks: string[];
   primaryImageLink: string;
   isRunning: boolean;
+  isApproved: string;
   rooms: Room[];
   discount: number;
 }
@@ -43,34 +45,40 @@ export interface Booking {
   status: string;
   guests: number;
   bookingInfo: {
+    beds: { bedType: string; numberOfBeds: string }[];
+    roomCapacity: string;
     roomType: string;
     rooms: number;
-    totalPrice: number;
-  };
+    totalRoomPrice: number;
+    roomPrice: string;
+  }[];
+  specialRequest: string;
+  totalBookingPrice: number;
+
   hotel: {
     address: string;
-    description: string;
     discount: number;
-    facilities: string[];
     houseRules: string[];
-    imageLinks: string[];
-    isRunning: boolean;
-    locationID: string;
     name: string;
     primaryImageLink: string;
     rooms: Room[];
+    contactDetails: {
+      email: string;
+      name: string;
+      number: string;
+      facebook: string;
+      instagram: string;
+      linkedin: string;
+      position: string;
+    };
   };
   user: {
     agencyName: string | null;
     contactNumber: string;
-    dateOfBirth: string;
     email: string;
     firstName: string;
     gradeID: string | null;
-    hotelID: string | null;
     lastName: string;
-    password: string;
-    role: string;
     userID: string;
   };
 }
@@ -105,6 +113,7 @@ export interface Room {
     price: string;
     createdAt: string;
   }[];
+  roomImageLinks: File[];
 }
 
 export interface HouseRuleInterface {
@@ -115,4 +124,10 @@ export interface FacilitiesInterface {
   facilityId: string;
   facilityCategory: string;
   subFacilities: string[];
+}
+
+export interface Grade {
+  gradeID: string;
+  gradeName: string;
+  priceModifier: string;
 }

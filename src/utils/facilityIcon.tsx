@@ -1,81 +1,3 @@
-// import React, { useEffect, useState } from "react";
-
-// interface Facility {
-//   facilityId: string;
-//   facilityCategory: string;
-//   name: string;
-//   subFacilities: any[];
-// }
-
-// export default function UseFacilityIcon(nameOfFacility: string) {
-//   const [facilityNames, setFacilityNames] = useState<string[]>([]);
-//   const [facilityName, setFacilityName] = useState("");
-
-//   useEffect(() => {
-//     const fetchFacilities = async () => {
-//       try {
-//         const response = await fetch("/api/getFacilities");
-//         const data: Facility[] = await response.json();
-//         console.log("Data fetched", data);
-//         const names = data.map((facility) => facility.facilityCategory);
-//         setFacilityNames(names);
-//         // setFacilityName(data[9].facilityCategory); // Assuming data is an array of facilities
-//       } catch (error) {
-//         console.log("Error fetching facilities:", error);
-//       }
-//     };
-//     fetchFacilities();
-//   }, []);
-
-//   const getIconName = (facilityCategory: string): string | null => {
-//     switch (facilityCategory) {
-//       case "Amenities":
-//         return "ConciergeBell";
-//       case "Dining":
-//         return "ChefHat";
-//       case "Recreation":
-//         return "TreePalm";
-//       case "Business Services":
-//         return "Handshake";
-//       case "Transportation":
-//         return "Car";
-//       case "Guest Services":
-//         return "HandPlatter";
-//       case "Housekeeping":
-//         return "WashingMachine";
-//       case "Luggage":
-//         return "Luggage";
-//       case "Accessibility":
-//         return "Accessibility";
-//       case "Security":
-//         return "Shield";
-//       case "Emergency Services":
-//         return "Siren";
-//       case "Recreational Activities":
-//         return "Tent";
-//       case "Wellness and Spa":
-//         return "Clover";
-//       case "Entertainment":
-//         return "Drama";
-//       case "Children's Services":
-//         return "Baby";
-//       case "Pet Services":
-//         return "PawPrint";
-//       case "Technology":
-//         return "Pickaxe";
-//       case "Sustainability":
-//         return "Flower";
-//       case "Events":
-//         return "CalendarCheck";
-//       case "Miscellaneous":
-//         return "Currency";
-//       default:
-//         return null;
-//     }
-//   };
-
-//   return { facilityNames, getIconName };
-//}
 import React, { useEffect, useState } from "react";
 import amenities from "../../public/images/facility-icon/amenitiesIcon.svg";
 import dining from "../../public/images/facility-icon/diningIcon.svg";
@@ -107,10 +29,10 @@ interface Facility {
 }
 
 interface IconComponentProps {
-  nameOfFacility: string;
+  name: string;
 }
 
-const UseFacilityIcon: React.FC<IconComponentProps> = ({ nameOfFacility }) => {
+const UseFacilityIcon: React.FC<IconComponentProps> = ({ name }) => {
   // const [facilityNames, setFacilityNames] = useState<string[]>([]);
 
   useEffect(() => {
@@ -175,10 +97,10 @@ const UseFacilityIcon: React.FC<IconComponentProps> = ({ nameOfFacility }) => {
     }
   };
 
-  const iconSrc = getIconName(nameOfFacility);
+  const iconSrc = getIconName(name);
 
   if (iconSrc) {
-    return <Image src={iconSrc} alt={nameOfFacility} />;
+    return <Image src={iconSrc} alt={name} />;
   } else {
     return null;
   }

@@ -5,7 +5,7 @@ import Link from "next/link";
 import React from "react";
 
 import Lottie from "lottie-react";
-import animationdata from "../../../../../../animation/Success.json";
+import animationdata from "../../../animation/Success.json";
 import UserLayout from "@/components/Layout/UserLayout";
 import Hero from "@/components/landing/Hero";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
@@ -35,7 +35,7 @@ export default function Page() {
             </div>
 
             <Button
-              className="w-2/5 bg-blue-700 hover:bg-blue-900 mt-10 py-4"
+              className="w-2/5 mt-10 py-4"
               onClick={() => (window.location.href = "/")}
             >
               Go to Dashboard

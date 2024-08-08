@@ -14,6 +14,25 @@ export default async function getAllBookingHistoryHandler(
   try {
     const agents = await prisma.user.findMany({
       where: { role: "agent" },
+      select: {
+        userID: true,
+        agencyName: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        contactNumber: true,
+        role: true,
+        dateOfBirth: true,
+        address: true,
+        toursCompleted: true,
+        hasMultipleHotel: true,
+        gradeName: true,
+        grade: {
+          select: {
+            priceModifier: true,
+          },
+        },
+      },
     });
 
     if (agents.length === 0) {

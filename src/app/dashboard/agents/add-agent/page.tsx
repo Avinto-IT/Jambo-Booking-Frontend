@@ -12,7 +12,6 @@ import {
   useFormContext,
 } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import AdminLayout from "@/components/Layout/AdminLayout";
 
 import {
   Card,
@@ -570,78 +569,70 @@ export default function AddHotel() {
   }
 
   return (
-    <AdminLayout>
-      <FormProvider {...methods}>
-        <div className="border-2 rounded-md bg-white flex flex-col gap">
-          <div className="p-6 grid w-full max-w-6xl gap-2">
-            <h1 className="text-2xl font-semibold">Add Agent</h1>
-            <div>Manage and view their overall details.</div>
-          </div>
-          <form onSubmit={methods.handleSubmit(onSubmit)}>
-            <div className="p-6 grid w-full max-w-6xl items-start gap-6 md:grid-cols-[180px_1fr] lg:grid-cols-[250px_1fr]">
-              <nav
-                className="grid gap-4 text-sm text-muted-foreground"
-                x-chunk="dashboard-04-chunk-0"
-              >
-                {steps.map((step, index) => (
-                  <Link
-                    key={index}
-                    href="#"
-                    className={`font-semibold ${
-                      currentStep === index ? "text-primary" : ""
-                    }`}
+    <FormProvider {...methods}>
+      <div className="border-2 rounded-md bg-white flex flex-col gap">
+        <div className="p-6 grid w-full max-w-6xl gap-2">
+          <h1 className="text-2xl font-semibold">Add Agent</h1>
+          <div>Manage and view their overall details.</div>
+        </div>
+        <form onSubmit={methods.handleSubmit(onSubmit)}>
+          <div className="p-6 grid w-full max-w-6xl items-start gap-6 md:grid-cols-[180px_1fr] lg:grid-cols-[250px_1fr]">
+            <nav
+              className="grid gap-4 text-sm text-muted-foreground"
+              x-chunk="dashboard-04-chunk-0"
+            >
+              {steps.map((step, index) => (
+                <Link
+                  key={index}
+                  href="#"
+                  className={`font-semibold ${
+                    currentStep === index ? "text-primary" : ""
+                  }`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setCurrentStep(index);
+                  }}
+                >
+                  {step.label}
+                </Link>
+              ))}
+            </nav>
+            <div className="grid gap-8">
+              <CurrentComponent />
+              <div className="flex gap-1.5">
+                {currentStep > 0 ? (
+                  <Button variant="outline" type="button" onClick={handleBack}>
+                    Back
+                  </Button>
+                ) : (
+                  <Button className="" variant="outline" type="button">
+                    <Link href="/dashboard/agents">Discard</Link>
+                  </Button>
+                )}
+                {currentStep < steps.length - 1 ? (
+                  <Button
+                    type="button"
                     onClick={(e) => {
                       e.preventDefault();
-                      setCurrentStep(index);
+                      handleNext();
                     }}
                   >
-                    {step.label}
-                  </Link>
-                ))}
-              </nav>
-              <div className="grid gap-8">
-                <CurrentComponent />
-                <div className="flex gap-1.5">
-                  {currentStep > 0 ? (
-                    <Button
-                      className="bg-white text-black"
-                      type="button"
-                      onClick={handleBack}
-                    >
-                      Back
-                    </Button>
-                  ) : (
-                    <Button className="bg-white text-black" type="button">
-                      <Link href="/dashboard/agents">Discard</Link>
-                    </Button>
-                  )}
-                  {currentStep < steps.length - 1 ? (
-                    <Button
-                      className="bg-blue-700 hover:bg-blue-900"
-                      type="button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleNext();
-                      }}
-                    >
-                      Continue
-                    </Button>
-                  ) : (
-                    <Button
-                      className="bg-blue-700 hover:bg-blue-900"
-                      type="submit"
-                      disabled={isSubmitClicked ? true : false}
-                    >
-                      Submit
-                    </Button>
-                  )}
-                </div>
+                    Continue
+                  </Button>
+                ) : (
+                  <Button
+                    type="submit"
+                    disabled={isSubmitClicked ? true : false}
+                  >
+                    Submit
+                  </Button>
+                )}
               </div>
             </div>
-          </form>
-          <Toaster />
-        </div>
-      </FormProvider>
-    </AdminLayout>
+          </div>
+        </form>
+        <Toaster />
+      </div>
+    </FormProvider>
   );
 }

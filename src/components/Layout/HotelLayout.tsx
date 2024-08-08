@@ -60,7 +60,7 @@ const HotelLayout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <div className="flex min-h-screen">
       <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
-        <nav className="flex flex-col items-center gap-4 px-2 sm:py-4">
+        <nav className=" navbar-override flex flex-col items-center gap-4 px-2 sm:py-4">
           <div className="flex items-center mb-6">
             <Image
               src="/images/minimalLogo.svg"
@@ -78,14 +78,31 @@ const HotelLayout: React.FC<LayoutProps> = ({ children }) => {
             <Home className="h-4 w-4 transition-all group-hover:scale-110" />
             <span className="sr-only">Dashboard</span>
           </Link>
-
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href="/hotel-dashboard/hotels"
+                  className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors md:h-8 md:w-8 ${
+                    pathname === "/hotel-dashboard/hotels"
+                      ? "bg-[#F1F5F9]"
+                      : "text-primary"
+                  }`}
+                >
+                  <Bed className="h-5 w-5" />
+                  <span className="sr-only">Hotels</span>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent side="right">Hotels</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
                   href="/hotel-dashboard/requests"
                   className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors md:h-8 md:w-8 ${
-                    pathname === "/agent-dashboard/requests"
+                    pathname === "/hotel-dashboard/requests"
                       ? "bg-[#F1F5F9]"
                       : "text-primary"
                   }`}
@@ -103,7 +120,7 @@ const HotelLayout: React.FC<LayoutProps> = ({ children }) => {
                 <Link
                   href="/hotel-dashboard/bookings"
                   className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors md:h-8 md:w-8 ${
-                    pathname === "/agent-dashboard/bookings"
+                    pathname === "/hotel-dashboard/bookings"
                       ? "bg-[#F1F5F9]"
                       : "text-primary"
                   }`}
@@ -116,7 +133,7 @@ const HotelLayout: React.FC<LayoutProps> = ({ children }) => {
             </Tooltip>
           </TooltipProvider>
         </nav>
-        <nav className="mt-auto flex flex-col items-center gap-4 px-2 sm:py-4">
+        <nav className="navbar-override mt-auto flex flex-col items-center gap-4 px-2 sm:py-4">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>

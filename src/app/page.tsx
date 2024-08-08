@@ -11,6 +11,9 @@ import StaticPage from "@/components/landing/StaticPage";
 import WorldMap from "@/components/landing/WorldMap";
 import { useEffect, useState } from "react";
 import DiscoverHistory from "@/components/landing/DiscoverHistory";
+import Lottie from "lottie-react";
+import loadingData from "../../animation/Hotel Loading.json";
+import LandingSkeleton from "@/components/AllSkeletons/LandingSkeleton";
 
 interface Hotel {
   hotelID: string;
@@ -83,7 +86,7 @@ export default function Home() {
 
   return (
     <Layout>
-      <Hero />
+      <Hero title="" />
       <div className="flex justify-center items-center text-[#111827]">
         <MaxWidthWrapper className="my-14 space-y-14">
           <Offersforyou />
