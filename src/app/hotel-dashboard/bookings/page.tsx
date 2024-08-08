@@ -147,145 +147,136 @@ export default function HotelBookingDashboard({}: {}) {
       return hotelName.includes(searchLower) || agentName.includes(searchLower);
     });
   return (
-    <HotelLayout>
-      <div className="flex flex-col sm:gap-4 ">
-        <div className="flex justify-between ">
-          <div className="flex flex-col">
-            <h1 className="text-2xl font-semibold">Booking Overview</h1>
-            <span>Manage your details form the dashboard</span>
-          </div>
-
-          {/* <DateRangePicker />  */}
-          {/* Discuss with Sakar dai about the date range picker */}
+    <div className="flex flex-col sm:gap-4 ">
+      <div className="flex justify-between ">
+        <div className="flex flex-col">
+          <h1 className="text-2xl font-semibold">Booking Overview</h1>
+          <span>Manage your details form the dashboard</span>
         </div>
-        <main className="grid flex-1 items-start gap-4 sm:py-0 md:gap-8 ">
-          <div className="grid auto-rows-max items-start gap-4 md:gap-6">
-            <Tabs
-              defaultValue="all"
-              className="flex flex-col gap-y-2"
-              onValueChange={(value) => setActiveTab(value)}
-            >
-              <TabsList className="self-start bg-slate-200">
-                <TabsTrigger value="requested" className="py-1.5">
-                  Requested
-                </TabsTrigger>
-                <TabsTrigger value="pending">Pending</TabsTrigger>
-                <TabsTrigger value="rejected">Rejected</TabsTrigger>
-                <TabsTrigger value="accepted">Accepted</TabsTrigger>
-                <TabsTrigger value="all">All</TabsTrigger>
-              </TabsList>
-              <TabsContent value={activeTab}>
-                <Card x-chunk="dashboard-05-chunk-3">
-                  <div className="p-6 flex justify-between items-center">
-                    <CardHeader className="p-0">
-                      <CardTitle className="text-2xl font-semibold">
-                        Bookings
-                      </CardTitle>
-                      <CardDescription>
-                        Manage your booking and view their overall details.
-                      </CardDescription>
-                    </CardHeader>
-                    <div className="relative ml-auto flex-1 md:grow-0">
-                      <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        type="search"
-                        placeholder="Search..."
-                        className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]"
-                        value={searchValue}
-                        onChange={(event) => setSearchValue(event.target.value)}
-                      />
-                    </div>
-                  </div>
-                  <CardContent>
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Hotel ID</TableHead>
-                          <TableHead>Hotel Name</TableHead>
-                          <TableHead>Status</TableHead>
-                          <TableHead>Agent Name</TableHead>
-                          <TableHead>Check In</TableHead>
-                          <TableHead>Check Out</TableHead>
-                          <TableHead>
-                            <span className="sr-only">Actions</span>
-                          </TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {filteredBookings?.map((booking, index) => {
-                          return (
-                            <TableRow key={index}>
-                              <TableCell>{booking.hotelID} </TableCell>
-
-                              <TableCell>{booking.hotel.name} </TableCell>
-                              <TableCell>
-                                <Badge
-                                  variant={
-                                    booking.status === "requested"
-                                      ? "Requested"
-                                      : booking.status === "accepted"
-                                      ? "Approved"
-                                      : booking.status === "pending"
-                                      ? "Pending"
-                                      : "Rejected"
-                                  }
-                                  className="capitalize"
-                                >
-                                  {booking.status}
-                                </Badge>
-                              </TableCell>
-
-                              <TableCell className="">
-                                {`${booking.user.firstName} ${booking.user.lastName}`}
-                              </TableCell>
-                              <TableCell>
-                                {dateFormatter(booking.bookingStartDate)}
-                              </TableCell>
-                              <TableCell>
-                                {dateFormatter(booking.bookingEndDate)}
-                              </TableCell>
-                              <TableCell>
-                                <DropdownMenu>
-                                  <DropdownMenuTrigger asChild>
-                                    <Button
-                                      aria-haspopup="true"
-                                      size="icon"
-                                      variant="ghost"
-                                    >
-                                      <MoreHorizontal className="h-4 w-4" />
-                                      <span className="sr-only">
-                                        Toggle menu
-                                      </span>
-                                    </Button>
-                                  </DropdownMenuTrigger>
-                                  <DropdownMenuContent align="end">
-                                    <DropdownMenuLabel>
-                                      Actions
-                                    </DropdownMenuLabel>
-                                    <DropdownMenuItem
-                                      onClick={() =>
-                                        router.push(
-                                          `bookings/${booking.bookingID}`
-                                        )
-                                      }
-                                    >
-                                      View
-                                    </DropdownMenuItem>
-                                  </DropdownMenuContent>
-                                </DropdownMenu>
-                              </TableCell>
-                            </TableRow>
-                          );
-                        })}
-                      </TableBody>
-                    </Table>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </Tabs>
-          </div>
-        </main>
       </div>
-    </HotelLayout>
+      <main className="grid flex-1 items-start gap-4 sm:py-0 md:gap-8 ">
+        <div className="grid auto-rows-max items-start gap-4 md:gap-6">
+          <Tabs
+            defaultValue="all"
+            className="flex flex-col gap-y-2"
+            onValueChange={(value) => setActiveTab(value)}
+          >
+            <TabsList className="self-start bg-slate-200">
+              <TabsTrigger value="requested" className="py-1.5">
+                Requested
+              </TabsTrigger>
+              <TabsTrigger value="pending">Pending</TabsTrigger>
+              <TabsTrigger value="rejected">Rejected</TabsTrigger>
+              <TabsTrigger value="accepted">Accepted</TabsTrigger>
+              <TabsTrigger value="all">All</TabsTrigger>
+            </TabsList>
+            <TabsContent value={activeTab}>
+              <Card x-chunk="dashboard-05-chunk-3">
+                <div className="p-6 flex justify-between items-center">
+                  <CardHeader className="p-0">
+                    <CardTitle className="text-2xl font-semibold">
+                      Bookings
+                    </CardTitle>
+                    <CardDescription>
+                      Manage your booking and view their overall details.
+                    </CardDescription>
+                  </CardHeader>
+                  <div className="relative ml-auto flex-1 md:grow-0">
+                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      type="search"
+                      placeholder="Search..."
+                      className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]"
+                      value={searchValue}
+                      onChange={(event) => setSearchValue(event.target.value)}
+                    />
+                  </div>
+                </div>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Hotel ID</TableHead>
+                        <TableHead>Hotel Name</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Agent Name</TableHead>
+                        <TableHead>Check In</TableHead>
+                        <TableHead>Check Out</TableHead>
+                        <TableHead>
+                          <span className="sr-only">Actions</span>
+                        </TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredBookings?.map((booking, index) => {
+                        return (
+                          <TableRow key={index}>
+                            <TableCell>{booking.hotelID} </TableCell>
+
+                            <TableCell>{booking.hotel.name} </TableCell>
+                            <TableCell>
+                              <Badge
+                                variant={
+                                  booking.status === "requested"
+                                    ? "Requested"
+                                    : booking.status === "accepted"
+                                    ? "Approved"
+                                    : booking.status === "pending"
+                                    ? "Pending"
+                                    : "Rejected"
+                                }
+                                className="capitalize"
+                              >
+                                {booking.status}
+                              </Badge>
+                            </TableCell>
+
+                            <TableCell className="">
+                              {`${booking.user.firstName} ${booking.user.lastName}`}
+                            </TableCell>
+                            <TableCell>
+                              {dateFormatter(booking.bookingStartDate)}
+                            </TableCell>
+                            <TableCell>
+                              {dateFormatter(booking.bookingEndDate)}
+                            </TableCell>
+                            <TableCell>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button
+                                    aria-haspopup="true"
+                                    size="icon"
+                                    variant="ghost"
+                                  >
+                                    <MoreHorizontal className="h-4 w-4" />
+                                    <span className="sr-only">Toggle menu</span>
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                  <DropdownMenuItem
+                                    onClick={() =>
+                                      router.push(
+                                        `bookings/${booking.bookingID}`
+                                      )
+                                    }
+                                  >
+                                    View
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </main>
+    </div>
   );
 }
