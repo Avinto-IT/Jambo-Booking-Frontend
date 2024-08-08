@@ -33,8 +33,6 @@ interface BookingData {
   userChoices: { room: Room; count: number }[];
 }
 
-const token = localStorage.getItem("token");
-
 export default function BookingReviewPage() {
   const [bookingData, setBookingData] = useState<BookingData | null>(null);
   const [hotel, setHotel] = useState<Hotel | null>(null);
@@ -53,9 +51,15 @@ export default function BookingReviewPage() {
     }
   };
 
+  let token: string | null = null;
+
   const handleCancel = () => {
     router.push("/all-hotels");
   };
+
+  useEffect(() => {
+    token = localStorage.getItem("token");
+  }, []);
 
   const handleSubmit = async () => {
     if (!bookingData) return;

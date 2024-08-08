@@ -86,7 +86,7 @@ export default function Home() {
 
   return (
     <Layout>
-      <Hero />
+      <Hero title="" />
       <div className="flex justify-center items-center text-[#111827]">
         <MaxWidthWrapper className="my-14 space-y-14">
           <Offersforyou />

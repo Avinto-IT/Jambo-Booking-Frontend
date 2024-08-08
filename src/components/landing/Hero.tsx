@@ -107,11 +107,12 @@ export default function Hero({ title = "" }: { title: string }) {
           Book Your Stay at Jambo Hotels
         </h1>
         <p className="max-w-7xl mb-8 w-full text-lg md:text-xl">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vitae
-          bibendum varius dictumst consectetur non ullamcorper massa. Bibendum
-          libero urna semper ornare. Lorem ipsum dolor sit amet, consectetur
-          adipiscing elit. Vitae bibendum varius dictumst consectetur non
-          ullamcorper massa. Bibendum libero urna semper ornare.
+          Discover the best accommodations and unbeatable hospitality at Jambo
+          Hotels. Whether you&apos;re planning a business trip, a family
+          vacation, or a romantic getaway, our luxurious rooms and world-class
+          amenities ensure an unforgettable experience. Book now and enjoy
+          special offers on your stay. Experience comfort and convenience at its
+          finest with Jambo Hotels.
         </p>
         <div className="w-full max-w-7xl">
           <div className="flex flex-col md:flex-row items-center justify-center gap-4">

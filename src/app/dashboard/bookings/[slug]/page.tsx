@@ -102,7 +102,7 @@ export default function BookingDetails({
   };
 
   return (
-    <AdminLayout>
+    <div>
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">Booking Details</CardTitle>
@@ -347,6 +347,6 @@ export default function BookingDetails({
         </CardHeader>
       </Card>
       <Toaster />
-    </AdminLayout>
+    </div>
   );
 }

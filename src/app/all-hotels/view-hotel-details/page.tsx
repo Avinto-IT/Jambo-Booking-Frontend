@@ -19,9 +19,7 @@ import {
   DialogOverlay,
   DialogTitle,
 } from "@/components/ui/dialog";
-import Layout from "@/components/Layout/Layout";
 import Hero from "@/components/HotelHero/Hero";
-import { BedIcon } from "@/components/Icons/AdminIcons";
 import { DatePickerWithRange } from "@/components/DateRangePicker";
 import {
   Select,
@@ -73,8 +71,6 @@ export default function Page() {
 const cleanFacilityName = (name: string) => name.replace(/[^a-zA-Z0-9]/g, "");
 
 function ClientViewHotel() {
-  // const startDate = addDays(new Date(), 10);
-  // const endDate = addDays(startDate, 4);
   const [showMore, setShowMore] = useState(false);
   const [showAmenities, setShowAmentities] = useState(false);
   const [visibleFacilitiesCount, setVisibleFacilitiesCount] = useState(4);
@@ -83,6 +79,7 @@ function ClientViewHotel() {
   const id = searchParams?.get("id");
   const urlStartDate = searchParams?.get("checkin");
   const urlEndDate = searchParams?.get("checkout");
+  let userID = null;
 
   const [hotel, setHotel] = useState<Hotel>();
   // const [token, setToken] = useState<string | null>(null);
@@ -114,6 +111,19 @@ function ClientViewHotel() {
       setCount(Array(hotel.rooms.length).fill(0));
     }
   }, [hotel]);
+
+  useEffect(() => {
+    const storedUserDetails = Cookies.get("userDetails");
+
+    if (storedUserDetails) {
+      try {
+        const userDetails = JSON.parse(storedUserDetails);
+        userID = userDetails.userID;
+      } catch (e) {
+        console.warn("Error fetching user details");
+      }
+    }
+  }, [userID]);
 
   useEffect(() => {
     const fetchHotels = async () => {
