@@ -68,6 +68,7 @@ function AllHotels() {
     const fetchHotels = async () => {
       try {
         const response = await fetch("/api/getHotels");
+        console.log(response);
         const data = await response.json();
         setHotels(data.hotels);
       } catch (error) {

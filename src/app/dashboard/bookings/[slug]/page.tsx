@@ -1,5 +1,4 @@
 "use client";
-import AdminLayout from "@/components/Layout/AdminLayout";
 import {
   Card,
   CardContent,
