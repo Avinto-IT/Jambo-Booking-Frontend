@@ -35,7 +35,7 @@ export default function Dashboard({
   agents: Agent[];
 }) {
   return (
-    <AdminLayout>
+    <div>
       <div className="flex flex-col sm:gap-4 ">
         <div className="p-6 flex justify-between ">
           <div className="flex flex-col">
@@ -168,6 +168,6 @@ export default function Dashboard({
           </div>
         </main>
       </div>
-    </AdminLayout>
+    </div>
   );
 }

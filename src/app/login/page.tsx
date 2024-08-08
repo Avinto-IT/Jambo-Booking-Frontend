@@ -1,5 +1,4 @@
 "use client";
-import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import { ChangeEvent, useState } from "react";
 import Cookies from "js-cookie";
 import { Button } from "@/components/ui/button";
@@ -19,7 +18,6 @@ import Link from "next/link";
 import jamboicon from "../../../public/images/login/Logo.svg";
 import Image from "next/image";
 import LoginHeader from "@/components/Logins/LoginHeader";
-import { Form } from "@/components/ui/form";
 
 export default function Login() {
   // const [email, setEmail] = useState("");
@@ -51,7 +49,7 @@ export default function Login() {
 
       if (response.status === 200) {
         const userDetails = data.user;
-        setMessage(data.message);
+        // setMessage(data.message);
         Cookies.set("userDetails", JSON.stringify(userDetails), {
           expires: 7,
           secure: process.env.NODE_ENV !== "development",
@@ -88,73 +86,75 @@ export default function Login() {
           <div className="mx-auto grid  ">
             <div className="w-full flex place-content-center place-items-center">
               <div className="w-full max-w-sm  ">
-                <CardHeader>
-                  <CardTitle className="text-3xl leading-10">Login</CardTitle>
-                  <CardDescription>
-                    Enter your email below to login to your account.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="grid gap-4">
-                  <form onSubmit={handleSubmit} className="grid gap-4">
-                    <div className="grid gap-2">
-                      <Label htmlFor="email" className="font-semibold">
-                        Email
-                      </Label>
-                      <Input
-                        name="email"
-                        type="email"
-                        placeholder="m@example.com"
-                        // value={fields.email}
-                        // onChange={(e) => setEmail(e.target.value)}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
-                    <div className="grid gap-2">
-                      <div className="flex justify-between">
-                        <Label htmlFor="password" className="font-semibold">
-                          Password
+                <Card className="border-none shadow-none">
+                  <CardHeader>
+                    <CardTitle className="text-3xl leading-10">Login</CardTitle>
+                    <CardDescription>
+                      Enter your email below to login to your account.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="grid gap-4">
+                    <form onSubmit={handleSubmit} className="grid gap-4">
+                      <div className="grid gap-2">
+                        <Label htmlFor="email" className="font-semibold">
+                          Email
                         </Label>
-                        <Link
-                          href="/login/forgot-password"
-                          className="text-[#2563EB] text-xs font-semibold"
-                        >
-                          <u>Forgot your password?</u>
-                        </Link>
+                        <Input
+                          name="email"
+                          type="email"
+                          placeholder="m@example.com"
+                          // value={fields.email}
+                          // onChange={(e) => setEmail(e.target.value)}
+                          onChange={handleChange}
+                          required
+                        />
                       </div>
-                      <Input
-                        name="password"
-                        type="password"
-                        placeholder="Enter Password"
-                        // value={fields.password}
-                        // onChange={(e) => setPassword(e.target.value)}
-                        onChange={handleChange}
-                        required
-                      />
+                      <div className="grid gap-2">
+                        <div className="flex justify-between">
+                          <Label htmlFor="password" className="font-semibold">
+                            Password
+                          </Label>
+                          <Link
+                            href="/login/forgot-password"
+                            className="text-[#2563EB] text-xs font-semibold"
+                          >
+                            <u>Forgot your password?</u>
+                          </Link>
+                        </div>
+                        <Input
+                          name="password"
+                          type="password"
+                          placeholder="Enter Password"
+                          // value={fields.password}
+                          // onChange={(e) => setPassword(e.target.value)}
+                          onChange={handleChange}
+                          required
+                        />
+                      </div>
+
+                      <Button
+                        type="submit"
+                        // onClick={handleLogin}
+                        className="w-full "
+                      >
+                        Login
+                      </Button>
+                    </form>
+                  </CardContent>
+
+                  <CardFooter>
+                    <div className="text-xs text-[#64748B] w-full flex justify-center">
+                      Don’t have an account? Signup as{" "}
+                      <Link href="/" className="text-blue-600">
+                        &nbsp;Agent&nbsp;
+                      </Link>
+                      or&nbsp;
+                      <Link href="/" className="text-blue-600">
+                        Hotel{" "}
+                      </Link>{" "}
                     </div>
-
-                    <Button
-                      type="submit"
-                      // onClick={handleLogin}
-                      className="w-full "
-                    >
-                      Login
-                    </Button>
-                  </form>
-                </CardContent>
-
-                <CardFooter>
-                  <div className="text-xs text-[#64748B] w-full flex justify-center">
-                    Don’t have an account? Signup as{" "}
-                    <Link href="/" className="text-blue-600">
-                      &nbsp;Agent&nbsp;
-                    </Link>
-                    or&nbsp;
-                    <Link href="/" className="text-blue-600">
-                      Hotel{" "}
-                    </Link>{" "}
-                  </div>
-                </CardFooter>
+                  </CardFooter>
+                </Card>
                 {message && (
                   <div className=" flex justify-center">
                     {" "}

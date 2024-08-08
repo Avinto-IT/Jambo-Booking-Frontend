@@ -164,40 +164,38 @@ export default function HotelsDashboard() {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              <Button size="sm" className="h-7 gap-1 py-2 ">
-                <PlusCircle className="h-3.5 w-3.5" />
-                <Link
-                  href="/dashboard/hotels/add-hotel"
-                  className="sr-only sm:not-sr-only sm:whitespace-nowrap"
-                >
-                  Add Hotel
-                </Link>
-              </Button>
-            </div>
+            <Button size="sm" className="h-7 gap-1 py-2 ">
+              <PlusCircle className="h-3.5 w-3.5" />
+              <Link
+                href="/dashboard/hotels/add-hotel"
+                className="sr-only sm:not-sr-only sm:whitespace-nowrap"
+              >
+                Add Hotel
+              </Link>
+            </Button>
           </div>
-          <TabsContent value="all">
-            <Card x-chunk="dashboard-06-chunk-0">
-              <div className="p-6 flex justify-between ">
-                <CardHeader className="p-0">
-                  <CardTitle className="text-2xl font-semibold">
-                    Hotels
-                  </CardTitle>
-                  <CardDescription>
-                    Manage your hotel and view their overall details.
-                  </CardDescription>
-                </CardHeader>
+        </div>
+        <TabsContent value="all">
+          <Card x-chunk="dashboard-06-chunk-0">
+            <div className="p-6 flex justify-between ">
+              <CardHeader className="p-0">
+                <CardTitle className="text-2xl font-semibold">Hotels</CardTitle>
+                <CardDescription>
+                  Manage your hotel and view their overall details.
+                </CardDescription>
+              </CardHeader>
 
-                <div className="relative ml-auto flex-1 md:grow-0">
-                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    type="search"
-                    placeholder="Search..."
-                    className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]"
-                    value={searchValue}
-                    onChange={(event) => setSearchValue(event.target.value)}
-                  />
-                </div>
+              <div className="relative ml-auto flex-1 md:grow-0">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="search"
+                  placeholder="Search..."
+                  className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]"
+                  value={searchValue}
+                  onChange={(event) => setSearchValue(event.target.value)}
+                />
               </div>
+            </div>
 
               <CardContent>
                 <Table>
@@ -302,11 +300,10 @@ export default function HotelsDashboard() {
                   Showing <strong>1-10</strong> of <strong>32</strong> products
                 </div>
               </CardFooter> */}
-            </Card>
-          </TabsContent>
-        </Tabs>
-        <Toaster />
-      </main>
-    </AdminLayout>
+          </Card>
+        </TabsContent>
+      </Tabs>
+      <Toaster />
+    </main>
   );
 }

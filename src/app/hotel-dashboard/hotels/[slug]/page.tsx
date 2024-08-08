@@ -8,9 +8,9 @@ import bed from "../../../../../public/images/Bed.svg";
 import guest from "../../../../../public/images/Guest.svg";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import facilitiesIcon from "../../../../../data/facilities.json";
 import * as Icons from "lucide-react";
 import UseFacilityIcon from "../../../../utils/facilityIcon";
+import { CustomIcons } from "@/utils/icons";
 
 import {
   Dialog,
@@ -43,11 +43,13 @@ interface Hotel {
   description: string;
   facilities: {
     name: string;
-    subFacilities: { name: string }[];
+    subFacilities: { name: { label: string; value: string } }[];
   }[];
   rooms: Room[];
   houseRules: { type: string; details: string }[];
 }
+
+const cleanFacilityName = (name: string) => name.replace(/[^a-zA-Z0-9]/g, "");
 
 export default function Page({ params }: { params: { slug: string } }) {
   const [showMore, setShowMore] = useState(false);
@@ -291,42 +293,22 @@ export default function Page({ params }: { params: { slug: string } }) {
                     Top Facilities
                   </div>
                   <div className="grid gap-5 grid-cols-3">
-                    {/* {hotel.facilities.map((facility, facilityIndex) => {
-                      const facilityIcon = facilitiesIcon.facilitiesIcon.find(
-                        (icon) => {
-                          return icon.name === facility.name;
-                        }
-                      );
-
-                      const IconComponent = (Icons as any)[
-                        `${facilityIcon?.icon}`
-                      ];
-
-                      return (
-                        <div
-                          key={facilityIndex}
-                          className="flex items-center space-x-4"
-                        >
-                          <div className="">
-                            {IconComponent && <IconComponent className="" />}
-                          </div>
-
-                          <div className="">{facility.name}</div>
-                        </div>
-                      );
-                    })} */}
                     {hotel.facilities.map((facility, facilityIndex) => {
+                      const cleanedName = cleanFacilityName(facility.name);
+                      const IconComponent = CustomIcons[cleanedName];
                       return (
                         <div
                           key={facilityIndex}
-                          className="flex items-center space-x-4"
+                          className="flex items-center gap-4"
                         >
-                          <div>
-                            {UseFacilityIcon && (
-                              <UseFacilityIcon nameOfFacility={facility.name} />
-                            )}
-                          </div>
-                          <div className="">{facility.name}</div>
+                          {IconComponent && (
+                            <IconComponent
+                              height={24}
+                              width={24}
+                              weight="light"
+                            />
+                          )}
+                          {facility.name}
                         </div>
                       );
                     })}
@@ -566,11 +548,17 @@ export default function Page({ params }: { params: { slug: string } }) {
                     {hotel.facilities
                       .slice(0, visibleFacilitiesCount)
                       .map((value, facilityIndex) => {
+                        const cleanedName = cleanFacilityName(value.name);
+                        const IconComponent = CustomIcons[cleanedName];
                         return (
                           <div className="" key={facilityIndex}>
                             <div className="flex items-center space-x-4 ">
-                              {UseFacilityIcon && (
-                                <UseFacilityIcon nameOfFacility={value.name} />
+                              {IconComponent && (
+                                <IconComponent
+                                  height={24}
+                                  width={24}
+                                  weight="light"
+                                />
                               )}
 
                               <div className="">{value.name}</div>
@@ -583,7 +571,9 @@ export default function Page({ params }: { params: { slug: string } }) {
                                     key={subIndex}
                                   >
                                     <Dot className="" />
-                                    <div className="">{subValue.name}</div>
+                                    <div className="">
+                                      {subValue.name.value}
+                                    </div>
                                   </span>
                                 );
                               })}

@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Leaf,
   Oven,
@@ -42,7 +41,6 @@ import {
   ArrowFatLeft,
   CigaretteSlash,
 } from "@phosphor-icons/react";
-import camelCase from "camelcase";
 type IconComponent = (props: IconProps) => JSX.Element;
 export const CustomIcons: Record<string, IconComponent> = {
   leaf: (props: IconProps) => <Leaf {...props} />,
@@ -62,7 +60,7 @@ export const CustomIcons: Record<string, IconComponent> = {
   circle: (props: IconProps) => <Circle {...props} />,
   checkCircle: (props: IconProps) => <CheckCircle {...props} />,
   Amenities: (props: IconProps) => <HairDryer {...props} />,
-  Dinning: (props: IconProps) => <CallBell {...props} />,
+  Dining: (props: IconProps) => <CallBell {...props} />,
   Recreation: (props: IconProps) => <PersonSimpleThrow {...props} />,
   Accessibility: (props: IconProps) => <PersonArmsSpread {...props} />,
   BusinessServices: (props: IconProps) => <Briefcase {...props} />,
@@ -80,20 +78,10 @@ export const CustomIcons: Record<string, IconComponent> = {
   Sustainability: (props: IconProps) => <GlobeHemisphereWest {...props} />,
   Technology: (props: IconProps) => <Laptop {...props} />,
   Transportation: (props: IconProps) => <Van {...props} />,
-  WellnessAndSpa: (props: IconProps) => <FlowerLotus {...props} />,
+  WellnessandSpa: (props: IconProps) => <FlowerLotus {...props} />,
   CancellationPolicy: (props: IconProps) => <Prohibit {...props} />,
   CheckInTime: (props: IconProps) => <ArrowFatRight {...props} />,
   CheckOutTime: (props: IconProps) => <ArrowFatLeft {...props} />,
-  NoSmoking: (props: IconProps) => <CigaretteSlash {...props} />,
+  Nosmoking: (props: IconProps) => <CigaretteSlash {...props} />,
   PetPolicy: (props: IconProps) => <PawPrint {...props} />,
 };
-interface IconPropsWithName {
-  iconName: string;
-  props: IconProps;
-}
-const DynamicIcon = ({ iconName, props }: IconPropsWithName) => {
-  const normalizedIconName = camelCase(iconName);
-  const IconComponent = CustomIcons[normalizedIconName];
-  return IconComponent ? <IconComponent {...props} /> : null;
-};
-export default DynamicIcon;

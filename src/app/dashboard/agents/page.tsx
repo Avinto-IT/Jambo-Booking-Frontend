@@ -223,14 +223,13 @@ export default function AgentDashboard({}: {}) {
   };
   console.log(agents);
   return (
-    <AdminLayout>
-      <div className="flex flex-col sm:gap-4 ">
-        <div className="flex px-6 py-4 flex-col gap-2">
-          <h1 className="text-2xl font-semibold">Agent Tier</h1>
-          <span className="text-[#64748B]">
-            Manage your details form the dashboard
-          </span>
-        </div>
+    <div className="flex flex-col sm:gap-4 ">
+      <div className="flex px-6 py-4 flex-col gap-2">
+        <h1 className="text-2xl font-semibold">Agent Tier</h1>
+        <span className="text-[#64748B]">
+          Manage your details form the dashboard
+        </span>
+      </div>
 
         <main className="grid flex-1 items-start gap-4 sm:py-0 md:gap-8 ">
           <div className="grid auto-rows-max items-start gap-4 md:gap-6">
@@ -406,8 +405,8 @@ export default function AgentDashboard({}: {}) {
               </Card>
             </div>
 
-            <div
-              className="filters flex justify-between items-center 
+          <div
+            className="filters flex justify-between items-center 
            h-10 -mb-4"
             >
               <Tabs

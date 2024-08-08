@@ -5,7 +5,7 @@ import Link from "next/link";
 import React from "react";
 
 import Lottie from "lottie-react";
-import animationdata from "../../../../../../animation/Success.json";
+import animationdata from "../../../animation/Success.json";
 import UserLayout from "@/components/Layout/UserLayout";
 import Hero from "@/components/landing/Hero";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";

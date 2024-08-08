@@ -2,6 +2,12 @@
 import { useEffect, useState } from "react";
 import Select from "react-select";
 import { Button } from "../ui/button";
+import { DatePickerWithRange } from "@/components/DateRangePicker";
+import { DateRange } from "react-day-picker";
+import { format, addDays } from "date-fns";
+import { HeroDatePicker } from "../HeroDatePicker";
+import { useRouter } from "next/navigation"; // Import the useRouter hook
+
 interface Location {
   locationID: string;
   city: string;
@@ -10,12 +16,23 @@ interface Location {
   zipCode: string;
 }
 
-export default function Hero() {
+export default function Hero({ title = "" }: { title: string }) {
+  const startDate = addDays(new Date(), 10);
+  const endDate = addDays(startDate, 4);
   const [inputValue, setInputValue] = useState("");
   const [locations, setLocations] = useState<Location[]>([]);
   const [locationChange, setLocationChange] = useState<string | undefined>(
     undefined
   );
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+    from: startDate,
+    to: endDate,
+  });
+  const router = useRouter(); // Initialize the useRouter hook
+
+  const handleDateChange = (newDate: DateRange | undefined) => {
+    setDateRange(newDate);
+  };
 
   useEffect(() => {
     const fetchLocations = async () => {
@@ -30,12 +47,14 @@ export default function Hero() {
 
     fetchLocations();
   }, []);
+
   const handleLocationChange = (selectedOption: any) => {
     const selectedLocation = locations.find(
       (location) => location.locationID === selectedOption.value
     );
     setLocationChange(selectedLocation?.city);
   };
+
   const handleInputChange = (newValue: any) => {
     setInputValue(newValue);
     if (inputValue) setLocationChange(inputValue);
@@ -44,7 +63,7 @@ export default function Hero() {
   const customStyles = {
     control: (provided: any) => ({
       ...provided,
-      minHeight: "52px", // Adjust this value to match the height of other input fields
+      minHeight: "52px",
     }),
     valueContainer: (provided: any) => ({
       ...provided,
@@ -60,17 +79,26 @@ export default function Hero() {
       height: "52px",
     }),
   };
+
   if (!locations) return <>Loading..</>;
+
   const handleSearchClick = () => {
-    locationChange
-      ? (window.location.href = `/all-hotels/?id=${locationChange}`)
-      : (window.location.href = "/all-hotels");
+    const params = new URLSearchParams();
+    if (locationChange) {
+      params.append("location", locationChange);
+    }
+    if (dateRange?.from) {
+      params.append("checkin", format(dateRange.from, "yyyy-MM-dd"));
+    }
+    if (dateRange?.to) {
+      params.append("checkout", format(dateRange.to, "yyyy-MM-dd"));
+    }
+    router.push(`/all-hotels/?${params.toString()}`);
   };
+
   return (
     <section
-      className="relative bg-cover 
-      
-       bg-blue-400 bg-center h-[70vh]"
+      className="relative bg-cover bg-blue-400 bg-center h-[70vh]"
       style={{ backgroundImage: "url('/images/hero.png')" }}
     >
       <div className="absolute inset-0 bg-black opacity-85"></div>
@@ -79,17 +107,18 @@ export default function Hero() {
           Book Your Stay at Jambo Hotels
         </h1>
         <p className="max-w-7xl mb-8 w-full text-lg md:text-xl">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vitae
-          bibendum varius dictumst consectetur non ullamcorper massa. Bibendum
-          libero urna semper ornare. Lorem ipsum dolor sit amet, consectetur
-          adipiscing elit. Vitae bibendum varius dictumst consectetur non
-          ullamcorper massa. Bibendum libero urna semper ornare.
+          Discover the best accommodations and unbeatable hospitality at Jambo
+          Hotels. Whether you&apos;re planning a business trip, a family
+          vacation, or a romantic getaway, our luxurious rooms and world-class
+          amenities ensure an unforgettable experience. Book now and enjoy
+          special offers on your stay. Experience comfort and convenience at its
+          finest with Jambo Hotels.
         </p>
         <div className="w-full max-w-7xl">
           <div className="flex flex-col md:flex-row items-center justify-center gap-4">
             <Select
               instanceId="location-select"
-              options={locations.map((location) => ({
+              options={locations?.map((location) => ({
                 value: location.locationID,
                 label: `${location.city}, ${location.country}`,
               }))}
@@ -98,31 +127,21 @@ export default function Hero() {
               inputValue={inputValue}
               placeholder="Where are you planning to go..."
               styles={customStyles}
-              className="flex-1 rounded-lg bg-white text-black placeholder-gray-500 z-50"
+              className="flex-1 rounded-lg bg-white text-black placeholder-gray-500 z-50 max-w-[550px]"
             />
-            <input
-              type="text"
-              placeholder="Checkin Date"
-              className="p-4 rounded-lg bg-white text-black placeholder-gray-500"
+            <HeroDatePicker
+              onDateChange={handleDateChange}
+              from={dateRange?.from}
+              to={dateRange?.to}
             />
-            <input
-              type="text"
-              placeholder="Checkout Date"
-              className="p-4 rounded-lg bg-white text-black placeholder-gray-500"
-            />
-            <button
-              className="p-4 bg-blue-600 text-white rounded-lg"
+            <Button
+              className="h-14 w-32"
               onClick={() => {
                 handleSearchClick();
               }}
-              // onClick={() => {
-              //   locationChange
-              //     ? (window.location.href = `/all-hotels/?id=${locationChange}`)
-              //     : (window.location.href = "/all-hotels");
-              // }}
             >
               Search
-            </button>
+            </Button>
           </div>
         </div>
       </div>

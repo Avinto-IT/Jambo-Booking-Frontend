@@ -7,9 +7,5 @@ import { Hotel } from "@/utils/types";
 
 export default function AdminCalendarPricing() {
   // console.log(hotels, "data");
-  return (
-    <AdminLayout>
-      <CalendarPricing />
-    </AdminLayout>
-  );
+  return <CalendarPricing />;
 }
