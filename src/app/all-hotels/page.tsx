@@ -37,9 +37,11 @@ function AllHotels() {
     const fetchHotels = async () => {
       try {
         const response = await fetch("/api/getHotels");
+        console.log(response);
         const data = await response.json();
+        console.log(data);
         setHotels(data.hotels); // Corrected this line
-        console.log(hotels);
+        // console.log(hotels);
       } catch (error) {
         console.log("Error fetching hotels:", error);
       } finally {

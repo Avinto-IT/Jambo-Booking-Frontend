@@ -64,6 +64,7 @@ const Dashboard: React.FC = ({}) => {
       fetchBookings();
     }
   }, []);
+  console.log(bookings, "bookings");
   useEffect(() => {
     const fetchAgents = async () => {
       try {

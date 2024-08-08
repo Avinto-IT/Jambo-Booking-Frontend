@@ -42,7 +42,7 @@ import { dateFormatter } from "@/utils/functions";
 
 export default function HotelsDashboard() {
   const [hotels, setHotels] = useState<Hotel[]>([]);
-  const [activeTab, setActiveTab] = useState("All");
+  const [activeTab, setActiveTab] = useState("all");
   const [searchValue, setSearchValue] = useState<string>("");
 
   const router = useRouter();
@@ -119,7 +119,7 @@ export default function HotelsDashboard() {
   return (
     <AdminLayout>
       <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-        <Tabs defaultValue="all">
+        <Tabs defaultValue={activeTab}>
           <div className="flex items-center">
             <TabsList>
               <TabsTrigger value="requested">Requested</TabsTrigger>
@@ -203,7 +203,9 @@ export default function HotelsDashboard() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Hotel ID</TableHead>
+                      <TableHead>
+                        <span className="sr-only">Hotel Image</span>
+                      </TableHead>
                       <TableHead>Hotel Name</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead className="hidden md:table-cell">
@@ -221,8 +223,15 @@ export default function HotelsDashboard() {
                     {filteredData().map((hotel, index) => {
                       return (
                         <TableRow key={index}>
-                          <TableCell className="font-medium">
-                            {hotel.hotelID}
+                          <TableCell className="relative max-w-16">
+                            <div className="min-h-16 min-w-16 ">
+                              <Image
+                                src={hotel.primaryImageLink}
+                                alt={""}
+                                fill
+                                className="rounded-[0.5rem] p-2 object-fit"
+                              />
+                            </div>
                           </TableCell>
 
                           <TableCell className="font-medium">
@@ -231,10 +240,17 @@ export default function HotelsDashboard() {
                           <TableCell>
                             <Badge
                               variant={
-                                hotel.isRunning ? "Approved" : "Rejected"
+                                hotel.isApproved === "requested"
+                                  ? "Requested"
+                                  : hotel.isApproved === "accepted"
+                                  ? "Approved"
+                                  : hotel.isApproved === "pending"
+                                  ? "Pending"
+                                  : "Rejected"
                               }
+                              className="capitalize"
                             >
-                              {hotel.isRunning ? "Active" : "Inactive"}
+                              {hotel.isApproved}
                             </Badge>
                           </TableCell>
                           <TableCell>{hotel.address}</TableCell>

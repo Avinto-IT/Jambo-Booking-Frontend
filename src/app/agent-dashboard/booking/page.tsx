@@ -85,6 +85,7 @@ interface Bed {
 interface Hotel {
   name: string;
   address: string;
+  primaryImageLink: string;
 }
 
 // export default function AgentBookings() {
@@ -137,7 +138,6 @@ export default function AgentBookings() {
 
     fetchAgents();
   }, []);
-  console.log("agents", agent);
   const filteredData = () => {
     let filteredHotels = booking;
 
@@ -299,7 +299,9 @@ export default function AgentBookings() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Hotel ID</TableHead>
+                      <TableHead>
+                        <span className="sr-only">Hotel Image</span>
+                      </TableHead>
                       <TableHead>Hotel Name</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Agent Name</TableHead>
@@ -313,8 +315,15 @@ export default function AgentBookings() {
                   <TableBody>
                     {filteredData().map((booking, index) => (
                       <TableRow key={index}>
-                        <TableCell className="font-medium">
-                          {booking.hotelID}
+                        <TableCell className="relative max-w-16">
+                          <div className="min-h-16 min-w-16 ">
+                            <Image
+                              src={booking.hotel.primaryImageLink}
+                              alt={""}
+                              fill
+                              className="rounded-[0.5rem] p-2 object-fit"
+                            />
+                          </div>
                         </TableCell>
 
                         <TableCell className="font-medium">

@@ -66,6 +66,7 @@ model User {
   bookingHistories BookingHistory[]
   gradeID          String?          @db.ObjectId
   grade            Grade?           @relation(fields: [gradeID], references: [gradeID])
+  gradeName        String?
   hotel            Hotel[]
 }
 

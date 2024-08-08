@@ -21,19 +21,42 @@ export default async function getHotelByIdHandler(
       where: {
         userID: idFromQuery,
       },
-      include: {
+      select: {
+        userID: true,
+        agencyName: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        contactNumber: true,
+        role: true,
+        dateOfBirth: true,
+        address: true,
+        toursCompleted: true,
+        hasMultipleHotel: true,
+        gradeName: true,
         bookings: {
           include: {
             hotel: {
               select: {
                 name: true,
                 address: true,
+                primaryImageLink: true,
               },
             },
           },
         },
+        grade: {
+          select: {
+            priceModifier: true,
+          },
+        },
       },
     });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
     res.status(200).json({ user });
   } catch (error) {
     console.log("Error fetching agent", error);

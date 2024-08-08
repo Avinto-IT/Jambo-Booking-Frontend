@@ -10,11 +10,12 @@ export default async function getBookingsByHotelUserIdHandler(
   if (req.method !== "GET") {
     return res.status(405).json({ message: "Method not allowed" });
   }
-
   const { userID } = req.query;
   if (!userID) {
     return res.status(400).json({ error: "User ID not provided in the URL" });
   }
+  console.log(userID, "asdasdasdasdasdasdasdas");
+
   const userIDFromQuery = Array.isArray(userID) ? userID[0] : userID;
 
   try {

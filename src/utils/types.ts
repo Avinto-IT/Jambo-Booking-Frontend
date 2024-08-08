@@ -125,3 +125,9 @@ export interface FacilitiesInterface {
   facilityCategory: string;
   subFacilities: string[];
 }
+
+export interface Grade {
+  gradeID: string;
+  gradeName: string;
+  priceModifier: string;
+}

@@ -34,39 +34,38 @@ export default function HotelDashboard({
   bookings: Booking[];
   agents: Agent[];
 }) {
-  console.log(bookings);
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [bookingCounts, setBookingCounts] = useState({
     accepted: 0,
     requested: 0,
     rejected: 0,
   });
-  useEffect(() => {
-    const calculateTotalRevenue = (bookings: Booking[]) => {
-      const acceptedBookings = bookings.filter(
-        (booking) => booking.status === "accepted"
-      );
-      const total = acceptedBookings.reduce(
-        (sum, booking) => sum + booking.totalBookingPrice,
-        0
-      );
-      return total;
-    };
+  // useEffect(() => {
+  //   const calculateTotalRevenue = (bookings: Booking[]) => {
+  //     const acceptedBookings = bookings.filter(
+  //       (booking) => booking.status === "accepted"
+  //     );
+  //     const total = acceptedBookings.reduce(
+  //       (sum, booking) => sum + booking.totalBookingPrice,
+  //       0
+  //     );
+  //     return total;
+  //   };
 
-    const countBookingsByStatus = (bookings: Booking[]) => {
-      return bookings.reduce(
-        (counts, booking) => {
-          const status = booking.status as keyof typeof counts;
-          counts[status] = (counts[status] || 0) + 1;
-          return counts;
-        },
-        { accepted: 0, requested: 0, rejected: 0 }
-      );
-    };
+  //   const countBookingsByStatus = (bookings: Booking[]) => {
+  //     return bookings.reduce(
+  //       (counts, booking) => {
+  //         const status = booking.status as keyof typeof counts;
+  //         counts[status] = (counts[status] || 0) + 1;
+  //         return counts;
+  //       },
+  //       { accepted: 0, requested: 0, rejected: 0 }
+  //     );
+  //   };
 
-    setTotalRevenue(calculateTotalRevenue(bookings));
-    setBookingCounts(countBookingsByStatus(bookings));
-  }, [bookings]);
+  //   setTotalRevenue(calculateTotalRevenue(bookings));
+  //   setBookingCounts(countBookingsByStatus(bookings));
+  // }, [bookings]);
 
   return (
     <div className="flex flex-col sm:gap-4 ">
@@ -140,7 +139,7 @@ export default function HotelDashboard({
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {bookings.map((booking, index: number) => {
+                      {/* {bookings.map((booking, index: number) => {
                         return (
                           <TableRow key={index} className="">
                             <TableCell>{booking.hotel.name}</TableCell>
@@ -149,7 +148,7 @@ export default function HotelDashboard({
                             </TableCell>
                           </TableRow>
                         );
-                      })}
+                      })} */}
                     </TableBody>
                   </Table>
                 </CardContent>
