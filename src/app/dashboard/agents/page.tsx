@@ -22,7 +22,6 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DateRangePicker from "../../../components/AdminComponents/Sub-Components/DateRangePicker";
-import AdminLayout from "@/components/Layout/AdminLayout";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
@@ -231,390 +230,387 @@ export default function AgentDashboard({}: {}) {
         </span>
       </div>
 
-        <main className="grid flex-1 items-start gap-4 sm:py-0 md:gap-8 ">
-          <div className="grid auto-rows-max items-start gap-4 md:gap-6">
-            <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 ">
-              <Card x-chunk="dashboard-05-chunk-1">
-                <CardHeader className="pb-1">
-                  <CardDescription className="font-medium text-black">
-                    Tier A
-                  </CardDescription>
-                  <CardTitle className="text-2xl font-bold">
-                    {tierCount.tierA}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="text-[#64748B] text-xs">
-                  Currently applied 10% markup in Hotel price{" "}
-                </CardContent>
-                <CardFooter className="flex justify-end">
-                  <Dialog>
-                    <DialogTrigger>
-                      <div className="border-2 border-[#E2E8F0] py-2 px-4 gap-2 rounded-md font-medium text-sm hover:bg-slate-100">
-                        Edit Markup
+      <main className="grid flex-1 items-start gap-4 sm:py-0 md:gap-8 ">
+        <div className="grid auto-rows-max items-start gap-4 md:gap-6">
+          <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 ">
+            <Card x-chunk="dashboard-05-chunk-1">
+              <CardHeader className="pb-1">
+                <CardDescription className="font-medium text-black">
+                  Tier A
+                </CardDescription>
+                <CardTitle className="text-2xl font-bold">
+                  {tierCount.tierA}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="text-[#64748B] text-xs">
+                Currently applied 10% markup in Hotel price{" "}
+              </CardContent>
+              <CardFooter className="flex justify-end">
+                <Dialog>
+                  <DialogTrigger>
+                    <div className="border-2 border-[#E2E8F0] py-2 px-4 gap-2 rounded-md font-medium text-sm hover:bg-slate-100">
+                      Edit Markup
+                    </div>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Edit Markup</DialogTitle>
+                      <DialogDescription>
+                        Make changes to your markup value for each tier here.
+                        Click save when you&apos;re done.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="pt-5 space-y-5 ">
+                      <div className="space-y-3">
+                        <Label className="text-2xl font-bold">Tier A</Label>
                       </div>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Edit Markup</DialogTitle>
-                        <DialogDescription>
-                          Make changes to your markup value for each tier here.
-                          Click save when you&apos;re done.
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="pt-5 space-y-5 ">
-                        <div className="space-y-3">
-                          <Label className="text-2xl font-bold">Tier A</Label>
-                        </div>
-                        <div className="space-y-3">
-                          <Label>Mark Up Percent</Label>
-                          <Input
-                            type="number"
-                            placeholder="10%"
-                            defaultValue={getPriceModifier(
-                              "66b1fa300a0d9e6652fb4890"
-                            )}
-                            onChange={(e) =>
-                              setPriceModifierObj({
-                                gradeID: "66b1fa300a0d9e6652fb4890",
-                                priceModifier: e.target.value,
-                              })
-                            }
-                          />
-                        </div>
+                      <div className="space-y-3">
+                        <Label>Mark Up Percent</Label>
+                        <Input
+                          type="number"
+                          placeholder="10%"
+                          defaultValue={getPriceModifier(
+                            "66b1fa300a0d9e6652fb4890"
+                          )}
+                          onChange={(e) =>
+                            setPriceModifierObj({
+                              gradeID: "66b1fa300a0d9e6652fb4890",
+                              priceModifier: e.target.value,
+                            })
+                          }
+                        />
                       </div>
-                      <div className="flex justify-end w-full mt-3">
-                        <Button onClick={onPriceModifierSubmit}>
-                          Save Changes
-                        </Button>
+                    </div>
+                    <div className="flex justify-end w-full mt-3">
+                      <Button onClick={onPriceModifierSubmit}>
+                        Save Changes
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </CardFooter>
+            </Card>
+            <Card x-chunk="dashboard-05-chunk-1">
+              <CardHeader className="pb-1">
+                <CardDescription className="font-medium text-black">
+                  Tier B
+                </CardDescription>
+                <CardTitle className="text-2xl font-bold">
+                  {tierCount.tierB}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="text-[#64748B] text-xs">
+                Currently applied 10% markup in Hotel price{" "}
+              </CardContent>
+              <CardFooter className="flex justify-end">
+                <Dialog>
+                  <DialogTrigger>
+                    <div className="border-2 border-[#E2E8F0] py-2 px-4 gap-2 rounded-md font-medium text-sm hover:bg-slate-100">
+                      Edit Markup
+                    </div>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Edit Markup</DialogTitle>
+                      <DialogDescription>
+                        Make changes to your markup value for each tier here.
+                        Click save when you&apos;re done.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="pt-5 space-y-5 ">
+                      <Label className="text-2xl font-bold">Tier B</Label>
+                      <div className="space-y-3">
+                        <Label>Mark Up Percent</Label>
+                        <Input
+                          type="number"
+                          placeholder="10%"
+                          defaultValue={getPriceModifier(
+                            "66b1fa550a0d9e6652fb4891"
+                          )}
+                          onChange={(e) =>
+                            setPriceModifierObj({
+                              gradeID: "66b1fa550a0d9e6652fb4891",
+                              priceModifier: e.target.value,
+                            })
+                          }
+                        />
                       </div>
-                    </DialogContent>
-                  </Dialog>
-                </CardFooter>
-              </Card>
-              <Card x-chunk="dashboard-05-chunk-1">
-                <CardHeader className="pb-1">
-                  <CardDescription className="font-medium text-black">
-                    Tier B
-                  </CardDescription>
-                  <CardTitle className="text-2xl font-bold">
-                    {tierCount.tierB}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="text-[#64748B] text-xs">
-                  Currently applied 10% markup in Hotel price{" "}
-                </CardContent>
-                <CardFooter className="flex justify-end">
-                  <Dialog>
-                    <DialogTrigger>
-                      <div className="border-2 border-[#E2E8F0] py-2 px-4 gap-2 rounded-md font-medium text-sm hover:bg-slate-100">
-                        Edit Markup
+                    </div>
+                    <div className="flex justify-end w-full mt-3">
+                      <Button onClick={onPriceModifierSubmit}>
+                        Save Changes
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </CardFooter>
+            </Card>
+            <Card x-chunk="dashboard-05-chunk-1">
+              <CardHeader className="pb-1">
+                <CardDescription className="font-medium text-black">
+                  Tier C
+                </CardDescription>
+                <CardTitle className="text-2xl font-bold">
+                  {tierCount.tierC}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="text-[#64748B] text-xs">
+                Currently applied 10% markup in Hotel price{" "}
+              </CardContent>
+              <CardFooter className="flex justify-end">
+                <Dialog>
+                  <DialogTrigger>
+                    <div className="border-2 border-[#E2E8F0] py-2 px-4 gap-2 rounded-md font-medium text-sm hover:bg-slate-100">
+                      Edit Markup
+                    </div>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Edit Markup</DialogTitle>
+                      <DialogDescription>
+                        Make changes to your markup value for each tier here.
+                        Click save when you&apos;re done.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="pt-5 space-y-5 ">
+                      <div className="space-y-3">
+                        <Label className="text-2xl font-bold">Tier C</Label>
                       </div>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Edit Markup</DialogTitle>
-                        <DialogDescription>
-                          Make changes to your markup value for each tier here.
-                          Click save when you&apos;re done.
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="pt-5 space-y-5 ">
-                        <Label className="text-2xl font-bold">Tier B</Label>
-                        <div className="space-y-3">
-                          <Label>Mark Up Percent</Label>
-                          <Input
-                            type="number"
-                            placeholder="10%"
-                            defaultValue={getPriceModifier(
-                              "66b1fa550a0d9e6652fb4891"
-                            )}
-                            onChange={(e) =>
-                              setPriceModifierObj({
-                                gradeID: "66b1fa550a0d9e6652fb4891",
-                                priceModifier: e.target.value,
-                              })
-                            }
-                          />
-                        </div>
+                      <div className="space-y-3">
+                        <Label>Mark Up Percent</Label>
+                        <Input
+                          type="number"
+                          placeholder="10%"
+                          defaultValue={getPriceModifier(
+                            "66b1fa6c0a0d9e6652fb4892"
+                          )}
+                          onChange={(e) =>
+                            setPriceModifierObj({
+                              gradeID: "66b1fa6c0a0d9e6652fb4892",
+                              priceModifier: e.target.value,
+                            })
+                          }
+                        />
                       </div>
-                      <div className="flex justify-end w-full mt-3">
-                        <Button onClick={onPriceModifierSubmit}>
-                          Save Changes
-                        </Button>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-                </CardFooter>
-              </Card>
-              <Card x-chunk="dashboard-05-chunk-1">
-                <CardHeader className="pb-1">
-                  <CardDescription className="font-medium text-black">
-                    Tier C
-                  </CardDescription>
-                  <CardTitle className="text-2xl font-bold">
-                    {tierCount.tierC}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="text-[#64748B] text-xs">
-                  Currently applied 10% markup in Hotel price{" "}
-                </CardContent>
-                <CardFooter className="flex justify-end">
-                  <Dialog>
-                    <DialogTrigger>
-                      <div className="border-2 border-[#E2E8F0] py-2 px-4 gap-2 rounded-md font-medium text-sm hover:bg-slate-100">
-                        Edit Markup
-                      </div>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Edit Markup</DialogTitle>
-                        <DialogDescription>
-                          Make changes to your markup value for each tier here.
-                          Click save when you&apos;re done.
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="pt-5 space-y-5 ">
-                        <div className="space-y-3">
-                          <Label className="text-2xl font-bold">Tier C</Label>
-                        </div>
-                        <div className="space-y-3">
-                          <Label>Mark Up Percent</Label>
-                          <Input
-                            type="number"
-                            placeholder="10%"
-                            defaultValue={getPriceModifier(
-                              "66b1fa6c0a0d9e6652fb4892"
-                            )}
-                            onChange={(e) =>
-                              setPriceModifierObj({
-                                gradeID: "66b1fa6c0a0d9e6652fb4892",
-                                priceModifier: e.target.value,
-                              })
-                            }
-                          />
-                        </div>
-                      </div>
-                      <div className="flex justify-end w-full mt-3">
-                        <Button onClick={onPriceModifierSubmit}>
-                          Save Changes
-                        </Button>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-                </CardFooter>
-              </Card>
-            </div>
+                    </div>
+                    <div className="flex justify-end w-full mt-3">
+                      <Button onClick={onPriceModifierSubmit}>
+                        Save Changes
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </CardFooter>
+            </Card>
+          </div>
 
           <div
             className="filters flex justify-between items-center 
            h-10 -mb-4"
+          >
+            <Tabs
+              defaultValue="all"
+              className=" w-20 h-10 p-1 rounded-md"
+              onValueChange={(value) => setActiveTab(value)}
             >
-              <Tabs
-                defaultValue="all"
-                className=" w-20 h-10 p-1 rounded-md"
-                onValueChange={(value) => setActiveTab(value)}
-              >
-                <TabsList className="bg-[#64748B] bg-opacity-10">
-                  <TabsTrigger
-                    value="A"
-                    className=""
-                    // onClick={() => setActiveTab("TierA")}
-                  >
-                    Tier A
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="B"
-                    // onClick={() => setActiveTab("TierB")}
-                  >
-                    Tier B
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="C"
-                    // onClick={() => setActiveTab("TierC")}
-                  >
-                    Tier C
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="all"
-                    // onClick={() => setActiveTab("All")}
-                  >
-                    All
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
-              <div className="buttons gap-2 h-8 w-50  ">
-                <Button asChild className="  h-8">
-                  <Link href="/dashboard/agents/add-agent">
-                    <CirclePlus className="size-4 mr-1" />
-                    Add Agents
-                  </Link>
-                </Button>
-              </div>
+              <TabsList className="bg-[#64748B] bg-opacity-10">
+                <TabsTrigger
+                  value="A"
+                  className=""
+                  // onClick={() => setActiveTab("TierA")}
+                >
+                  Tier A
+                </TabsTrigger>
+                <TabsTrigger
+                  value="B"
+                  // onClick={() => setActiveTab("TierB")}
+                >
+                  Tier B
+                </TabsTrigger>
+                <TabsTrigger
+                  value="C"
+                  // onClick={() => setActiveTab("TierC")}
+                >
+                  Tier C
+                </TabsTrigger>
+                <TabsTrigger
+                  value="all"
+                  // onClick={() => setActiveTab("All")}
+                >
+                  All
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+            <div className="buttons gap-2 h-8 w-50  ">
+              <Button asChild className="  h-8">
+                <Link href="/dashboard/agents/add-agent">
+                  <CirclePlus className="size-4 mr-1" />
+                  Add Agents
+                </Link>
+              </Button>
             </div>
-            <Tabs className="w-full">
-              <Card x-chunk="dashboard-05-chunk-3">
-                <div className="p-6 flex justify-between items-center">
-                  <CardHeader className="p-0">
-                    <CardTitle className="text-2xl font-semibold">
-                      Agents
-                    </CardTitle>
-                    <CardDescription>
-                      Manage your blogs and view their status performance.
-                    </CardDescription>
-                  </CardHeader>
+          </div>
+          <Tabs className="w-full">
+            <Card x-chunk="dashboard-05-chunk-3">
+              <div className="p-6 flex justify-between items-center">
+                <CardHeader className="p-0">
+                  <CardTitle className="text-2xl font-semibold">
+                    Agents
+                  </CardTitle>
+                  <CardDescription>
+                    Manage your blogs and view their status performance.
+                  </CardDescription>
+                </CardHeader>
 
-                  <div className="relative w-72">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      type="search"
-                      placeholder="Search..."
-                      className="w-full pl-8"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                  </div>
+                <div className="relative w-72">
+                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    type="search"
+                    placeholder="Search..."
+                    className="w-full pl-8"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
                 </div>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>User ID</TableHead>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Tier</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Agency</TableHead>
-                        <TableHead>
-                          <span className="sr-only">Actions</span>
-                        </TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredAgents?.map((agent, index) => {
-                        return (
-                          <TableRow key={index}>
-                            <TableCell>001 </TableCell>
-                            <TableCell className="">
-                              {`${agent.firstName} ${agent.lastName}`}
-                            </TableCell>
-                            <TableCell className="">
-                              <Badge>
-                                Tier {agent.gradeName ? agent.gradeName : ""}
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="">{agent.email}</TableCell>
-                            <TableCell className="">
-                              {agent.agencyName}
-                            </TableCell>
-                            <TableCell>
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button
-                                    aria-haspopup="true"
-                                    size="icon"
-                                    variant="ghost"
-                                  >
-                                    <MoreHorizontal className="h-4 w-4" />
-                                    <span className="sr-only">Toggle menu</span>
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                  <Dialog
-                                    open={isDialogOpen}
-                                    onOpenChange={setIsDialogOpen}
-                                  >
-                                    <DialogTrigger asChild>
-                                      <Button
-                                        className="h-10 w-full"
-                                        variant="ghost"
-                                      >
-                                        Update Tier
-                                      </Button>
-                                    </DialogTrigger>
-                                    <DialogContent className="sm:max-w-[425px]">
-                                      <DialogHeader>
-                                        <DialogTitle>Update Tier</DialogTitle>
-                                        <DialogDescription>
-                                          Update the agent tier from here.
-                                        </DialogDescription>
-                                      </DialogHeader>
-                                      <div className="grid gap-4 py-4">
-                                        <div className="flex items-center gap-4">
-                                          <Label htmlFor="username">
-                                            Agent name:
-                                          </Label>
-                                          <div className="">
-                                            {agent.firstName} {agent.lastName}
-                                          </div>
+              </div>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>User ID</TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Tier</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Agency</TableHead>
+                      <TableHead>
+                        <span className="sr-only">Actions</span>
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredAgents?.map((agent, index) => {
+                      return (
+                        <TableRow key={index}>
+                          <TableCell>001 </TableCell>
+                          <TableCell className="">
+                            {`${agent.firstName} ${agent.lastName}`}
+                          </TableCell>
+                          <TableCell className="">
+                            <Badge>
+                              Tier {agent.gradeName ? agent.gradeName : ""}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="">{agent.email}</TableCell>
+                          <TableCell className="">{agent.agencyName}</TableCell>
+                          <TableCell>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  aria-haspopup="true"
+                                  size="icon"
+                                  variant="ghost"
+                                >
+                                  <MoreHorizontal className="h-4 w-4" />
+                                  <span className="sr-only">Toggle menu</span>
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                <Dialog
+                                  open={isDialogOpen}
+                                  onOpenChange={setIsDialogOpen}
+                                >
+                                  <DialogTrigger asChild>
+                                    <Button
+                                      className="h-10 w-full"
+                                      variant="ghost"
+                                    >
+                                      Update Tier
+                                    </Button>
+                                  </DialogTrigger>
+                                  <DialogContent className="sm:max-w-[425px]">
+                                    <DialogHeader>
+                                      <DialogTitle>Update Tier</DialogTitle>
+                                      <DialogDescription>
+                                        Update the agent tier from here.
+                                      </DialogDescription>
+                                    </DialogHeader>
+                                    <div className="grid gap-4 py-4">
+                                      <div className="flex items-center gap-4">
+                                        <Label htmlFor="username">
+                                          Agent name:
+                                        </Label>
+                                        <div className="">
+                                          {agent.firstName} {agent.lastName}
                                         </div>
-                                        {/* <div className="flex items-center gap-4">
+                                      </div>
+                                      {/* <div className="flex items-center gap-4">
                                           <Label htmlFor="username">
                                             Agent Id:
                                           </Label>
                                           <div className="">{agent.userID}</div>
                                         </div> */}
-                                        <div className="grid grid-cols-4 items-center gap-4">
-                                          <Label
-                                            htmlFor="name"
-                                            className="text-right"
-                                          >
-                                            Tier
-                                          </Label>
-                                          <Select
-                                            onValueChange={(value) =>
-                                              setUpdatedAgentGrade(
-                                                (prevState) => ({
-                                                  ...prevState,
-                                                  gradeID: value,
-                                                  agentID: agent.userID,
-                                                })
-                                              )
-                                            }
-                                          >
-                                            <SelectTrigger className="w-[180px]">
-                                              <SelectValue placeholder="Select a grade" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                              <SelectGroup>
-                                                <SelectItem value="66b1fa300a0d9e6652fb4890">
-                                                  A
-                                                </SelectItem>
-                                                <SelectItem value="66b1fa550a0d9e6652fb4891">
-                                                  B
-                                                </SelectItem>
-                                                <SelectItem value="66b1fa6c0a0d9e6652fb4892">
-                                                  c
-                                                </SelectItem>
-                                              </SelectGroup>
-                                            </SelectContent>
-                                          </Select>
-                                        </div>
-                                      </div>
-                                      <DialogFooter>
-                                        <Button
-                                          type="submit"
-                                          onClick={() => onSubmit()}
+                                      <div className="grid grid-cols-4 items-center gap-4">
+                                        <Label
+                                          htmlFor="name"
+                                          className="text-right"
                                         >
-                                          Save changes
-                                        </Button>
-                                      </DialogFooter>
-                                    </DialogContent>
-                                  </Dialog>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
-            </Tabs>
-          </div>
-        </main>
-        <Toaster />
-      </div>
-    </AdminLayout>
+                                          Tier
+                                        </Label>
+                                        <Select
+                                          onValueChange={(value) =>
+                                            setUpdatedAgentGrade(
+                                              (prevState) => ({
+                                                ...prevState,
+                                                gradeID: value,
+                                                agentID: agent.userID,
+                                              })
+                                            )
+                                          }
+                                        >
+                                          <SelectTrigger className="w-[180px]">
+                                            <SelectValue placeholder="Select a grade" />
+                                          </SelectTrigger>
+                                          <SelectContent>
+                                            <SelectGroup>
+                                              <SelectItem value="66b1fa300a0d9e6652fb4890">
+                                                A
+                                              </SelectItem>
+                                              <SelectItem value="66b1fa550a0d9e6652fb4891">
+                                                B
+                                              </SelectItem>
+                                              <SelectItem value="66b1fa6c0a0d9e6652fb4892">
+                                                c
+                                              </SelectItem>
+                                            </SelectGroup>
+                                          </SelectContent>
+                                        </Select>
+                                      </div>
+                                    </div>
+                                    <DialogFooter>
+                                      <Button
+                                        type="submit"
+                                        onClick={() => onSubmit()}
+                                      >
+                                        Save changes
+                                      </Button>
+                                    </DialogFooter>
+                                  </DialogContent>
+                                </Dialog>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </Tabs>
+        </div>
+      </main>
+      <Toaster />
+    </div>
   );
 }

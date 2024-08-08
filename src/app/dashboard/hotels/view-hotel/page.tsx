@@ -11,7 +11,6 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import facilitiesIcon from "../../../../../data/facilities.json";
 import * as Icons from "lucide-react";
-import AdminLayout from "@/components/Layout/AdminLayout";
 import { CustomIcons } from "@/utils/icons";
 
 import {
