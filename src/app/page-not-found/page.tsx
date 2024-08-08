@@ -26,7 +26,7 @@ export default function Page() {
               </p>
             </div>
             <Button
-              className="w-1/4 bg-blue-700 hover:bg-blue-900 mt-10 py-4"
+              className="w-1/4  mt-10 py-4"
               onClick={() => (window.location.href = "/")}
             >
               Back to Home

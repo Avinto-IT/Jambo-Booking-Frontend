@@ -20,7 +20,10 @@ export default async function hotelRegisterHandler(
     email,
     contactNumber,
     dateOfBirth,
+    address,
+    toursCompleted,
   } = req.body;
+
   if (!agencyName) {
     return res.status(400).json({ error: "Agency name is required" });
   }
@@ -42,7 +45,14 @@ export default async function hotelRegisterHandler(
   if (!dateOfBirth) {
     return res.status(400).json({ error: "Date of birth is required" });
   }
-
+  if (!address) {
+    return res.status(400).json({ error: "Address is required" });
+  }
+  if (!toursCompleted) {
+    return res.status(400).json({
+      error: "Number of tours completed in the previous year is required",
+    });
+  }
   try {
     const emailCheck = await prisma.user.findUnique({
       where: {
@@ -65,12 +75,14 @@ export default async function hotelRegisterHandler(
         contactNumber,
         role: "agent", // Hard-coded role value
         dateOfBirth: new Date(dateOfBirth),
+        address,
+        toursCompleted,
       },
     });
 
     return res.status(200).json({
-      message:
-        "Your account has been added to the registration queue. You will receive an email when it is successfully registered.",
+      user,
+      message: "Your agent account has been registered successfully",
     });
   } catch (error) {
     console.error("Agent registration error:", error);

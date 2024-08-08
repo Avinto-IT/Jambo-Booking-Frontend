@@ -59,7 +59,7 @@ const AdminLayout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <div className="flex min-h-screen">
       <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
-        <nav className="flex flex-col items-center gap-4 px-2 sm:py-4">
+        <nav className="navbar-override flex flex-col items-center gap-4 px-2 sm:py-4">
           <div className="flex items-center mb-6">
             <Image
               src="/images/minimalLogo.svg"
@@ -182,7 +182,7 @@ const AdminLayout: React.FC<LayoutProps> = ({ children }) => {
             </Tooltip>
           </TooltipProvider>
         </nav>
-        <nav className="mt-auto flex flex-col items-center gap-4 px-2 sm:py-4">
+        <nav className="navbar-override mt-auto flex flex-col items-center gap-4 px-2 sm:py-4">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -201,7 +201,7 @@ const AdminLayout: React.FC<LayoutProps> = ({ children }) => {
           </TooltipProvider>
         </nav>
       </aside>
-      <main className="py-4 flex bg-gray-100 flex-col flex-1 ml-14">
+      <main className="py-4 flex bg-[#F1F5F9] bg-opacity-40 flex-col flex-1 ml-14">
         <div className="px-6 w-full flex justify-between">
           <Breadcrumb>
             <BreadcrumbList>

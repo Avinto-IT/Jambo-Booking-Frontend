@@ -20,11 +20,13 @@ export const verifyToken = (
       .status(500)
       .json({ error: "Internal server error: SECRET_KEY is not set" });
   }
+
   try {
     const decoded = jwt.verify(token, SECRET_KEY);
     (req as any).user = decoded;
     next();
   } catch (error) {
+    console.error("Token verification error:", error);
     return res
       .status(401)
       .json({ error: "You are not authorized to perform the action" });

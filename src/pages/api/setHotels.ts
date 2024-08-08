@@ -10,6 +10,7 @@ async function addHotelHandler(req: NextApiRequest, res: NextApiResponse) {
   }
 
   let {
+    userID,
     name,
     address,
     locationID,
@@ -23,7 +24,9 @@ async function addHotelHandler(req: NextApiRequest, res: NextApiResponse) {
     discount,
     contactDetails,
   } = req.body;
-
+  if (!userID) {
+    return res.status(400).json({ error: "User Id is not provided" });
+  }
   if (!name) {
     return res.status(400).json({ error: "Missing or incorrect field: name" });
   }
@@ -102,7 +105,7 @@ async function addHotelHandler(req: NextApiRequest, res: NextApiResponse) {
         location: {
           connect: { locationID: locationID },
         },
-        // locationID,
+        addedDate: new Date(),
         facilities,
         description,
         houseRules,
@@ -112,6 +115,12 @@ async function addHotelHandler(req: NextApiRequest, res: NextApiResponse) {
         rooms,
         discount,
         contactDetails,
+        isApproved: "accepted",
+        user: {
+          connect: {
+            userID: userID,
+          },
+        },
       },
     });
     res.status(201).json(hotel);

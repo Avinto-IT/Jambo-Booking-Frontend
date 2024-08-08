@@ -95,7 +95,7 @@ function BlogLanding() {
       <div className="mainbody flex  ">
         {limitedData.length > 0 && (
           <div
-            className="left w-1/2 mr-3"
+            className="left w-1/2 mr-3 hover:cursor-pointer"
             onClick={() => handleBlogClick(limitedData[0].ID)}
           >
             <div className="relative overflow-hidden rounded-md">
@@ -123,7 +123,7 @@ function BlogLanding() {
             limitedData.slice(1, 3).map((blog) => (
               <div
                 key={blog.POST_ID}
-                className="one h-1/2 flex pb-3 mb-3"
+                className="one h-1/2 flex pb-3 mb-3 hover:cursor-pointer"
                 onClick={() => handleBlogClick(blog.ID)}
               >
                 <div className="w-1/2 mr-5 relative overflow-hidden rounded-md">

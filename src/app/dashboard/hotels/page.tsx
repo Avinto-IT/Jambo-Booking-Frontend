@@ -38,6 +38,7 @@ import { Hotel } from "@/utils/types";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { toast, Toaster } from "sonner";
+import { dateFormatter } from "@/utils/functions";
 
 export default function HotelsDashboard() {
   const [hotels, setHotels] = useState<Hotel[]>([]);
@@ -114,182 +115,170 @@ export default function HotelsDashboard() {
       toast.message("Error deleting hotel");
     }
   };
-
+  console.log(hotels);
   return (
-    <AdminLayout>
-      <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-        <Tabs defaultValue="all">
-          <div className="flex items-center">
-            <TabsList>
-              <TabsTrigger value="requested">Requested</TabsTrigger>
-              <TabsTrigger value="pending">Pending</TabsTrigger>
-              <TabsTrigger value="rejected">Rejected</TabsTrigger>
-              <TabsTrigger value="approved">Approved</TabsTrigger>
-              <TabsTrigger value="all">All</TabsTrigger>
-            </TabsList>
-            <div className="ml-auto flex items-center gap-2">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-7 gap-1 py-2"
-                  >
-                    <ListFilter className="h-3.5 w-3.5" />
-                    <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                      Filter
-                    </span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>Filter by</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuCheckboxItem
-                    defaultChecked
-                    onClick={() => setActiveTab("All")}
-                  >
-                    All
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    onClick={() => setActiveTab("Active")}
-                  >
-                    Active
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    onClick={() => setActiveTab("Inactive")}
-                  >
-                    Inactive
-                  </DropdownMenuCheckboxItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              <Button size="sm" className="h-7 gap-1 py-2 bg-blue-600">
-                <PlusCircle className="h-3.5 w-3.5" />
-                <Link
-                  href="/dashboard/hotels/add-hotel"
-                  className="sr-only sm:not-sr-only sm:whitespace-nowrap"
+    <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
+      <Tabs defaultValue="all">
+        <div className="flex items-center">
+          <TabsList>
+            <TabsTrigger value="requested">Requested</TabsTrigger>
+            <TabsTrigger value="pending">Pending</TabsTrigger>
+            <TabsTrigger value="rejected">Rejected</TabsTrigger>
+            <TabsTrigger value="approved">Approved</TabsTrigger>
+            <TabsTrigger value="all">All</TabsTrigger>
+          </TabsList>
+          <div className="ml-auto flex items-center gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="h-7 gap-1 py-2">
+                  <ListFilter className="h-3.5 w-3.5" />
+                  <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                    Filter
+                  </span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Filter by</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuCheckboxItem
+                  defaultChecked
+                  onClick={() => setActiveTab("All")}
                 >
-                  Add Hotel
-                </Link>
-              </Button>
-            </div>
+                  All
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem
+                  onClick={() => setActiveTab("Active")}
+                >
+                  Active
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem
+                  onClick={() => setActiveTab("Inactive")}
+                >
+                  Inactive
+                </DropdownMenuCheckboxItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <Button size="sm" className="h-7 gap-1 py-2 ">
+              <PlusCircle className="h-3.5 w-3.5" />
+              <Link
+                href="/dashboard/hotels/add-hotel"
+                className="sr-only sm:not-sr-only sm:whitespace-nowrap"
+              >
+                Add Hotel
+              </Link>
+            </Button>
           </div>
-          <TabsContent value="all">
-            <Card x-chunk="dashboard-06-chunk-0">
-              <div className="p-6 flex justify-between ">
-                <CardHeader className="p-0">
-                  <CardTitle className="text-2xl font-semibold">
-                    Hotels
-                  </CardTitle>
-                  <CardDescription>
-                    Manage your hotel and view their overall details.
-                  </CardDescription>
-                </CardHeader>
+        </div>
+        <TabsContent value="all">
+          <Card x-chunk="dashboard-06-chunk-0">
+            <div className="p-6 flex justify-between ">
+              <CardHeader className="p-0">
+                <CardTitle className="text-2xl font-semibold">Hotels</CardTitle>
+                <CardDescription>
+                  Manage your hotel and view their overall details.
+                </CardDescription>
+              </CardHeader>
 
-                <div className="relative ml-auto flex-1 md:grow-0">
-                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    type="search"
-                    placeholder="Search..."
-                    className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]"
-                    value={searchValue}
-                    onChange={(event) => setSearchValue(event.target.value)}
-                  />
-                </div>
+              <div className="relative ml-auto flex-1 md:grow-0">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="search"
+                  placeholder="Search..."
+                  className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]"
+                  value={searchValue}
+                  onChange={(event) => setSearchValue(event.target.value)}
+                />
               </div>
+            </div>
 
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Hotel ID</TableHead>
-                      <TableHead>Hotel Name</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="hidden md:table-cell">
-                        Location
-                      </TableHead>
-                      <TableHead className="hidden md:table-cell">
-                        Listed at
-                      </TableHead>
-                      <TableHead>
-                        <span className="sr-only">Actions</span>
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredData().map((hotel, index) => {
-                      return (
-                        <TableRow key={index}>
-                          <TableCell className="font-medium">
-                            {hotel.hotelID}
-                          </TableCell>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Hotel ID</TableHead>
+                    <TableHead>Hotel Name</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="hidden md:table-cell">
+                      Location
+                    </TableHead>
+                    <TableHead className="hidden md:table-cell">
+                      Listed at
+                    </TableHead>
+                    <TableHead>
+                      <span className="sr-only">Actions</span>
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredData().map((hotel, index) => {
+                    return (
+                      <TableRow key={index}>
+                        <TableCell className="font-medium">
+                          {hotel.hotelID}
+                        </TableCell>
 
-                          <TableCell className="font-medium">
-                            {hotel.name}
-                          </TableCell>
-                          <TableCell>
-                            <Badge
-                              variant={
-                                hotel.isRunning ? "Approved" : "Rejected"
-                              }
-                            >
-                              {hotel.isRunning ? "Active" : "Inactive"}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>{hotel.address}</TableCell>
-                          <TableCell className="hidden md:table-cell">
-                            2023-07-12 10:42 AM
-                          </TableCell>
-                          <TableCell>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button
-                                  aria-haspopup="true"
-                                  size="icon"
-                                  variant="ghost"
-                                >
-                                  <MoreHorizontal className="h-4 w-4" />
-                                  <span className="sr-only">Toggle menu</span>
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                <DropdownMenuItem
-                                  onClick={() => handleViewClick(hotel.hotelID)}
-                                >
-                                  View
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  onClick={() => handleEditClick(hotel.hotelID)}
-                                >
-                                  Edit
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  onClick={() =>
-                                    handleDeleteClick(hotel.hotelID)
-                                  }
-                                >
-                                  Delete
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              </CardContent>
-              {/* <CardFooter>
+                        <TableCell className="font-medium">
+                          {hotel.name}
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant={hotel.isRunning ? "Approved" : "Rejected"}
+                          >
+                            {hotel.isRunning ? "Active" : "Inactive"}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>{hotel.address}</TableCell>
+                        <TableCell className="hidden md:table-cell">
+                          {dateFormatter(hotel.addedDate)}
+                        </TableCell>
+                        <TableCell>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                aria-haspopup="true"
+                                size="icon"
+                                variant="ghost"
+                              >
+                                <MoreHorizontal className="h-4 w-4" />
+                                <span className="sr-only">Toggle menu</span>
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                              <DropdownMenuItem
+                                onClick={() => handleViewClick(hotel.hotelID)}
+                              >
+                                View
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => handleEditClick(hotel.hotelID)}
+                              >
+                                Edit
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => handleDeleteClick(hotel.hotelID)}
+                              >
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </CardContent>
+            {/* <CardFooter>
                 <div className="text-xs text-muted-foreground">
                   Showing <strong>1-10</strong> of <strong>32</strong> products
                 </div>
               </CardFooter> */}
-            </Card>
-          </TabsContent>
-        </Tabs>
-        <Toaster />
-      </main>
-    </AdminLayout>
+          </Card>
+        </TabsContent>
+      </Tabs>
+      <Toaster />
+    </main>
   );
 }

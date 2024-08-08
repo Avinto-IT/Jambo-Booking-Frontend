@@ -389,7 +389,6 @@ export default function CalendarPricing() {
                 </Button>
                 <Button
                   onClick={handleSubmit}
-                  className="bg-blue-600 hover:bg-blue-800 "
                   disabled={
                     selectedHotel && selectedRoom && date && price
                       ? false

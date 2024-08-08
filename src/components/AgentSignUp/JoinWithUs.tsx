@@ -4,9 +4,13 @@ import joinus from "../../../public/images/register/CTA_section.svg";
 import { Button } from "../ui/button";
 
 interface JoinWithUsProp {
-  buttonName: string;
+  // buttonName: string;
 }
-const JoinWithUs: React.FC<JoinWithUsProp> = ({ buttonName }) => {
+const JoinWithUs: React.FC<JoinWithUsProp> = (
+  {
+    // buttonName
+  }
+) => {
   return (
     <div className=" relative max-h-fit -space-y-40">
       <div className="relative w-full h-fit flex items-center">
@@ -21,9 +25,9 @@ const JoinWithUs: React.FC<JoinWithUsProp> = ({ buttonName }) => {
             clients. Streamline your booking process with our user-friendly
             interface, dedicated support, and exclusive B2B rates.
           </p>
-          <Button className="  w-40 h-12 bg-blue-600 hover:bg-blue-800">
-            SignUp as {buttonName}
-          </Button>
+          {/* <Button className="  w-40 h-12 bg-blue-600 hover:bg-blue-800">
+            Sign up as {buttonName}
+          </Button> */}
         </div>
       </div>
     </div>

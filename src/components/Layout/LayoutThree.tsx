@@ -21,7 +21,7 @@ interface LayoutThreeProps {
   children: ReactNode;
   title?: string;
   description: string;
-  buttonName: string;
+  // buttonName: string;
   imgTitle: string;
 }
 
@@ -40,7 +40,7 @@ const LayoutThree: React.FC<LayoutThreeProps> = ({
   title = "My App",
   imgTitle,
   description,
-  buttonName,
+  // buttonName,
 }) => {
   return (
     <div className="min-h-screen w-full flex flex-col">
@@ -79,7 +79,7 @@ const LayoutThree: React.FC<LayoutThreeProps> = ({
         <TopImgSignUp
           title={imgTitle}
           description={description}
-          buttonName={buttonName}
+          // buttonName={buttonName}
           topimg={TopImages()}
         />
       </header>
