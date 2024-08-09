@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
 import { verifyToken } from "@/lib/middleware";
-import { differenceInCalendarDays } from "date-fns";
+import { differenceInCalendarDays, isWithinInterval } from "date-fns";
 
 const prisma = new PrismaClient();
 
@@ -45,6 +45,7 @@ async function bookHotelRoomHandler(req: NextApiRequest, res: NextApiResponse) {
     // Check if the user exists
     const user = await prisma.user.findUnique({
       where: { userID },
+      include: { grade: true },
     });
     if (!user) {
       return res.status(404).json({ error: "User not found" });
@@ -52,6 +53,10 @@ async function bookHotelRoomHandler(req: NextApiRequest, res: NextApiResponse) {
     if (user.role !== "agent") {
       return res.status(403).json({ error: "Only agents can book rooms" });
     }
+
+    const priceModifier = user.grade?.priceModifier
+      ? 1 - parseFloat(user.grade.priceModifier) / 100
+      : 1.0;
 
     // Check if the hotel exists
     const hotel = await prisma.hotel.findUnique({
@@ -83,7 +88,7 @@ async function bookHotelRoomHandler(req: NextApiRequest, res: NextApiResponse) {
       }
       const beds = room.beds;
       const roomCapacity = room.capacity;
-      const roomPrice = room.price;
+      const roomPrice = room.price * priceModifier;
 
       const totalRoomPrice = roomPrice * info.rooms * numberOfDaysBooked;
       totalBookingPrice += totalRoomPrice;
@@ -96,6 +101,23 @@ async function bookHotelRoomHandler(req: NextApiRequest, res: NextApiResponse) {
         roomPrice,
       };
     });
+    if (hotel.discount) {
+      const { startDate, endDate, discountPercentage } = hotel.discount as {
+        startDate: string;
+        endDate: string;
+        discountPercentage: string;
+      };
+
+      const isInDiscountPeriod = isWithinInterval(new Date(), {
+        start: new Date(startDate),
+        end: new Date(endDate),
+      });
+
+      if (isInDiscountPeriod) {
+        const discount = parseFloat(discountPercentage);
+        totalBookingPrice -= (totalBookingPrice * discount) / 100;
+      }
+    }
 
     // Create the booking
     const booking = await prisma.booking.create({
