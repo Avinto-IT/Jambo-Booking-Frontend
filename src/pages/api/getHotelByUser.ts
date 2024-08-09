@@ -41,7 +41,10 @@ export default async function getHotelByUserHandler(
 
         // Include discount only if today is within the range
         if (!isInDiscountPeriod) {
-          hotelData = { ...hotelData, discount: null };
+          hotelData = {
+            ...hotelData,
+            discount: { startDate: null, endDate: null, discountPercentage: 0 },
+          };
         }
       }
 

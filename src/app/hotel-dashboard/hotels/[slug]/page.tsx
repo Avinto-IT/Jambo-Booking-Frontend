@@ -27,7 +27,7 @@ interface Hotel {
   facilities: { name: string; subFacilities: { name: string }[] }[];
   rooms: Room[];
   houseRules: { type: string; details: string }[];
-  discount: number;
+  discount: { startDate: string; endDate: string; discountPercentage: string };
   hotelID: string;
 }
 

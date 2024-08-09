@@ -202,7 +202,9 @@ const ViewHotel: React.FC<{ hotel: Hotel }> = ({ hotel }) => {
   }, 0);
 
   const finalPriceBeforeDiscount = totalPrice * numberOfDays;
-  const discountAmount = (finalPriceBeforeDiscount * hotel.discount) / 100;
+  const discountAmount =
+    (finalPriceBeforeDiscount * parseFloat(hotel.discount.discountPercentage)) /
+    100;
   const finalPrice = finalPriceBeforeDiscount - discountAmount;
 
   const handleSubmit = () => {
@@ -809,7 +811,8 @@ const ViewHotel: React.FC<{ hotel: Hotel }> = ({ hotel }) => {
                           <div className="flex justify-between">
                             <span>Discount </span>
                             <span className="text-[#10B981]">
-                              -${discountAmount.toFixed(0)} | {hotel.discount}%
+                              -${discountAmount.toFixed(0)} |{" "}
+                              {hotel.discount.discountPercentage}%
                             </span>
                           </div>
                         )}

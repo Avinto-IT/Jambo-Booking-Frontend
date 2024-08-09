@@ -29,7 +29,7 @@ export interface Hotel {
   facilities: { name: string; subFacilities: { name: string }[] }[];
   rooms: Room[];
   houseRules: { type: string; details: string }[];
-  discount: number;
+  discount: { startDate: string; endDate: string; discountPercentage: string };
   hotelID: string;
 }
 
@@ -50,10 +50,16 @@ function ClientViewHotel() {
   useEffect(() => {
     const fetchHotels = async () => {
       try {
-        const response = await fetch(`/api/getHotelById?id=${id}`);
+        const response = await fetch(`/api/getHotelById?id=${id}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
         const data = await response.json();
         setHotel(data.hotel);
-        console.log(data.hotel, "hotel data");
+        // console.log(data.hotel, "hotel data");
       } catch (error) {
         console.log("Error fetching hotels:", error);
       }
