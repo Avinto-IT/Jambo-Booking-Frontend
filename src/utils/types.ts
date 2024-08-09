@@ -33,7 +33,11 @@ export interface Hotel {
   isRunning: boolean;
   isApproved: string;
   rooms: Room[];
-  discount: number;
+  discount: {
+    startDate: string;
+    endDate: string;
+    discountPercentage: string;
+  };
 }
 
 export interface Booking {

@@ -27,6 +27,8 @@ import { toast, Toaster } from "sonner";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Separator } from "@radix-ui/react-dropdown-menu";
+import { differenceInCalendarDays } from "date-fns";
+
 interface Bed {
   bedType: string;
   numberOfBeds: string;
@@ -58,9 +60,9 @@ export default function BookingDetails({
   }, [params.slug]);
 
   if (!booking) return <>Loading...</>;
-  const daysBooked = calculateDaysBetweenDates(
-    booking?.bookingStartDate,
-    booking?.bookingEndDate
+  const daysBooked = differenceInCalendarDays(
+    booking?.bookingEndDate,
+    booking?.bookingStartDate
   );
 
   const handleConfirm = async () => {

@@ -24,7 +24,7 @@ async function UpdateBookingStatusHandler(
     primaryImageLink,
     isRunning,
     rooms,
-    discount,
+    // discount,
     contactDetails,
   } = req.body;
 
@@ -97,9 +97,9 @@ async function UpdateBookingStatusHandler(
       .status(400)
       .json({ error: "Atleast one room type should be included." });
   }
-  if (!discount) {
-    discount = 0.0;
-  }
+  // if (!discount) {
+  //   discount = 0.0;
+  // }
 
   try {
     // Validate admin email
@@ -137,7 +137,7 @@ async function UpdateBookingStatusHandler(
         primaryImageLink: primaryImageLink,
         isRunning: isRunning,
         rooms: rooms,
-        discount: discount,
+        // discount: discount,
         contactDetails: contactDetails,
       },
     });
