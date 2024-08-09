@@ -5,7 +5,7 @@ import { Agent, Booking, Hotel, UserDetails } from "@/utils/types";
 import Cookies from "js-cookie";
 import withAuth from "@/lib/loginAuth";
 import HotelDashboard from "@/components/dashboard/HotelDashboard";
-import HotelLayout from "@/components/Layout/HotelLayout";
+import { Toaster } from "sonner";
 
 const Dashboard: React.FC = ({}) => {
   const [hotels, setHotels] = useState<Hotel[]>([]);
@@ -81,9 +81,10 @@ const Dashboard: React.FC = ({}) => {
   }, []);
 
   return (
-    <HotelLayout>
+    <>
+      <Toaster />
       <HotelDashboard hotels={hotels} agents={agents} bookings={bookings} />
-    </HotelLayout>
+    </>
   );
 };
 

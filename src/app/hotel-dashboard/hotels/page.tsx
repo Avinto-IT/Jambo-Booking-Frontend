@@ -126,7 +126,7 @@ export default function HotelsDashboard() {
   }
 
   return (
-    <HotelLayout>
+    <>
       {hasMultipleHotel ? (
         <HasMultipleHotel
           hotels={hotels}
@@ -143,6 +143,6 @@ export default function HotelsDashboard() {
           hasHotel={hasHotel}
         />
       )}
-    </HotelLayout>
+    </>
   );
 }
