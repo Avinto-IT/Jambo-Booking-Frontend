@@ -4,7 +4,6 @@ import React, { ReactNode } from "react";
 import facebook from "../../../public/images/footer/Facebook.svg";
 import twitter from "../../../public/images/footer/Twitter.svg";
 import instagram from "../../../public/images/footer/Instagram.svg";
-import { InstagramLogo, XLogo, FacebookLogo } from "@phosphor-icons/react";
 
 import Image from "next/image";
 import Link from "next/link";

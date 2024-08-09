@@ -110,56 +110,54 @@ export default function Page() {
   }, []);
 
   return (
-    <AgentLayout>
-      <Card className="w-10/12 text-[#020617] space-y-5 pb-5">
-        <CardHeader className="border-b-2 w-full">
-          <CardTitle className="text-2xl font-semibold leading-8">
-            Settings
-          </CardTitle>
-          <CardDescription className="">
-            Manage your account settings and set e-mail preferences.
-          </CardDescription>
-        </CardHeader>
-        <div className="w-full flex pr-32 gap-8 pb-1.5 ">
-          <div className="w-1/4 text-sm leading-5 font-medium space-y-2">
-            <div
-              className="py-2 px-4 gap-2.5 rounded-md hover:bg-[#F1F5F9]"
-              onClick={() => setCurrentView("profile")}
-            >
-              Profile
-            </div>
-            <div
-              className={`py-2 px-4 gap-2.5 rounded-md  hover:bg-[#F1F5F9]`}
-              onClick={() => setCurrentView("privacyDetails")}
-            >
-              Privacy Details
-            </div>
-            <Dialog>
-              <DialogTrigger className="w-full flex justify-start py-2 px-4 gap-2.5 rounded-md hover:bg-[#F1F5F9] ">
-                Logout
-              </DialogTrigger>
-              <DialogContent className="px-10">
-                <DialogHeader className="gap-1  py-4 px-6">
-                  <DialogTitle className="text-3xl ">Logout</DialogTitle>
-                  <DialogDescription className="text-[#64748B]">
-                    Are you sure you would like to logout?
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="flex outlline  outline-black gap-2">
-                  <Button variant="outline">Discard</Button>
-                  {/* <Button asChild className="bg-blue-700 hover:bg-blue-800"> */}
-                  <Button asChild variant="default">
-                    <Link href="/login">Logout</Link>
-                  </Button>
-                </div>
-              </DialogContent>
-            </Dialog>
+    <Card className="w-10/12 text-[#020617] space-y-5 pb-5">
+      <CardHeader className="border-b-2 w-full">
+        <CardTitle className="text-2xl font-semibold leading-8">
+          Settings
+        </CardTitle>
+        <CardDescription className="">
+          Manage your account settings and set e-mail preferences.
+        </CardDescription>
+      </CardHeader>
+      <div className="w-full flex pr-32 gap-8 pb-1.5 ">
+        <div className="w-1/4 text-sm leading-5 font-medium space-y-2">
+          <div
+            className="py-2 px-4 gap-2.5 rounded-md hover:bg-[#F1F5F9]"
+            onClick={() => setCurrentView("profile")}
+          >
+            Profile
           </div>
-
-          {currentView === "profile" && <Profile agent={agent} />}
-          {currentView === "privacyDetails" && <PrivacyDetails agent={agent} />}
+          <div
+            className={`py-2 px-4 gap-2.5 rounded-md  hover:bg-[#F1F5F9]`}
+            onClick={() => setCurrentView("privacyDetails")}
+          >
+            Privacy Details
+          </div>
+          <Dialog>
+            <DialogTrigger className="w-full flex justify-start py-2 px-4 gap-2.5 rounded-md hover:bg-[#F1F5F9] ">
+              Logout
+            </DialogTrigger>
+            <DialogContent className="px-10">
+              <DialogHeader className="gap-1  py-4 px-6">
+                <DialogTitle className="text-3xl ">Logout</DialogTitle>
+                <DialogDescription className="text-[#64748B]">
+                  Are you sure you would like to logout?
+                </DialogDescription>
+              </DialogHeader>
+              <div className="flex outlline  outline-black gap-2">
+                <Button variant="outline">Discard</Button>
+                {/* <Button asChild className="bg-blue-700 hover:bg-blue-800"> */}
+                <Button asChild variant="default">
+                  <Link href="/login">Logout</Link>
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
-      </Card>
-    </AgentLayout>
+
+        {currentView === "profile" && <Profile agent={agent} />}
+        {currentView === "privacyDetails" && <PrivacyDetails agent={agent} />}
+      </div>
+    </Card>
   );
 }

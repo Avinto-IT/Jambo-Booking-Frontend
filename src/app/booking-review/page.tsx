@@ -36,6 +36,8 @@ interface BookingData {
 export default function BookingReviewPage() {
   const [bookingData, setBookingData] = useState<BookingData | null>(null);
   const [hotel, setHotel] = useState<Hotel | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+
   const router = useRouter();
 
   const [request, setRequest] = useState<string>("");
@@ -51,14 +53,12 @@ export default function BookingReviewPage() {
     }
   };
 
-  let token: string | null = null;
-
   const handleCancel = () => {
     router.push("/all-hotels");
   };
 
   useEffect(() => {
-    token = localStorage.getItem("token");
+    setToken(localStorage.getItem("token"));
   }, []);
 
   const handleSubmit = async () => {

@@ -70,7 +70,11 @@ export default async function getHotelByIdHandler(
 
       // Exclude the discount if today is not within the range
       if (!isInDiscountPeriod) {
-        hotel.discount = null;
+        hotel.discount = {
+          startDate: null,
+          endDate: null,
+          discountPercentage: 0,
+        };
       }
     }
     const rooms = hotel.rooms as Array<{

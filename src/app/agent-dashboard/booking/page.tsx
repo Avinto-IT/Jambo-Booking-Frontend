@@ -191,198 +191,189 @@ export default function AgentBookings() {
     router.push(`booking/${bookingID}`);
   };
   return (
-    <AgentLayout>
-      <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-        <Tabs defaultValue="all">
-          <div className="flex items-center">
-            <TabsList>
-              <TabsTrigger
-                value="requested"
-                onClick={() => setActiveTab("Requested")}
-              >
-                Requested
-              </TabsTrigger>
-              <TabsTrigger
-                value="pending"
-                onClick={() => setActiveTab("Pending")}
-              >
-                Pending
-              </TabsTrigger>
-              <TabsTrigger
-                value="rejected"
-                onClick={() => setActiveTab("Rejected")}
-              >
-                Rejected
-              </TabsTrigger>
-              <TabsTrigger
-                value="approved"
-                onClick={() => setActiveTab("Accepted")}
-              >
-                Approved
-              </TabsTrigger>
-              <TabsTrigger value="all" onClick={() => setActiveTab("All")}>
-                All
-              </TabsTrigger>
-            </TabsList>
-            <div className="ml-auto flex items-center gap-2">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-7 gap-1 py-2"
-                  >
-                    <ListFilter className="h-3.5 w-3.5" />
-                    <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                      Filter
-                    </span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>Filter by</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuCheckboxItem
-                    defaultChecked
-                    onClick={() => setActiveTab("all")}
-                  >
-                    All
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    onClick={() => setActiveTab("accepted")}
-                  >
-                    Accepted
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    onClick={() => setActiveTab("requested")}
-                  >
-                    Requested
-                  </DropdownMenuCheckboxItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              <Button size="sm" className="h-7 gap-1 py-2">
-                <PlusCircle className="h-3.5 w-3.5" />
-                <Link
-                  href="/agent-dashboard/booking/add-booking"
-                  className="sr-only sm:not-sr-only sm:whitespace-nowrap"
+    <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
+      <Tabs defaultValue="all">
+        <div className="flex items-center">
+          <TabsList>
+            <TabsTrigger
+              value="requested"
+              onClick={() => setActiveTab("Requested")}
+            >
+              Requested
+            </TabsTrigger>
+            <TabsTrigger
+              value="pending"
+              onClick={() => setActiveTab("Pending")}
+            >
+              Pending
+            </TabsTrigger>
+            <TabsTrigger
+              value="rejected"
+              onClick={() => setActiveTab("Rejected")}
+            >
+              Rejected
+            </TabsTrigger>
+            <TabsTrigger
+              value="approved"
+              onClick={() => setActiveTab("Accepted")}
+            >
+              Approved
+            </TabsTrigger>
+            <TabsTrigger value="all" onClick={() => setActiveTab("All")}>
+              All
+            </TabsTrigger>
+          </TabsList>
+          <div className="ml-auto flex items-center gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="h-7 gap-1 py-2">
+                  <ListFilter className="h-3.5 w-3.5" />
+                  <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                    Filter
+                  </span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Filter by</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuCheckboxItem
+                  defaultChecked
+                  onClick={() => setActiveTab("all")}
                 >
-                  Add Booking
-                </Link>
-              </Button>
-            </div>
+                  All
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem
+                  onClick={() => setActiveTab("accepted")}
+                >
+                  Accepted
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem
+                  onClick={() => setActiveTab("requested")}
+                >
+                  Requested
+                </DropdownMenuCheckboxItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <Button size="sm" className="h-7 gap-1 py-2">
+              <PlusCircle className="h-3.5 w-3.5" />
+              <Link
+                href="/agent-dashboard/booking/add-booking"
+                className="sr-only sm:not-sr-only sm:whitespace-nowrap"
+              >
+                Add Booking
+              </Link>
+            </Button>
           </div>
-          <TabsContent value="all">
-            <Card x-chunk="dashboard-06-chunk-0">
-              <div className="p-6 flex justify-between ">
-                <CardHeader className="p-0">
-                  <CardTitle className="text-2xl font-semibold">
-                    Bookings
-                  </CardTitle>
-                  <CardDescription>
-                    Manage your booking and view their overall details.
-                  </CardDescription>
-                </CardHeader>
+        </div>
+        <TabsContent value="all">
+          <Card x-chunk="dashboard-06-chunk-0">
+            <div className="p-6 flex justify-between ">
+              <CardHeader className="p-0">
+                <CardTitle className="text-2xl font-semibold">
+                  Bookings
+                </CardTitle>
+                <CardDescription>
+                  Manage your booking and view their overall details.
+                </CardDescription>
+              </CardHeader>
 
-                <div className="relative ml-auto flex-1 md:grow-0">
-                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    type="search"
-                    placeholder="Search..."
-                    className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]"
-                    value={searchValue}
-                    onChange={(event) => setSearchValue(event.target.value)}
-                  />
-                </div>
+              <div className="relative ml-auto flex-1 md:grow-0">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="search"
+                  placeholder="Search..."
+                  className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]"
+                  value={searchValue}
+                  onChange={(event) => setSearchValue(event.target.value)}
+                />
               </div>
+            </div>
 
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>
-                        <span className="sr-only">Hotel Image</span>
-                      </TableHead>
-                      <TableHead>Hotel Name</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Agent Name</TableHead>
-                      <TableHead>Check In</TableHead>
-                      <TableHead>Check Out</TableHead>
-                      <TableHead>
-                        <span className="sr-only">Actions</span>
-                      </TableHead>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>
+                      <span className="sr-only">Hotel Image</span>
+                    </TableHead>
+                    <TableHead>Hotel Name</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Agent Name</TableHead>
+                    <TableHead>Check In</TableHead>
+                    <TableHead>Check Out</TableHead>
+                    <TableHead>
+                      <span className="sr-only">Actions</span>
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredData().map((booking, index) => (
+                    <TableRow key={index}>
+                      <TableCell className="relative max-w-16">
+                        <div className="min-h-16 min-w-16 ">
+                          <Image
+                            src={booking.hotel.primaryImageLink}
+                            alt={""}
+                            fill
+                            className="rounded-[0.5rem] p-2 object-fit"
+                          />
+                        </div>
+                      </TableCell>
+
+                      <TableCell className="font-medium">
+                        {booking.hotel?.name}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            booking.status === "accepted"
+                              ? "Approved"
+                              : "Requested"
+                          }
+                        >
+                          {booking.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {agent?.firstName} {agent?.lastName}
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        {formatDate(booking.bookingStartDate)}
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        {formatDate(booking.bookingEndDate)}
+                      </TableCell>
+                      <TableCell>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              aria-haspopup="true"
+                              size="icon"
+                              variant="ghost"
+                            >
+                              <MoreHorizontal className="h-4 w-4" />
+                              <span className="sr-only">Toggle menu</span>
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuItem
+                              onClick={() => handleViewClick(booking.bookingID)}
+                            >
+                              View
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
                     </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredData().map((booking, index) => (
-                      <TableRow key={index}>
-                        <TableCell className="relative max-w-16">
-                          <div className="min-h-16 min-w-16 ">
-                            <Image
-                              src={booking.hotel.primaryImageLink}
-                              alt={""}
-                              fill
-                              className="rounded-[0.5rem] p-2 object-fit"
-                            />
-                          </div>
-                        </TableCell>
-
-                        <TableCell className="font-medium">
-                          {booking.hotel?.name}
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            variant={
-                              booking.status === "accepted"
-                                ? "Approved"
-                                : "Requested"
-                            }
-                          >
-                            {booking.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          {agent?.firstName} {agent?.lastName}
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell">
-                          {formatDate(booking.bookingStartDate)}
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell">
-                          {formatDate(booking.bookingEndDate)}
-                        </TableCell>
-                        <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                aria-haspopup="true"
-                                size="icon"
-                                variant="ghost"
-                              >
-                                <MoreHorizontal className="h-4 w-4" />
-                                <span className="sr-only">Toggle menu</span>
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                              <DropdownMenuItem
-                                onClick={() =>
-                                  handleViewClick(booking.bookingID)
-                                }
-                              >
-                                View
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-        <Toaster />
-      </main>
-    </AgentLayout>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </main>
   );
 }
