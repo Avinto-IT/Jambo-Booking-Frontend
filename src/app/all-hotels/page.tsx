@@ -2,11 +2,8 @@
 import React, { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Dot } from "lucide-react";
-
-import { Skeleton } from "@/components/ui/skeleton";
 import { Hotel, Room } from "@/utils/types";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
-
 import FilterSheet, { FilterValues } from "@/components/FilterSheet";
 import FilterChips from "@/components/FilterChips";
 import Hero from "@/components/HotelHero/Hero";
@@ -68,7 +65,6 @@ function AllHotels() {
     const fetchHotels = async () => {
       try {
         const response = await fetch("/api/getHotels");
-        console.log(response);
         const data = await response.json();
         setHotels(data.hotels);
       } catch (error) {

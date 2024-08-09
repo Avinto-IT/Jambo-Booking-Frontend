@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
 import { verifyToken } from "@/lib/middleware";
-import { calculateDaysBetweenDates } from "@/utils/functions";
+import { differenceInCalendarDays } from "date-fns";
 
 const prisma = new PrismaClient();
 
@@ -60,9 +60,9 @@ async function bookHotelRoomHandler(req: NextApiRequest, res: NextApiResponse) {
     if (!hotel) {
       return res.status(404).json({ error: "Hotel not found" });
     }
-    const numberOfDaysBooked = calculateDaysBetweenDates(
-      bookingStartDate,
-      bookingEndDate
+    const numberOfDaysBooked = differenceInCalendarDays(
+      bookingEndDate,
+      bookingStartDate
     );
 
     const rooms = hotel.rooms as unknown as Array<{

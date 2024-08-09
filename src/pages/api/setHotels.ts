@@ -21,7 +21,7 @@ async function addHotelHandler(req: NextApiRequest, res: NextApiResponse) {
     primaryImageLink,
     isRunning,
     rooms,
-    discount,
+    // discount,
     contactDetails,
   } = req.body;
   if (!userID) {
@@ -93,9 +93,9 @@ async function addHotelHandler(req: NextApiRequest, res: NextApiResponse) {
       .status(400)
       .json({ error: "Atleast one room type should be included." });
   }
-  if (!discount) {
-    discount = 0.0;
-  }
+  // if (!discount) {
+  //   discount = 0.0;
+  // }
 
   try {
     const hotel = await prisma.hotel.create({
@@ -113,7 +113,7 @@ async function addHotelHandler(req: NextApiRequest, res: NextApiResponse) {
         primaryImageLink,
         isRunning,
         rooms,
-        discount,
+        // discount,
         contactDetails,
         isApproved: "accepted",
         user: {

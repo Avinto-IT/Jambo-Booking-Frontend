@@ -1,5 +1,6 @@
 import { NextApiResponse, NextApiRequest } from "next";
 import { PrismaClient } from "@prisma/client";
+import { isWithinInterval } from "date-fns";
 
 const prisma = new PrismaClient();
 
@@ -22,6 +23,29 @@ export default async function getHotelByIdHandler(
         hotelID: idFromQuery,
       },
     });
+    if (!hotel) {
+      return res.status(404).json({ error: "Hotel not found" });
+    }
+
+    const today = new Date();
+
+    if (hotel.discount) {
+      const { startDate, endDate } = hotel.discount as {
+        startDate: string;
+        endDate: string;
+      };
+
+      const isInDiscountPeriod = isWithinInterval(today, {
+        start: new Date(startDate),
+        end: new Date(endDate),
+      });
+
+      // Exclude the discount if today is not within the range
+      if (!isInDiscountPeriod) {
+        hotel.discount = null;
+      }
+    }
+
     res.status(200).json({ hotel });
   } catch (error) {
     console.log("Error fetching hotels", error);

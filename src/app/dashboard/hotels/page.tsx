@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import { ListFilter, MoreHorizontal, PlusCircle, Search } from "lucide-react";
-
+import { addDays, format, isBefore, parseISO, compareDesc } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,6 +30,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
@@ -38,12 +46,21 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { toast, Toaster } from "sonner";
 import { dateFormatter } from "@/utils/functions";
+import { Label } from "@/components/ui/label";
+import { DateRange } from "react-day-picker";
+import { Calendar } from "@/components/ui/calendar";
 
 export default function HotelsDashboard() {
   const [hotels, setHotels] = useState<Hotel[]>([]);
   const [activeTab, setActiveTab] = useState("all");
   const [searchValue, setSearchValue] = useState<string>("");
-
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [date, setDate] = useState<DateRange | undefined>(undefined);
+  const [discountObject, setDiscountObject] = useState({
+    startDate: date?.from || undefined,
+    endDate: date?.to || undefined,
+    discountPercent: "",
+  });
   const router = useRouter();
 
   const filteredData = () => {
@@ -65,6 +82,7 @@ export default function HotelsDashboard() {
 
     return filteredHotels;
   };
+  console.log(hotels);
 
   useEffect(() => {
     const fetchHotels = async () => {
@@ -78,7 +96,15 @@ export default function HotelsDashboard() {
     };
     fetchHotels();
   }, []);
-
+  useEffect(() => {
+    if (date?.from && date?.to) {
+      setDiscountObject((prevValue) => ({
+        ...prevValue,
+        startDate: date.from,
+        endDate: date.to,
+      }));
+    }
+  }, [date]);
   const handleViewClick = (hotelId: string) => {
     router.push(`/dashboard/hotels/view-hotel?id=${hotelId}`);
   };
@@ -114,7 +140,35 @@ export default function HotelsDashboard() {
       toast.message("Error deleting hotel");
     }
   };
-  console.log(hotels);
+  const handleDiscountUpdate = async (hotelID: string, hotelName: string) => {
+    console.log(hotelID);
+    try {
+      const response = await fetch(`/api/updateHotelDiscount`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`, // Ensure you have the token stored in localStorage
+        },
+        body: JSON.stringify({
+          hotelID,
+          discountStartDate: discountObject.startDate,
+          discountEndDate: discountObject.endDate,
+          discountPercentage: discountObject.discountPercent,
+        }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        toast.message(`Discount percentage update for ${hotelName}`);
+      } else {
+        toast.error(data.error);
+      }
+    } catch (error) {
+      console.log("Error updating the discount percentage:", error);
+      toast.message(
+        "Internal server error: Error updating the discount percentage:"
+      );
+    }
+  };
   return (
     <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
       <Tabs defaultValue={activeTab}>
@@ -196,6 +250,9 @@ export default function HotelsDashboard() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>
+                      <span className="sr-only"></span>
+                    </TableHead>
+                    <TableHead>
                       <span className="sr-only">Hotel Image</span>
                     </TableHead>
                     <TableHead>Hotel Name</TableHead>
@@ -215,13 +272,14 @@ export default function HotelsDashboard() {
                   {filteredData().map((hotel, index) => {
                     return (
                       <TableRow key={index}>
-                        <TableCell className="relative max-w-16">
-                          <div className="min-h-16 min-w-16 ">
+                        <TableCell className="min-w-6"></TableCell>
+                        <TableCell className="relative min-w-20">
+                          <div className="rounded-sm min-h-20 min-w-20 ">
                             <Image
                               src={hotel.primaryImageLink}
                               alt={""}
                               fill
-                              className="rounded-[0.5rem] p-2 object-fit"
+                              className="rounded-[1rem] object-fit p-2"
                             />
                           </div>
                         </TableCell>
@@ -278,6 +336,75 @@ export default function HotelsDashboard() {
                               >
                                 Delete
                               </DropdownMenuItem>
+                              <Dialog
+                                open={isDialogOpen}
+                                onOpenChange={setIsDialogOpen}
+                              >
+                                <DialogTrigger
+                                  asChild
+                                  className="appearance-none"
+                                >
+                                  <div className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 hover:bg-slate-100">
+                                    Discount
+                                  </div>
+                                </DialogTrigger>
+                                <DialogContent className="p-3">
+                                  <DialogHeader className="px-4 my-2">
+                                    <DialogTitle>Hotel Discount</DialogTitle>
+                                    <DialogDescription>
+                                      Update the discount for the hotel.
+                                    </DialogDescription>
+                                  </DialogHeader>
+
+                                  <Label className="px-6">
+                                    Select the date you want to apply the
+                                    discount
+                                  </Label>
+                                  <Calendar
+                                    className="mb-4"
+                                    selected={date}
+                                    onSelect={setDate}
+                                    mode="range"
+                                    numberOfMonths={2}
+                                  />
+                                  <div className="flex gap-x-2 w-full justify-center items-center">
+                                    <Label>
+                                      Select the discount percentage(%)
+                                    </Label>
+                                    <Input
+                                      type="number"
+                                      placeholder="e.g. 12.5"
+                                      className="w-1/2"
+                                      onChange={(e) =>
+                                        setDiscountObject((prevValue) => ({
+                                          ...prevValue,
+                                          discountPercent: e.target.value,
+                                        }))
+                                      }
+                                    />
+                                  </div>
+
+                                  <div className="flex justify-end gap-2 mt-4">
+                                    <Button
+                                      type="button"
+                                      onClick={() =>
+                                        handleDiscountUpdate(
+                                          hotel.hotelID,
+                                          hotel.name
+                                        )
+                                      }
+                                    >
+                                      Add discount
+                                    </Button>
+                                    <Button
+                                      variant="outline"
+                                      onClick={() => setIsDialogOpen(false)}
+                                    >
+                                      Cancel
+                                    </Button>
+                                  </div>
+                                </DialogContent>
+                              </Dialog>
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </TableCell>
