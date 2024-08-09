@@ -81,7 +81,7 @@ interface AgentDashboardProps {
 }
 
 export default function AgentDashboard({ agent }: AgentDashboardProps) {
-  console.log(agent, "agentssad");
+  // console.log(agent, "agentssad");
 
   return (
     <div className="flex flex-col sm:gap-4 ">

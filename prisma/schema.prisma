@@ -19,7 +19,7 @@ model Hotel {
   primaryImageLink String
   isRunning        Boolean
   rooms            Json
-  discount         Float
+  discount         Json?
   contactDetails   Json
   addedDate        DateTime
   isApproved       String

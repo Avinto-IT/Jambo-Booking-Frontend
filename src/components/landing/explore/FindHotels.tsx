@@ -49,7 +49,7 @@ function FindHotels() {
           </Link>
         </div>
       </div>
-      <div className="grid grid-cols-3 grid-rows-2   gap-x-5 gap-y-4  ">
+      <div className="grid grid-cols-3 grid-rows-2 gap-x-5 gap-y-4  ">
         {hotels.slice(0, 6).map((hotel, id) => {
           const lowestPricedRoom = getLowestPricedRoom(hotel.rooms);
           return (
